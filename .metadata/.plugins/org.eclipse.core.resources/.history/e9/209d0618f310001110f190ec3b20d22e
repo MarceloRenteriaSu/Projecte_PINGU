@@ -1,0 +1,10 @@
+package modelos;
+
+public class BolaDeNieve extends item {
+
+	public BolaDeNieve(int cantidad) {
+		super("Bola de Nieve", cantidad);
+		
+	}
+
+}

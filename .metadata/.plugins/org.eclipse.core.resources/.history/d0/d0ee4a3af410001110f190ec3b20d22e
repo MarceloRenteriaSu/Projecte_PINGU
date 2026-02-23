@@ -1,0 +1,10 @@
+package modelos;
+
+public class Dado extends item {
+
+	public Dado(String nombre, int cantidad) {
+		super(nombre, cantidad);
+	}
+	
+	
+}
