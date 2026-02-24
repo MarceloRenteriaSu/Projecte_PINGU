@@ -1,8 +1,0 @@
-package modelos;
-
-public class Pez extends item {
-	public Pez(int cantidad) {
-		super("Pez", cantidad);
-	}
-
-}
