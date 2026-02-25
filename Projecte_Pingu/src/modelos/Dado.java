@@ -16,7 +16,7 @@ public class Dado extends item {
 			this.max = 3;
 			break;
 		case "Rapido":
-			this.min = 6;
+			this.min = 5;
 			this.max = 10;
 			break;
 		default:
