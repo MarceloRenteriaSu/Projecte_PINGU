@@ -13,8 +13,7 @@ public class Partida {
 	protected jugador ganador;
 	
 	//CONSTRUCTOR
-	public Partida(Tablero tablero, ArrayList<modelos.jugador> jugador, int turnos, int jugadorActual, boolean fin,
-			modelos.jugador ganador) {
+	public Partida(Tablero tablero, ArrayList<jugador> jugador, int turnos, int jugadorActual, boolean fin, jugador ganador) {
 		this.tablero = tablero;
 		this.jugador = jugador;
 		this.turnos = turnos;
@@ -62,7 +61,9 @@ public class Partida {
 	}
 	
 	//MÉTODOS
-	
+	public jugador jugadorActual() {
+		return jugador.get(jugadorActual);
+	}
 	
 
 	
