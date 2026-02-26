@@ -21,9 +21,19 @@ public class Pinguino extends jugador {
 	
 	//MÉTODO BATALLA()
 	public void batalla(Pinguino p) {
-		if(inv.contarItem(" Bola de Nieve ") > p.getInv().contarItem(" Bola de Nieve ")) {
-			
+		int diferencia = 0;
+		item bola = new BolaDeNieve(inv.contarItem("Bola de Nieve"));
+		item bola2 = new BolaDeNieve(p.inv.contarItem("Bola de Nieve"));
+		
+		if(inv.contarItem("Bola de Nieve") > p.getInv().contarItem("Bola de Nieve")) {
+		diferencia = inv.contarItem("Bola de Nieve") - p.getInv().contarItem("Bola de Nieve");
+		pos += diferencia;
+		}else if(inv.contarItem("Bola de Nieve") < p.getInv().contarItem("Bola de Nieve")) {
+			diferencia = p.getInv().contarItem("Bola de Nieve") - inv.contarItem("Bola de Nieve");
+			p.pos += diferencia;
 		}
+		quitarItem(bola);
+		p.quitarItem(bola2);
 	}
 	
 	//MÉTODO USARITEM()
