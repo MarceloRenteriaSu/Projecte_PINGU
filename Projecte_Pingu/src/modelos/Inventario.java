@@ -29,7 +29,7 @@ public class Inventario {
 			}
 		}
 		return cantidad;
-
+	}
 	public int totalItems() {
 		int total = 0;
 		for(item it : inv) {
