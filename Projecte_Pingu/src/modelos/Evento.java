@@ -1,69 +1,59 @@
 package modelos;
-
-import java.util.Random;  // ← Import OBLIGATORIO
-
-public class Evento extends casilla {  // ← Corregido: Casilla con mayúscula
-
-    // ATRIBUTOS
+import java.util.Random;
+public class Evento extends casilla {
+    //ATRIBUTOS
     protected String[] eventos;
-
-    // CONSTRUCTOR
+    
+    //CONSTRUCTOR
     public Evento(int pos, String[] eventos) {
         super(pos);
         this.eventos = eventos;
     }
+    
     //METODOS
-
     @Override
-    public void realizarAccion(Partida partida, jugador jugador) {
+    public void realizarAccion(Partida partida, Pinguino p) {
         if (eventos == null || eventos.length == 0) {
             System.out.println("No hay eventos definidos en esta casilla.");
-            return;
-        }
-
-        Random rand = new Random();
-
-        int probabilidad = rand.nextInt(100);
-        String eventoElegido;
-
-        if (probabilidad < 50) {          // 50% DADO_LENTO(ALTA PROBABILIDAD) 
-            eventoElegido = "DADO_LENTO";
-        } else if (probabilidad < 80) {   // 30% BOLAS_DE_NIEVE
-            eventoElegido = "BOLAS_DE_NIEVE";
-        } else if (probabilidad < 92) {   // 12% PEZ
-            eventoElegido = "PEZ";
-        } else {                          // 8%  DADO_RAPIDO
-            eventoElegido = "DADO_RÁPIDO";
-        }
-
-        // Ejecutar el efecto correspondiente
-        switch (eventoElegido) {
-            case "PEZ":
-                jugador.getInventario().agregarPez(1);
-                System.out.println(jugador.getNom() + " ha obtenido 1 pez ");
-                break;
-
-            case "BOLAS_DE_NIEVE":
-                int cantidad = rand.nextInt(3) + 1;  // 1, 2 o 3
-                jugador.getInventario().agregarBolaDeNieve(cantidad);
-                System.out.println(jugador.getNom() + " ha obtenido " + cantidad + " bolas de nieve ");
-                break;
-
-            case "DADO_RAPIDO":
-                int avance = rand.nextInt(6) + 5;  // 5 a 10 casillas
-                partida.moverJugador(jugador, avance);
-                System.out.println(jugador.getNom() + " ha sacado dado RÁPIDO! + " + avance + " casillas ");
-                break;
-
-            case "DADO_LENTO":
-                int avanceLento = rand.nextInt(3) + 1;  // 1 a 3 casillas
-                partida.moverJugador(jugador, avanceLento);
-                System.out.println(jugador.getNom() + " ha sacado dado LENTO + " + avanceLento + " casillas");
-                break;
-
-            default:
-                System.out.println("Evento desconocido: " + eventoElegido);
-                break;
-        }
+        }else {
+	        Random rand = new Random();
+	        int probabilidad = rand.nextInt(100)+1;
+	        String eventoElegido;
+	        if (probabilidad < 51) {          //50%
+	            eventoElegido = "DADO_LENTO";
+	        } else if (probabilidad < 81) {   //30%
+	            eventoElegido = "BOLAS_DE_NIEVE";
+	        } else if (probabilidad < 93) {   //12%
+	            eventoElegido = "PEZ";
+	        } else {                          //8% 
+	            eventoElegido = "DADO_RAPIDO";
+	        }
+	        switch (eventoElegido) {
+	            case "PEZ":
+	            	Pez p1 = new Pez(0);
+	                p.agregarItem(p1);
+	                System.out.println(p.getNom() + " ha obtenido 1 pez!");
+	                break;
+	            case "BOLAS_DE_NIEVE":
+	                int cantidad = rand.nextInt(3) + 1;  // 1, 2 o 3
+	                BolaDeNieve b = new BolaDeNieve(cantidad);
+	                p.agregarItem(b);
+	                System.out.println(p.getNom() + " ha obtenido " + cantidad + " bolas de nieve!");
+	                break;
+	            case "DADO_RAPIDO":
+	                Dado r = new Dado("Rapido", 1);
+	                p.agregarItem(r);
+	                System.out.println(p.getNom() + " ha ganado un dado RÁPIDO!");
+	                break;
+	            case "DADO_LENTO":
+	            	Dado l = new Dado("Lento", 1);
+	                p.agregarItem(l);
+	                System.out.println(p.getNom() + " ha ganado un dado LENTO!");
+	                break;
+	            default:
+	                System.out.println("Evento desconocido: " + eventoElegido);
+	                break;
+	        }
+	    }
     }
 }

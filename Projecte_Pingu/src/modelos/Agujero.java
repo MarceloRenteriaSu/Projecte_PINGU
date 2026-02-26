@@ -7,7 +7,7 @@ public class Agujero extends casilla {
 	}
 	
 	@Override
-	public void realizarAccion(Partida partida, jugador jugador) {
+	public void realizarAccion(Partida partida, Pinguino p) {
 		
 	}
 }

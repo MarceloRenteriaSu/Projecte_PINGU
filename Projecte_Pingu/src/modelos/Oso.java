@@ -7,7 +7,14 @@ public class Oso extends casilla {
 	}
 	
 	@Override
-	public void realizarAccion(Partida partida, jugador jugador) {
-		
+	public void realizarAccion(Partida partida, Pinguino p) {
+		if(p != null) {
+			if(p.getInv().contarItem("Pez") == 0) {
+				p.setPos(0);
+			}else {
+				Pez p1 = new Pez(0);
+				p.usarItem(p1);
+			}
+		}
 	}
 }

@@ -19,7 +19,7 @@ public abstract class casilla {
 	}
 	
 	//MÉTODO REALIZAR ACCION()
-	public void realizarAccion(Partida partida, jugador jugador) {
+	public void realizarAccion(Partida partida, Pinguino p) {
 		
 	}
 	
