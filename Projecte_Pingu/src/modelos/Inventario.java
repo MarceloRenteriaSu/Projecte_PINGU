@@ -31,6 +31,7 @@ public class Inventario {
 		return cantidad;
 	}
 	
+	//MÉTODO TOTALITEMS()
 	public int totalItems() {
 		int total = 0;
 		for(item it : inv) {
@@ -38,5 +39,16 @@ public class Inventario {
 		}
 		return total;
 
+	}
+	
+	//MÉTODO CONTARDADOS()
+	public int contarDados() {
+		int total = 0;
+		for(item it : inv) {
+			if(it instanceof Dado) {
+				total += 1;
+			}
+		}
+		return total;
 	}
 }
