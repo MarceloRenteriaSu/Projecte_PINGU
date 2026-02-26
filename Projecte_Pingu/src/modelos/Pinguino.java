@@ -53,28 +53,7 @@ public class Pinguino extends jugador {
 		if(i == null) {
 			System.out.println("No se puede añadir este item.");
 		}else {
-			String n = i.getNombre();
-			for(item exist : inv.getInv()) {
-				if(exist instanceof Dado) {
-					int total = contarDados();
-					if(total == 3) {
-						//No añade el dado
-					}else {
-						if(exist.getNombre().equalsIgnoreCase(i.getNombre()) && !exist.getNombre().equals("Normal")){
-							encontrado = true;
-							int nuevaCantidad = exist.getCantidad() + i.getCantidad();
-							exist.setCantidad(nuevaCantidad);
-						}
-					}
-				}else if(exist.getNombre().equalsIgnoreCase(i.getNombre()) && !(exist instanceof Dado)) {
-				encontrado = true;
-				int nuevaCantidad = exist.getCantidad() + i.getCantidad();
-				exist.setCantidad(nuevaCantidad);
-				}
-			}
-			if(!encontrado) {
-				inv.getInv().add(i);
-			}
+			
 		}
 	}
 	
@@ -93,5 +72,6 @@ public class Pinguino extends jugador {
 				}
 			}  
 		}
-	}	
+	}
+
 }

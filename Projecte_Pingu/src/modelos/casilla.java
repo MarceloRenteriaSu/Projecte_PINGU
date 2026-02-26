@@ -18,7 +18,7 @@ public abstract class casilla {
 		this.pos = pos;
 	}
 	
-	//MÉTODO REALIZARACCION()
+	//MÉTODO REALIZAR ACCION()
 	public void realizarAccion(Partida partida, jugador jugador) {
 		
 	}
