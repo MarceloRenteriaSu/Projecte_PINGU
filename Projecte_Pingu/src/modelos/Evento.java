@@ -40,22 +40,22 @@ public class Evento extends casilla {  // ← Corregido: Casilla con mayúscula
         switch (eventoElegido) {
             case "PEZ":
                 jugador.getInventario().agregarPez(1);
-                System.out.println(jugador.getNom() + " ha obtenido 1 pez 🐟");
+                System.out.println(jugador.getNom() + " ha obtenido 1 pez ");
                 break;
 
-            case "BOLES_NEU":
+            case "BOLAS_DE_NIEVE":
                 int cantidad = rand.nextInt(3) + 1;  // 1, 2 o 3
-                jugador.getInventari().agregarBolaDeNieve(cantidad);
-                System.out.println(jugador.getNom() + " ha obtenido " + cantidad + " bolas de nieve ❄️");
+                jugador.getInventario().agregarBolaDeNieve(cantidad);
+                System.out.println(jugador.getNom() + " ha obtenido " + cantidad + " bolas de nieve ");
                 break;
 
-            case "DAU_RAPID":
+            case "DADO_RAPIDO":
                 int avance = rand.nextInt(6) + 5;  // 5 a 10 casillas
                 partida.moverJugador(jugador, avance);
-                System.out.println(jugador.getNom() + " ha sacado dado RÁPIDO! + " + avance + " casillas ⚡");
+                System.out.println(jugador.getNom() + " ha sacado dado RÁPIDO! + " + avance + " casillas ");
                 break;
 
-            case "DAU_LENT":
+            case "DADO_LENTO":
                 int avanceLento = rand.nextInt(3) + 1;  // 1 a 3 casillas
                 partida.moverJugador(jugador, avanceLento);
                 System.out.println(jugador.getNom() + " ha sacado dado LENTO + " + avanceLento + " casillas");
