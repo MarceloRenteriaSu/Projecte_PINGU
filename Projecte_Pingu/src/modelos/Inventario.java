@@ -19,4 +19,13 @@ public class Inventario {
 		this.inv = inv;
 	}
 	
+	public int contarItem(String nom) {
+		int cantidad = 0;
+		for(item it : inv) {
+			if(it.getNombre().equalsIgnoreCase(nom)) {
+				cantidad += it.getCantidad();
+			}
+		}
+		return cantidad;
+	}
 }

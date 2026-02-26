@@ -21,7 +21,9 @@ public class Pinguino extends jugador {
 	
 	//MÉTODO BATALLA()
 	public void batalla(Pinguino p) {
-		
+		if(inv.contarItem(" Bola de Nieve ") > p.getInv().contarItem(" Bola de Nieve ")) {
+			
+		}
 	}
 	
 	//MÉTODO USARITEM()
