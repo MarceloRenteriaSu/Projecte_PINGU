@@ -31,7 +31,7 @@ public class Pinguino extends jugador {
 				int diferencia = bola1 - bola2;
 				moverPos(diferencia);
 			}else if(bola1 < bola2) {
-				int diferencia = bola1 - bola2;
+				int diferencia = bola2 - bola1;
 				p.moverPos(diferencia);
 			}
 			quitarItem(bola);
@@ -39,9 +39,6 @@ public class Pinguino extends jugador {
 		}else {
 			System.out.println("ERROR: No hay pingüino!");
 		}
-		
-		
-		
 	}
 	
 	//MÉTODO USARITEM()
