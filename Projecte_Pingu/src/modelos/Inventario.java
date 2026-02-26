@@ -10,7 +10,8 @@ public class Inventario {
 	public Inventario(ArrayList<item> inv) {
 		this.inv = inv;
 	}
-
+	
+	//GETTER Y SETTER
 	public ArrayList<item> getInv() {
 		return inv;
 	}
@@ -19,6 +20,7 @@ public class Inventario {
 		this.inv = inv;
 	}
 	
+
 	public int contarItem(String nom) {
 		int cantidad = 0;
 		for(item it : inv) {
@@ -27,5 +29,13 @@ public class Inventario {
 			}
 		}
 		return cantidad;
+
+	public int totalItems() {
+		int total = 0;
+		for(item it : inv) {
+			total = total + it.getCantidad();
+		}
+		return total;
+
 	}
 }
