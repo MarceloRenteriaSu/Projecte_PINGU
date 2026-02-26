@@ -21,9 +21,27 @@ public class Pinguino extends jugador {
 	
 	//MÉTODO BATALLA()
 	public void batalla(Pinguino p) {
-		if(inv.contarItem(" Bola de Nieve ") > p.getInv().contarItem(" Bola de Nieve ")) {
+		item bola = new BolaDeNieve(0);
+		
+		if(p != null) {
+			int bola1 = inv.contarItem("Bola de Nieve");
+			int bola2 = p.inv.contarItem("Bola de Nieve");
 			
+			if(bola1 > bola2) {
+				int diferencia = bola1 - bola2;
+				moverPos(diferencia);
+			}else if(bola1 < bola2) {
+				int diferencia = bola1 - bola2;
+				p.moverPos(diferencia);
+			}
+			quitarItem(bola);
+			p.quitarItem(bola);
+		}else {
+			System.out.println("ERROR: No hay pingüino!");
 		}
+		
+		
+		
 	}
 	
 	//MÉTODO USARITEM()
@@ -51,6 +69,7 @@ public class Pinguino extends jugador {
 		if(i == null) {
 			System.out.println("No se puede añadir este item.");
 		}else {
+
 			boolean encontrado = false;
 			String nombre = i.getNombre();
 			for(item exist : inv.getInv()) {
@@ -82,6 +101,7 @@ public class Pinguino extends jugador {
 			if(encontrado == false) {
 				inv.getInv().add(i);
 			}
+
 		}
 	}
 	
@@ -101,5 +121,17 @@ public class Pinguino extends jugador {
 				inv.getInv().remove(eliminar);
 			}
 		}
-	}	
+	}
+
+	@Override
+	public void moverPos(int p) {
+		if(p != 0) {
+			int nuevaPos = pos + p;
+			if(nuevaPos < 0) {
+				nuevaPos = 0;
+			}
+			pos = nuevaPos;
+		}
+	}
+
 }
