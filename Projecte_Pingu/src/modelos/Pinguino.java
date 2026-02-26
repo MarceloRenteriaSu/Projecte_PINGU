@@ -28,23 +28,23 @@ public class Pinguino extends jugador {
 	
 	//MÉTODO USARITEM()
 	public void usarItem(item i) {
-		
+		if(i == null) {
+			System.out.println("No se puede usar este item.");
+		}else {
+			String nom = i.getNombre();
+			for(item exist : inv.getInv()) {
+				if(exist.getNombre().equalsIgnoreCase(nom) && !nom.equals("Normal")){
+					if(exist.getCantidad() >= 1) {
+						exist.setCantidad(exist.getCantidad() - 1);
+					}
+					if(exist.getCantidad() <= 0) {
+						inv.getInv().remove(exist);
+					}
+				}
+			}  
+		}
 	}
 	
-	private int contarDados() {
-	    int total = 0;
-	    for (item it : inv.getInv()) {
-	        if (it.getNombre().contains("Normal")) {
-	            total++;
-	        }else if (it.getNombre().contains("Lento")) {
-	            total++;
-	        }
-	        else if (it.getNombre().contains("Rapido")) {
-	            total++;
-	        }
-	    }
-	    return total;
-	}
 	
 	//MÉTODO AGREGARITEM
 	public void agregarItem(item i) {
@@ -86,21 +86,20 @@ public class Pinguino extends jugador {
 	}
 	
 	//MÉTODO QUITARITEM()
-	public void quitarItem(item i, int cantidad) {
+	public void quitarItem(item i) {
 		if(i == null) {
 			System.out.println("No se puede quitar este item.");
 		}else {
-			String nom = i.getNombre();
+			item eliminar = null;
+			String nombre = i.getNombre();
 			for(item exist : inv.getInv()) {
-				if(exist.getNombre().equalsIgnoreCase(nom) && !nom.equals("Normal")){
-					if(exist.getCantidad() >= 1) {
-						exist.setCantidad(exist.getCantidad() - cantidad);
-					}
-					if(exist.getCantidad() <= 0) {
-						inv.getInv().remove(i);
-					}
+				if(exist.getNombre().equalsIgnoreCase(nombre) && !nombre.equals("Normal")) {
+					eliminar = exist;
 				}
-			}  
+			}
+			if(eliminar != null) {
+				inv.getInv().remove(eliminar);
+			}
 		}
 	}	
 }
