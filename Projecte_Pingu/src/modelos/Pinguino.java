@@ -92,7 +92,7 @@ public class Pinguino extends jugador {
 		}else {
 			String nom = i.getNombre();
 			for(item exist : inv.getInv()) {
-				if(exist.getNombre().equalsIgnoreCase(nom) && nom != "Normal"){
+				if(exist.getNombre().equalsIgnoreCase(nom) && !nom.equals("Normal")){
 					if(exist.getCantidad() >= 1) {
 						exist.setCantidad(exist.getCantidad() - cantidad);
 					}
