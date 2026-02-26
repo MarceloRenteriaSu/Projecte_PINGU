@@ -92,4 +92,12 @@ public class Pinguino extends jugador {
 			}  
 		}
 	}
+
+	@Override
+	public void moverPos(int p) {
+		pos += p;
+		if(pos > )
+	}
+	
+	
 }
