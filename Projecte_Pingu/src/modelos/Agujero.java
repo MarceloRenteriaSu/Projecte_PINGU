@@ -13,21 +13,15 @@ public class Agujero extends casilla {
         if(partida != null && p != null) {
             ArrayList<casilla> tablero = partida.getTablero().getCasilla();
             int actual = p.getPos();
-            //usando boolean
-           boolean encontrado = false;
-
-            // Buscamos el agujero ANTERIOR (retrocediendo)
-            for(int i = actual - 1; i >= 0; i--) {  
+            int i = 0;
+            for(i = actual - 1; i >= 0; i--) {  
                 if(tablero.get(i) instanceof Agujero) {
                     p.setPos(i);
-                    encontrado = true;
-                    i = -1;  
+                    i = -2;  
                 }
             }
-
-            if(! encontrado) {  
-                p.setPos(1);
-            
+            if(i != -2) {  
+                p.setPos(0);
             }
         }
     }
