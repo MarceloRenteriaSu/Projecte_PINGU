@@ -1,9 +1,30 @@
 package controlador;
 
 public class GestorJugador {
-
-	public GestorJugador() {
-		// TODO Auto-generated constructor stub
+	
+	public void jugadorUsarItem() {
+		
 	}
+	
+	public void jugadorSeMueve() {
+		
+	}
+	
+	public void jugadorFinalizarTurno() {
+		
+	}
+	
+	public void pinguEvento() {
+		
+	}
+	
+	public void pinguGuerra() {
+		
+	}
+	
+	public void focaInteractua() {
+		
+	}
+	
 
 }

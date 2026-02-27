@@ -1,9 +1,21 @@
 package vista;
 
 public class PantallaMenu {
-
-	public PantallaMenu() {
-		// TODO Auto-generated constructor stub
+	
+	public void menu() {
+		
+	}
+	
+	public void botonNuevaPartida() {
+		
+	}
+	
+	public void botonCargarPartida(int id) {
+		
+	}
+	
+	public void botonSalir() {
+		
 	}
 
 }
