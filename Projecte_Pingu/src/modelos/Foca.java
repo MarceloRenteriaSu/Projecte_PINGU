@@ -34,7 +34,8 @@ public class Foca extends jugador {
 	public void golpearJugador(Partida partida, Pinguino p) {
 		if(partida != null & p != null) {
 			if(this.pos == p.getPos()) {
-				
+				casilla c = new Agujero(0);
+				c.realizarAccion(partida, p);
 			}
 		}
 	}
