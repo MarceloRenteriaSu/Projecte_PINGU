@@ -7,8 +7,8 @@ public class Tablero {
 	protected ArrayList<casilla> casilla;
 	
 	//CONSTRUCTOR
-	public Tablero(ArrayList<casilla> casilla) {
-		this.casilla = casilla;
+	public Tablero(int cantidad) {
+		generarTableroAleatorio(cantidad);
 	}
 	
 	//GETTERS Y SETTERS
@@ -28,31 +28,53 @@ public class Tablero {
     }
 	
 	//MÉTODOS
-	public static Tablero generarAleatorio(int cantidad) {
-		ArrayList<casilla> lista = new ArrayList<>();
-		if(cantidad < 50) {
+	private casilla crearCasilla(String tipo, int pos) {
+        switch (tipo) {
+            case "Oso": 
+            	return new Oso(pos);
+            case "Agujero": 
+            	return new Agujero(pos);
+            case "Trineo": 
+            	return new Trineo(pos);
+            case "Evento": 
+            	return new Evento(pos);
+            case "SueloQuebradizo": 
+            	return new SueloQuebradizo(pos);
+            default: 
+            	return new Normal(pos);
+        }
+    }
+	
+	private void generarTableroAleatorio(int cantidad) {
+        Random r = new Random();
+        String[] tipos = {"Normal", "Oso", "Agujero", "Trineo", "Evento", "SueloQuebradizo"};
+        int[] probs = {55, 63, 73, 85, 95, 100}; 
+        if(cantidad < 50) {
         	cantidad = 50;
         }
-            Random rand = new Random();
-            lista.add(new Normal(0));
-            for (int i = 1; i < cantidad; i++) {
-                int r = rand.nextInt(100);
-                if (r < 55) {
-                    lista.add(new Normal(i));
-                } else if (r < 65) {
-                    lista.add(new Oso(i));
-                } else if (r < 75) {
-                    lista.add(new Agujero(i));
-                } else if (r < 88) {
-                    lista.add(new Trineo(i));
-                } else if (r < 95) {
-                    lista.add(new Evento(i));
-                } else {
-                    lista.add(new SueloQuebradizo(i));
-                }
+        casilla.set(0, new Normal(0));
+        for (int i = 1; i <= cantidad; i++) {
+            int rand = r.nextInt(100)+1;
+            String tipo = "Normal";
+            if(rand < probs[0]) {
+            	tipo = tipos[0];
+            }else if(rand < probs[1]) {
+            	tipo = tipos[1];
+            }else if(rand < probs[2]) {
+            	tipo = tipos[2];
+            }else if(rand < probs[3]) {
+            	tipo = tipos[3];
+            }else if(rand < probs[4]) {
+            	tipo = tipos[4];
+            }else {
+            	tipo = tipos[5];
             }
-            return new Tablero(lista);
-	}
+
+            casilla c = crearCasilla(tipo, i);
+            this.casilla.add(c);
+        }
+        casilla.set(cantidad, new Normal(cantidad));
+    }
 	
 	public void actualizarTablero() {
 		
