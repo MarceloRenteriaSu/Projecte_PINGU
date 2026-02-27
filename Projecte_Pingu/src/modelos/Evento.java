@@ -21,11 +21,11 @@ public class Evento extends casilla {
 	        String eventoElegido;
 	        if (probabilidad < 51) {          //50%
 	            eventoElegido = "DADO_LENTO";
-	        } else if (probabilidad < 81) {   //30%
+	        } else if (probabilidad < 76) {   //25%
 	            eventoElegido = "BOLAS_DE_NIEVE";
-	        } else if (probabilidad < 93) {   //12%
+	        } else if (probabilidad < 81) {   //15%
 	            eventoElegido = "PEZ";
-	        } else {                          //8% 
+	        } else {                          //10% 
 	            eventoElegido = "DADO_RAPIDO";
 	        }
 	        switch (eventoElegido) {
