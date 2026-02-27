@@ -1,6 +1,7 @@
 package modelos;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Partida {
 	
@@ -13,21 +14,44 @@ public class Partida {
 	protected jugador ganador;
 	
 	//CONSTRUCTOR
-	public Partida(Tablero tablero, ArrayList<jugador> jugador, int turnos, int jugadorActual, boolean fin, jugador ganador) {
+	public Partida(Tablero tablero, ArrayList<jugador> jugador, int turnos, int jugadorActual) {
 		this.tablero = tablero;
 		this.jugador = jugador;
 		this.turnos = turnos;
 		this.jugadorActual = jugadorActual;
-		this.fin = fin;
-		this.ganador = ganador;
+		this.fin = false;
+		this.ganador = null;
 	}
 	
 	//GETTERS Y SETTERS
 	public Tablero getTablero() {
 		return tablero;
 	}
-	public void setTablero(Tablero tablero) {
-		this.tablero = tablero;
+	public void setTablero(int cantidad) {
+		ArrayList<casilla> lista = new ArrayList<>();
+		if(cantidad < 50) {
+        	System.out.println("ERROR");
+        	cantidad = 50;
+        }
+            Random rand = new Random();
+            lista.add(new Normal(0));
+            for (int i = 1; i < cantidad; i++) {
+                int r = rand.nextInt(100);
+                if (r < 55) {
+                    lista.add(new Normal(i));
+                } else if (r < 65) {
+                    lista.add(new Oso(i));
+                } else if (r < 75) {
+                    lista.add(new Agujero(i));
+                } else if (r < 88) {
+                    lista.add(new Trineo(i));
+                } else if (r < 95) {
+                    lista.add(new Evento(i));
+                } else {
+                    lista.add(new SueloQuebradizo(i));
+                }
+            }
+        this.tablero = new Tablero(lista);
 	}
 	public ArrayList<jugador> getJugador() {
 		return jugador;

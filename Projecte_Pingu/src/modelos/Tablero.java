@@ -19,14 +19,15 @@ public class Tablero {
 		this.casilla = casilla;
 	}
 	
+	public casilla getCasilla(int pos) {
+        if (pos >= 0 && pos < this.casilla.size()) {
+        	return this.casilla.get(pos);
+        }
+        return null;
+    }
+	
 	//MÉTODOS
 	public void actualizarTablero() {
 		
 	}
-	
-	
-	
-	
-	
-
 }
