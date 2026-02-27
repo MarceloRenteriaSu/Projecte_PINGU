@@ -1,20 +1,16 @@
 package modelos;
 import java.util.Random;
 public class Evento extends casilla {
-    //ATRIBUTOS
-    protected String[] eventos;
-    
     //CONSTRUCTOR
-    public Evento(int pos, String[] eventos) {
+    public Evento(int pos) {
         super(pos);
-        this.eventos = eventos;
     }
     
     //METODOS
     @Override
     public void realizarAccion(Partida partida, Pinguino p) {
-        if (eventos == null || eventos.length == 0) {
-            System.out.println("No hay eventos definidos en esta casilla.");
+        if (partida == null || p == null) {
+            System.out.println("ERROR");
         }else {
 	        Random rand = new Random();
 	        int probabilidad = rand.nextInt(100)+1;
