@@ -17,22 +17,27 @@ public class Foca extends jugador {
 	}
 
 	public void setSoborno() {
-		if(soborno == false) {
+		if(!soborno) {
 			this.soborno = true;
 			this.turnosBloqueada = 2;
 		}else {
 			this.soborno = false;
+			this.turnosBloqueada = 0;
 		}
 	}
 
 	//MÉTODO APLASTARJUGADOR()
 	public void aplastarJugador(Pinguino p) {
-		
+		if(p != null) {
+			if(this.pos == p.getPos()) {
+				p.perderMitadItems();
+			}
+		}
 	}
 	
 	//MÉTODO GOLPEARJUGADOR()
 	public void golpearJugador(Partida partida, Pinguino p) {
-		if(partida != null & p != null) {
+		if(partida != null && p != null) {
 			if(this.pos == p.getPos()) {
 				casilla c = new Agujero(0);
 				c.realizarAccion(partida, p);
