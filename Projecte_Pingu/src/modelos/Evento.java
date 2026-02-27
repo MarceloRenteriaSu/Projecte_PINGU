@@ -1,5 +1,4 @@
 package modelos;
-import java.util.ArrayList;
 import java.util.Random;
 public class Evento extends casilla {
     //CONSTRUCTOR
@@ -46,14 +45,8 @@ public class Evento extends casilla {
 	                System.out.println(p.getNom() + " ha ganado un dado LENTO!");
 	                break;
 	            case "MOTO_DE_NIEVE":
-	            	ArrayList<casilla> tablero = partida.getTablero().getCasilla();
-	    			int actual = p.getPos();
-	    			for(int i = actual; i < tablero.size(); i++) {
-	    				if(tablero.get(i) instanceof Trineo) {
-	    					p.setPos(i);
-	    					i = tablero.size() + 1;
-	    				}
-	    			}
+	            	casilla c = new Trineo(0);
+	            		c.realizarAccion(partida, p);
 	            	break;
 	        }
 	    }

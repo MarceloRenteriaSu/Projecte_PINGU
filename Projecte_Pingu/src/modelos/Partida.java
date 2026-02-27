@@ -1,10 +1,6 @@
 package modelos;
-
 import java.util.ArrayList;
-import java.util.Random;
-
 public class Partida {
-	
 	//ATRIBUTOS
 	protected Tablero tablero;
 	protected ArrayList<jugador> jugador;

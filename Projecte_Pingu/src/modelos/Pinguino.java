@@ -1,5 +1,5 @@
 package modelos;
-
+import java.util.Random;
 public class Pinguino extends jugador {
 	//ATRIBUTOS
 	protected Inventario inv;
@@ -118,6 +118,21 @@ public class Pinguino extends jugador {
 				inv.getInv().remove(eliminar);
 			}
 		}
+	}
+	
+	//MÉTODO PERDERMITADITEMS()
+	public void perderMitadItems() {
+	    int mitad = inv.totalItems() / 2;
+	    for (int i = 0; i < mitad; i++) {
+	        quitarItemAleatorio();
+	    }
+	}
+	
+	//MÉTODO QUITARITEMALEATORIO
+	public void quitarItemAleatorio() {
+		Random r = new Random();
+		int index = r.nextInt(inv.getInv().size());
+		inv.getInv().remove(index);
 	}
 
 	@Override
