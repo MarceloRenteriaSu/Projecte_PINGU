@@ -27,32 +27,11 @@ public class Partida {
 	public Tablero getTablero() {
 		return tablero;
 	}
-	public void setTablero(int cantidad) {
-		ArrayList<casilla> lista = new ArrayList<>();
-		if(cantidad < 50) {
-        	System.out.println("ERROR");
-        	cantidad = 50;
-        }
-            Random rand = new Random();
-            lista.add(new Normal(0));
-            for (int i = 1; i < cantidad; i++) {
-                int r = rand.nextInt(100);
-                if (r < 55) {
-                    lista.add(new Normal(i));
-                } else if (r < 65) {
-                    lista.add(new Oso(i));
-                } else if (r < 75) {
-                    lista.add(new Agujero(i));
-                } else if (r < 88) {
-                    lista.add(new Trineo(i));
-                } else if (r < 95) {
-                    lista.add(new Evento(i));
-                } else {
-                    lista.add(new SueloQuebradizo(i));
-                }
-            }
-        this.tablero = new Tablero(lista);
+	
+	public void setTablero(Tablero tablero) {
+		this.tablero = tablero;
 	}
+
 	public ArrayList<jugador> getJugador() {
 		return jugador;
 	}
