@@ -12,8 +12,7 @@ public class Oso extends casilla {
 			if(p.getInv().contarItem("Pez") == 0) {
 				p.setPos(0);
 			}else {
-				Pez p1 = new Pez(0);
-				p.usarItem(p1);
+				p.usarItem(new Pez(0));
 			}
 		}
 	}
