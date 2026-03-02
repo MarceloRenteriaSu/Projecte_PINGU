@@ -1,10 +1,13 @@
 package clases;
 import java.util.ArrayList;
 public class Inventario {
+	//ATRIBUTOS
 	protected ArrayList<Item> inv;
-	public Inventario(ArrayList<item> inv) {
+	//CONSTRUCTOR
+	public Inventario(ArrayList<Item> inv) {
 		this.inv = inv;
 	}
+	//GETTERS Y SETTERS
 	public ArrayList<Item> getInv() {
 		return inv;
 	}
@@ -12,28 +15,31 @@ public class Inventario {
 		this.inv = inv;
 	}
 	
+	//MÉTODO PARA CONTAR LA CANTIDAD DE UN ITEM
 	public int contarItem(Item i) {
 		int cantidad = 0;
 		for(Item it : inv) {
-			if(it.getNombre().equals(i.getNombre())) {
+			if(it.getNom().equals(i.getNom())) {
 				cantidad += it.getCantidad();
 			}
 		}
 		return cantidad;
 	}
 	
+	//MÉTODO PARA CONTAR LA CANTIDAD DE ITEMS EN EL INVENTARIO
 	public int totalItems() {
 		int total = 0;
-		for(item it : inv) {
+		for(Item it : inv) {
 			total = total + it.getCantidad();
 		}
 		return total;
 
 	}
 	
+	//MÉTODO PARA CONTAR LOS DADOS
 	public int contarDados() {
 		int total = 0;
-		for(item it : inv) {
+		for(Item it : inv) {
 			if(it instanceof Dado) {
 				total += 1;
 			}

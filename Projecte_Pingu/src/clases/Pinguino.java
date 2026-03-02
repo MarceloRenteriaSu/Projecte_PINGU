@@ -1,17 +1,18 @@
 package clases;
-
 import java.util.Random;
-
 public class Pinguino extends Jugador {
+	//ATRIBUTOS
 	protected String color;
 	protected Inventario inv;
 	
+	//CONSTRUCTOR
 	public Pinguino(String nom, int pos, Inventario inv) {
 		super(nom, pos);
 		this.color = null;
 		this.inv = inv;
 	}
-
+	
+	//GETTERS Y SETTERS
 	public String getColor() {
 		return color;
 	}
@@ -28,6 +29,7 @@ public class Pinguino extends Jugador {
 		this.inv = inv;
 	}
 	
+	//MÉTODO PARA GESTIONAR LA BATALLA
 	public void GestionarBatalla(Pinguino oponent) {
 		if(oponent != null) {
 			int nBola1 = inv.contarItem(new Bola(0));
@@ -44,13 +46,14 @@ public class Pinguino extends Jugador {
 		}
 	}
 	
+	//MÉTODO PARA USAR ITEM
 	public void usarItem(Item i) {
 		if(i == null) {
 			System.out.println("No se puede usar este item.");
 		}else {
-			String nom = i.getNombre();
+			String nom = i.getNom();
 			for(Item exist : inv.getInv()) {
-				if(exist.getNombre().equalsIgnoreCase(nom) && !nom.equals("Normal")){
+				if(exist.getNom().equalsIgnoreCase(nom) && !nom.equals("Normal")){
 					if(exist.getCantidad() >= 1) {
 						exist.setCantidad(exist.getCantidad() - 1);
 					}
@@ -62,14 +65,15 @@ public class Pinguino extends Jugador {
 		}
 	}
 	
+	//MÉTODO PARA AGREGAR ITEMS AL INVENTARIO
 	public void agregarItem(Item i) {
 		if(i == null) {
 			System.out.println("No se puede añadir este item.");
 		}else {
 			boolean encontrado = false;
-			String nombre = i.getNombre();
+			String nombre = i.getNom();
 			for(Item exist : inv.getInv()) {
-				if(exist.getNombre().equalsIgnoreCase(nombre)) {
+				if(exist.getNom().equalsIgnoreCase(nombre)) {
 					if(nombre.equalsIgnoreCase("Normal") ||
 					   nombre.equalsIgnoreCase("Lento") ||
 					   nombre.equalsIgnoreCase("Rapido")) {
@@ -101,14 +105,15 @@ public class Pinguino extends Jugador {
 		}
 	}
 	
+	//MÉTODO PARA QUITAR ITEMS DEL INVENTARIO
 	public void quitarItem(Item i) {
 		if(i == null) {
 			System.out.println("No se puede quitar este item.");
 		}else {
 			Item eliminar = null;
-			String nombre = i.getNombre();
+			String nombre = i.getNom();
 			for(Item exist : inv.getInv()) {
-				if(exist.getNombre().equalsIgnoreCase(nombre) && !nombre.equals("Normal")) {
+				if(exist.getNom().equalsIgnoreCase(nombre) && !nombre.equals("Normal")) {
 					eliminar = exist;
 				}
 			}
@@ -118,6 +123,7 @@ public class Pinguino extends Jugador {
 		}
 	}
 	
+	//MÉTODO PARA ELIMINAR MITAD DEL INVENTARIO (ALEATORIAMENTE)
 	public void perderMitadItems() {
 	    int mitad = inv.totalItems() / 2;
 	    for (int i = 0; i < mitad; i++) {
@@ -125,6 +131,7 @@ public class Pinguino extends Jugador {
 	    }
 	}
 	
+	//MÉTODO PARA QUITAR UN ITEM ALEATORIO DEL INVENTARIO
 	public void quitarItemAleatorio() {
 		Random r = new Random();
 		int index = r.nextInt(inv.getInv().size());

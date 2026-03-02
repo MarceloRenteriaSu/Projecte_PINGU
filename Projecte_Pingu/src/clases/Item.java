@@ -5,11 +5,13 @@ public abstract class Item {
 	protected int Cantidad;
 
 	public Item(int Cantidad) {
-
 		this.Nom = null;
 		this.Cantidad = Cantidad;
-		
-		
+	}
+	
+	public Item(String nombre, int Cantidad) {
+		this.Nom = nombre;
+		this.Cantidad = Cantidad;
 	}
 
 	public String getNom() {

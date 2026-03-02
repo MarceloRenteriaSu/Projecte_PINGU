@@ -1,9 +1,10 @@
 package clases;
 import java.util.Random;
 public class Dado extends Item {
-	//Atributos
+	//ATRIBUTOS
 	private int min;
 	private int max;
+	//CONSTRUCTOR
 	public Dado(String nombre, int cantidad) {
 		super(nombre, cantidad);
 		switch(nombre) {
@@ -24,7 +25,7 @@ public class Dado extends Item {
 		}
 	}
 	
-	//Getters
+	//GETTERS
 	public int getMin() {
 		return min;
 	}
@@ -32,7 +33,7 @@ public class Dado extends Item {
 		return max;
 	}
 	
-	//Método tirarDado()
+	//MÉTODO PARA TIRAR DADOS
 	public int tirar() {
         return new Random().nextInt(max - min + 1) + min;
     }
