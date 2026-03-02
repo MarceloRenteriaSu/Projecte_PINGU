@@ -6,7 +6,6 @@ public class MAIN_PRUEBAS {
 
     public static void main(String[] args) {
     	Tablero tableroPrueba = new Tablero(60);
-    	System.out.println("\nPrimeras 10 casillas:");
         for (int i = 0; i < tableroPrueba.getCasillas().size(); i++) {
             Casilla c = tableroPrueba.getCasilla(i);
             System.out.printf("Pos %2d → %s%n", i, c.getClass().getSimpleName());

@@ -57,7 +57,7 @@ public class Tablero {
 			cantidad = 50;
 		}
 		casillas.add(0, new Normal(0));
-		for(int i = 1; i <= cantidad; i++) {
+		for(int i = 1; i < cantidad-1; i++) {
 			int rd = r.nextInt(100)+1;
 			String tipo = "Normal";
 			if(rd < probs[0]) {
@@ -77,7 +77,7 @@ public class Tablero {
 			Casilla c = crearCasilla(tipo, i);
 			casillas.add(c);
 		}
-		casillas.set(cantidad, new Normal(cantidad));
+		casillas.add(cantidad-1, new Normal(cantidad-1));
 		
 	}
 	
