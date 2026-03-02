@@ -4,7 +4,13 @@ public class Trineo extends Casilla {
 
 	public Trineo(int pos) {
 		super(pos);
-		// TODO Auto-generated constructor stub
 	}
+
+	@Override
+	public void realizarAccion(Partida p, Jugador j) {
+		
+	}
+	
+	
 
 }
