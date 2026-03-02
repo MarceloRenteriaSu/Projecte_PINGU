@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class MAIN_PRUEBAS {
 
     public static void main(String[] args) {
-    	Tablero tableroPrueba = new Tablero(60);
+    	Tablero tableroPrueba = new Tablero(10);
         for (int i = 0; i < tableroPrueba.getCasillas().size(); i++) {
             Casilla c = tableroPrueba.getCasilla(i);
             System.out.printf("Pos %2d → %s%n", i, c.getClass().getSimpleName());

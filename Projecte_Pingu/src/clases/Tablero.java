@@ -51,32 +51,34 @@ public class Tablero {
 	
 	private void generarTablero(int cantidad) {
 		Random r = new Random();
-		String[]tipos = {"Normal", "Oso", "Agujero", "Trineo", "Evento", "SueloQuebradizo"};
-		int[] probs = {46, 61, 73, 85, 95, 100};
+		String[]tipos = {"Oso", "Agujero", "Trineo", "Evento", "SueloQuebradizo"};
+		int[] probs = {20, 40, 70, 90, 100};
 		if(cantidad < 50) {
 			cantidad = 50;
 		}
+		int contador = 0;
 		casillas.add(0, new Normal(0));
 
 		for(int i = 1; i < cantidad-1; i++) {
 			int rd = r.nextInt(100)+1;
 			String tipo = "Normal";
-			if(i % 3 == 0) {
-				if(rd < probs[1]) {
-				tipo = tipos[1];
+			if(contador != 3) {
+				tipo = "Normal";
+				contador++;
+			}else {
+				if(rd < probs[0]) {
+					tipo = tipos[0];
+				}else if(rd < probs[1]) {
+					tipo = tipos[1];
 				}else if(rd < probs[2]) {
 					tipo = tipos[2];
 				}else if(rd < probs[3]) {
 					tipo = tipos[3];
-				}else if(rd < probs[4]) {
-					tipo = tipos[4];
 				}else {
-					tipo = tipos[5];
+					tipo = tipos[4];
 				}
-			}else {
-				tipo = "Normal";
+				contador = 0;
 			}
-			
 			
 			
 			Casilla c = crearCasilla(tipo, i);
