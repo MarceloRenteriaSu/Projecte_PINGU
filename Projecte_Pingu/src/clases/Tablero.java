@@ -61,19 +61,21 @@ public class Tablero {
 		for(int i = 1; i < cantidad-1; i++) {
 			int rd = r.nextInt(100)+1;
 			String tipo = "Normal";
-			if(rd < probs[0]) {
-				tipo = tipos[0];
-			}else if(rd < probs[1]) {
+			if(i % 3 == 0) {
+				if(rd < probs[1]) {
 				tipo = tipos[1];
-			}else if(rd < probs[2]) {
-				tipo = tipos[2];
-			}else if(rd < probs[3]) {
-				tipo = tipos[3];
-			}else if(rd < probs[4]) {
-				tipo = tipos[4];
-			}else {
-				tipo = tipos[5];
+				}else if(rd < probs[2]) {
+					tipo = tipos[2];
+				}else if(rd < probs[3]) {
+					tipo = tipos[3];
+				}else if(rd < probs[4]) {
+					tipo = tipos[4];
+				}else {
+					tipo = tipos[5];
+				}
 			}
+			
+			
 			
 			Casilla c = crearCasilla(tipo, i);
 			casillas.add(c);
