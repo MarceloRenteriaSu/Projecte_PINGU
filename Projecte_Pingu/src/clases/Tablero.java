@@ -51,7 +51,7 @@ public class Tablero {
 		if(cantidad < 50) {
 			cantidad = 50;
 		}
-		casillas.set(0, new Normal(0));
+		casillas.add(0, new Normal(0));
 		for(int i = 1; i <= cantidad; i++) {
 			int rd = r.nextInt(100)+1;
 			String tipo = "Normal";

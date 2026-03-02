@@ -12,7 +12,8 @@ public class Trineo extends Casilla {
 		ArrayList<Casilla>tablero = p.getTablero().getCasillas();
 		if(j instanceof Pinguino) {
 			Pinguino pingu =(Pinguino) j;
-			for(int i = pingu.getPos(); i < tablero.size(); i++) {
+			int i = 0;
+			for(i = pingu.getPos()+1; i < tablero.size(); i++) {
 				if(tablero.get(i) instanceof Trineo) {
 					pingu.setPos(i);
 					i = tablero.size() + 1;

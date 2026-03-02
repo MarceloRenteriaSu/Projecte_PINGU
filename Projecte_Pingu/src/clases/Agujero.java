@@ -13,14 +13,15 @@ public class Agujero extends Casilla {
 		ArrayList<Casilla>tablero = p.getTablero().getCasillas();	
 		if(j instanceof Pinguino) {
 			Pinguino pingu =(Pinguino) j;
-			for(int i = pingu.getPos(); i > 0; i--) {
+			int i = 0;
+			for(i = pingu.getPos()-1; i > 0; i--) {
 				if(tablero.get(i) instanceof Agujero) {
 					pingu.setPos(i);
 					i = -1;
 				}
-				if(i != -1) {
-					pingu.setPos(0);
-				}
+			}
+			if(i != -1) {
+				pingu.setPos(0);
 			}
 		}
 	}
