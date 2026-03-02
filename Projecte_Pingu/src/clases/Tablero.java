@@ -47,7 +47,7 @@ public class Tablero {
 	private void generarTablero(int cantidad) {
 		Random r = new Random();
 		String[]tipos = {"Normal", "Oso", "Agujero", "Trineo", "Evento", "SueloQuebradizo"};
-		int[] probs = {45, 60, 72, 84, 94, 100};
+		int[] probs = {46, 61, 73, 85, 95, 100};
 		if(cantidad < 50) {
 			cantidad = 50;
 		}
