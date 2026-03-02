@@ -149,5 +149,12 @@ public class Pinguino extends Jugador {
 		}
 	}
 	
-	
+	//MÉTODO PARA MOSTRAR INVENTARIO
+	public String mostrarInventario() {
+		String inve = "";
+		for (int i = 0; i < inv.getInv().size(); i++) {
+			inve += "Nombre: " + inv.getInv().get(i).getNom() + "\nCantidad: " + inv.getInv().get(i).getCantidad() + "\n";
+		}
+		return inve;
+	}
 }
