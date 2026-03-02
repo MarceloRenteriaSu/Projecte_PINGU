@@ -73,6 +73,8 @@ public class Tablero {
 				}else {
 					tipo = tipos[5];
 				}
+			}else {
+				tipo = "Normal";
 			}
 			
 			
