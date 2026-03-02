@@ -4,12 +4,14 @@ public class Pinguino extends Jugador {
 	//ATRIBUTOS
 	protected String color;
 	protected Inventario inv;
+	protected boolean juega;
 	
 	//CONSTRUCTOR
 	public Pinguino(String nom, int pos, Inventario inv) {
 		super(nom, pos);
 		this.color = null;
 		this.inv = inv;
+		juega = true;
 	}
 	
 	//GETTERS Y SETTERS
@@ -139,7 +141,11 @@ public class Pinguino extends Jugador {
 	public void quitarItemAleatorio() {
 		Random r = new Random();
 		int index = r.nextInt(inv.getInv().size());
-		inv.getInv().remove(index);
+		inv.getInv().get(index).setCantidad(inv.getInv().get(index).getCantidad()-1);;
+	}
+	
+	public void perderTurno() {
+		juega = false;
 	}
 
 	@Override
