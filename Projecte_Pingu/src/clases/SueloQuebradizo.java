@@ -18,6 +18,7 @@ public class SueloQuebradizo extends Casilla {
 				pingu.perderTurno();
 			}
 		}
+		
 	}
 
 	
