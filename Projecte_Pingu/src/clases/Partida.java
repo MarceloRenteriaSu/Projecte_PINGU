@@ -12,14 +12,13 @@ public class Partida {
 	protected Jugador ganador;
 	
 	//CONSTRUCTOR
-	public Partida(Tablero tablero, ArrayList<Jugador> jugadores, int turnos, int jugadorActual, boolean finalizada,
-			Jugador ganador) {
+	public Partida(Tablero tablero, ArrayList<Jugador> jugadores, int turnos, int jugadorActual) {
 		this.tablero = tablero;
 		this.jugadores = jugadores;
 		this.turnos = turnos;
 		this.jugadorActual = jugadorActual;
-		this.finalizada = finalizada;
-		this.ganador = ganador;
+		this.finalizada = false;
+		this.ganador = null;
 	}
 	
 	//CONSTRUCTOR
