@@ -4,7 +4,13 @@ public class Agujero extends Casilla {
 
 	public Agujero(int pos) {
 		super(pos);
-		// TODO Auto-generated constructor stub
 	}
+
+	@Override
+	public void realizarAccion(Partida p, Jugador j) {
+		
+	}
+	
+	
 
 }
