@@ -11,6 +11,11 @@ public class Tablero {
 		this.casillas = casillas;
 	}
 	
+	public Tablero(int cantidadCasillas) {
+		this.casillas = new ArrayList<>();
+        generarTablero(cantidadCasillas);
+    }
+	
 	//GETTERS Y SETTERS
 	public ArrayList<Casilla> getCasillas() {
 		return casillas;
