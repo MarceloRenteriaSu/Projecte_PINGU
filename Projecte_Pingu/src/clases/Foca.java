@@ -15,8 +15,14 @@ public class Foca extends Jugador {
 		return Soborno;
 	}
 
-	public void setSoborno(boolean soborno) {
-		Soborno = soborno;
+	public void setSoborno() {
+		if(!Soborno) {
+			this.Soborno = true;
+			this.turnosBloquejada = 2;
+		}else {
+			this.Soborno = false;
+			this.turnosBloquejada = 0;
+		}
 	}
 
 	public int getTurnosBloquejada() {
@@ -41,6 +47,32 @@ public class Foca extends Jugador {
 	
 	public void aplastarPinguino(Pinguino p) {
 		
+	}
+	
+	public void aplastarJugador(Pinguino p) {
+		if(p != null) {
+			if(this.pos == p.getPos()) {
+				p.perderMitadItems();
+			}
+		}
+	}
+	
+	public void golpearJugador(Partida partida, Pinguino p) {
+		if(partida != null && p != null) {
+			if(this.pos == p.getPos()) {
+				Casilla c = new Agujero(0);
+				c.realizarAccion(partida, p);
+			}
+		}
+	}
+	
+	public void esSobornado(Partida partida, Pinguino p) {
+		if(p.getInv().contarItem(new Pez(0)) >= 1) {
+			p.usarItem(new Pez(0));
+			setSoborno();
+		}else {
+			golpearJugador(partida, p);
+		}
 	}
 	
 	@Override
