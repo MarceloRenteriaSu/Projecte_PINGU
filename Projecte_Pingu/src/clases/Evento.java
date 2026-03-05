@@ -15,8 +15,8 @@ public class Evento extends Casilla {
 			Pinguino pingu = (Pinguino) j;
 			Random rd = new Random();
 			String evento = "";
-			String[] tipos = {"DadoL", "MotoDeNieve", "Bola", "Pez", "DadoR"};
-			int[] probs = {31, 46, 71, 86, 100};
+			String[] tipos = {"DadoL", "MotoDeNieve", "Bola", "Pez", "DadoR", "PerderT", "PerderObj"};
+			int[] probs = {20, 31, 42, 55, 65, 81, 100};
 			int prob = rd.nextInt(100)+1;
 			
 			if(prob < probs[0]) {

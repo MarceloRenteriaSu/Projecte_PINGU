@@ -19,6 +19,9 @@ public class Trineo extends Casilla {
 					i = tablero.size() + 1;
 				}else {
 					pingu.setPos(pos+((p.getTablero().getCasillas().size())/10));
+					if(pingu.getPos() > p.getTablero().getCasillas().size()) {
+						
+					}
 				}
 			}
 		}

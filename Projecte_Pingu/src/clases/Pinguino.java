@@ -40,19 +40,157 @@ public class Pinguino extends Jugador {
 	}
 
 	//MÉTODO PARA GESTIONAR LA BATALLA
-	public void GestionarBatalla(Pinguino oponent) {
-		if(oponent != null) {
+	public void GestionarBatalla(Pinguino oponente) {
+		if(oponente != null) {
 			int nBola1 = inv.contarItem(new Bola(0));
-			int nBola2 = oponent.getInv().contarItem(new Bola(0));
+			int nBola2 = oponente.getInv().contarItem(new Bola(0));
 			if(nBola1 > nBola2) {
 				int diferencia = nBola1-nBola2;
-				moverPosicio(diferencia);
+				oponente.moverPosicio(-diferencia);
 			}else if(nBola2 > nBola1) {
 				int diferencia = nBola2-nBola1;
-				oponent.moverPosicio(diferencia);
+				moverPosicio(-
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						diferencia);
 			}
 			quitarItem(new Bola(0));
-			oponent.quitarItem(new Bola(0));
+			oponente.quitarItem(new Bola(0));
 		}
 	}
 	

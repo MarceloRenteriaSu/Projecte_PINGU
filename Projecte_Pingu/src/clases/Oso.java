@@ -8,16 +8,14 @@ public class Oso extends Casilla {
 
 	@Override
 	public void realizarAccion(Partida p, Jugador j) {
-		Pinguino pingu = (Pinguino)j;
-		Inventario inv = pingu.getInv();
-		if(inv.contarItem(new Pez(0)) > 0) {
-			pingu.usarItem(new Pez(0));
-		}else {
-			pingu.setPos(0);
+		if(j instanceof Pinguino) {
+			Pinguino pingu = (Pinguino)j;
+			Inventario inv = pingu.getInv();
+			if(inv.contarItem(new Pez(0)) > 0) {
+				pingu.usarItem(new Pez(0));
+			}else {
+				pingu.setPos(0);
+			}
 		}
-		
 	}
-	
-	
-
 }
