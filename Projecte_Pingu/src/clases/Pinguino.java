@@ -31,6 +31,14 @@ public class Pinguino extends Jugador {
 		this.inv = inv;
 	}
 	
+	public boolean isJuega() {
+		return juega;
+	}
+
+	public void setJuega(boolean juega) {
+		this.juega = juega;
+	}
+
 	//MÉTODO PARA GESTIONAR LA BATALLA
 	public void GestionarBatalla(Pinguino oponent) {
 		if(oponent != null) {
