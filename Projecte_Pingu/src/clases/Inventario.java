@@ -16,10 +16,10 @@ public class Inventario {
 	}
 	
 	//MÉTODO PARA CONTAR LA CANTIDAD DE UN ITEM
-	public int contarItem(Item i) {
+	public int contarItem(Item item) {
 		int cantidad = 0;
 		for(Item it : inv) {
-			if(it.getNom().equals(i.getNom())) {
+			if(it.getNom().equals(item.getNom())) {
 				cantidad += it.getCantidad();
 			}
 		}
