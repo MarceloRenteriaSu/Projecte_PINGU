@@ -49,145 +49,7 @@ public class Pinguino extends Jugador {
 				oponente.moverPosicio(-diferencia);
 			}else if(nBola2 > nBola1) {
 				int diferencia = nBola2-nBola1;
-				moverPosicio(-
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						diferencia);
+				moverPosicio(-diferencia);
 			}
 			quitarItem(new Bola(0));
 			oponente.quitarItem(new Bola(0));
@@ -240,7 +102,7 @@ public class Pinguino extends Jugador {
 						}else {
 							System.out.println("Maximo de peces alcanzado");
 						}
-					}else if(nombre.equalsIgnoreCase("Bola de Nieve")) {
+					}else if(nombre.equalsIgnoreCase("Bola")) {
 						if(exist.getCantidad() < 6) {
 							exist.setCantidad(exist.getCantidad() + 1);
 						}else {
@@ -286,8 +148,14 @@ public class Pinguino extends Jugador {
 	//MÉTODO PARA QUITAR UN ITEM ALEATORIO DEL INVENTARIO
 	public void quitarItemAleatorio() {
 		Random r = new Random();
-		int index = r.nextInt(inv.getInv().size());
-		inv.getInv().get(index).setCantidad(inv.getInv().get(index).getCantidad()-1);;
+		if(inv.getInv().size() >= 1) {
+			int index = r.nextInt(inv.getInv().size());
+			Item itemAleatorio = inv.getInv().get(index);
+			itemAleatorio.setCantidad(itemAleatorio.getCantidad() - 1);
+			if (itemAleatorio.getCantidad() <= 0) {
+				inv.getInv().remove(index);
+			}
+		}
 	}
 	
 	public void perderTurno() {

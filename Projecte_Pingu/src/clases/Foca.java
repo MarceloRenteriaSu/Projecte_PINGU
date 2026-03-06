@@ -77,7 +77,7 @@ public class Foca extends Jugador {
 	
 	@Override
 	public void moverPosicio(int p) {
-		pos = (new Dado("Normal", 0).tirar());
+		pos += (new Dado("Normal", 0).tirar());
 	}
 	
 	

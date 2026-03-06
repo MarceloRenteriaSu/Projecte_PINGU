@@ -72,7 +72,7 @@ public class Tablero {
 				tablero[i] = "Normal";
 				contador++;
 			}else {
-				if(i > 2) {
+				if(i >= 3) {
 					if(rd < probs[0] && !tablero[i-3].equals(tipos[0]) && contadores[0] < restantes) {
 				        tipo = tipos[0];
 				        contadores[0]++;
