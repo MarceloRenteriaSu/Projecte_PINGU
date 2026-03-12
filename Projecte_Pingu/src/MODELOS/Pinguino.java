@@ -1,17 +1,16 @@
-package clases;
+package MODELOS;
 import java.util.Random;
 public class Pinguino extends Jugador {
 	//ATRIBUTOS
-	protected String color;
-	protected Inventario inv;
-	protected boolean juega;
+	private String color;
+	private Inventario inv;
+	private boolean juega = false;
 	
 	//CONSTRUCTOR
-	public Pinguino(String nom, int pos, Inventario inv) {
+	public Pinguino(String nom, int pos, String color, Inventario inv) {
 		super(nom, pos);
 		this.color = null;
 		this.inv = inv;
-		juega = true;
 	}
 	
 	//GETTERS Y SETTERS
@@ -58,23 +57,23 @@ public class Pinguino extends Jugador {
 	
 	//MÉTODO PARA USAR ITEM
 	public void usarItem(Item i) {
-		if(i == null) {
-			System.out.println("No se puede usar este item.");
-		}else {
-			String nom = i.getNom();
-			Item a = null;
-			for(Item exist : inv.getInv()) {
-				if(exist.getNom().equalsIgnoreCase(nom) && !nom.equals("Normal")){
-					if(exist.getCantidad() >= 1) {
-						exist.setCantidad(exist.getCantidad() - 1);
-					}
-					if(exist.getCantidad() <= 0) {
-						a = exist;;
-					}
-				}
+		
+		if(i instanceof Pez) {
+			if(inv.contarItem(i) >= 1) {
+				i.setCantidad(i.getCantidad()-1);
 			}
-			if(a != null) {
-				inv.getInv().remove(a);
+		}else if(i instanceof Dado) {
+			String nombre = i.getNom();
+			switch(nombre) {
+			case "Normal":
+					i.setCantidad(1);
+				break;
+			case "Rapido":
+			case "Lento":
+				if(inv.contarItem(i) >= 1) {
+					i.setCantidad(i.getCantidad()-1);
+				}
+				break;
 			}
 		}
 	}
@@ -161,24 +160,24 @@ public class Pinguino extends Jugador {
 	public void perderTurno() {
 		juega = false;
 	}
+	
+	//MÉTODO PARA MOSTRAR INVENTARIO
+		public String mostrarInventario() {
+			String inve = "";
+			for (int i = 0; i < inv.getInv().size(); i++) {
+				inve += "Nombre: " + inv.getInv().get(i).getNom() + "\nCantidad: " + inv.getInv().get(i).getCantidad() + "\n";
+			}
+			return inve;
+		}
 
 	@Override
 	public void moverPosicio(int p) {
 		if(p != 0) {
-			int nuevaPos = pos + p;
+			int nuevaPos = getPos() + p;
 			if(nuevaPos < 0) {
 				nuevaPos = 0;
 			}
-			pos = nuevaPos;
+			setPos(nuevaPos);
 		}
-	}
-	
-	//MÉTODO PARA MOSTRAR INVENTARIO
-	public String mostrarInventario() {
-		String inve = "";
-		for (int i = 0; i < inv.getInv().size(); i++) {
-			inve += "Nombre: " + inv.getInv().get(i).getNom() + "\nCantidad: " + inv.getInv().get(i).getCantidad() + "\n";
-		}
-		return inve;
 	}
 }

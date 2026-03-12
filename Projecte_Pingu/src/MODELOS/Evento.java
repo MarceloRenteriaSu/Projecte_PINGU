@@ -1,4 +1,4 @@
-package clases;
+package MODELOS;
 import java.util.Random;
 
 public class Evento extends Casilla {
@@ -53,16 +53,12 @@ public class Evento extends Casilla {
 				pingu.agregarItem(new Pez(1));
 				break;
 			case "PerderT":
-				//pingu.perderTurno();
+				pingu.perderTurno();
 				break;
 			case "PerderObj":
 				pingu.quitarItemAleatorio();
 				break;
 			}	
-		
 		}
 	}
-	
-	
-
 }

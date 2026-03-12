@@ -1,8 +1,8 @@
-package clases;
+package MODELOS;
 
 public abstract class Jugador {
-	protected int pos;
-	protected String nom;
+	private int pos;
+	private String nom;
 	
 	public Jugador(String nom, int pos) {
 		this.nom = nom;

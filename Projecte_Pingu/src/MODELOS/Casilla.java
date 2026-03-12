@@ -1,4 +1,4 @@
-package clases;
+package MODELOS;
 
 public abstract class Casilla {
 	protected int pos;

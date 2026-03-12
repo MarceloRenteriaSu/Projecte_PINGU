@@ -1,8 +1,8 @@
-package clases;
+package MODELOS;
 
 public abstract class Item {
-	protected String Nom;
-	protected int Cantidad;
+	private String Nom;
+	private int Cantidad;
 
 	public Item(int Cantidad) {
 		this.Nom = null;

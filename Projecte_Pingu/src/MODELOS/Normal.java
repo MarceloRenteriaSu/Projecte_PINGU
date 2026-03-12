@@ -1,4 +1,4 @@
-package clases;
+package MODELOS;
 
 public class Normal extends Casilla {
 
