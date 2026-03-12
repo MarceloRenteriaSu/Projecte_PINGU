@@ -1,4 +1,4 @@
-package clases;
+package MODELOS;
 import java.util.Random;
 public class Dado extends Item {
 	//ATRIBUTOS

@@ -1,24 +1,34 @@
-package clases;
+package MODELOS;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Tablero {
 	//ATRIBUTOS
-	protected ArrayList<Casilla>casillas;
+	private ArrayList<Casilla>casillas;
+	private Random r;
+	private int tamanyo;
 	
 	//CONSTRUCTOR
-	public Tablero(ArrayList<Casilla> casillas) {
-		this.casillas = casillas;
-	}
+	
 	
 	public Tablero(int cantidadCasillas) {
+		this.r = new Random();
 		this.casillas = new ArrayList<>();
+		if(cantidadCasillas < 50) {
+			this.tamanyo = 50;
+		}else {			
+			this.tamanyo = cantidadCasillas;
+		}
         generarTablero(cantidadCasillas);
     }
 	
 	//GETTERS Y SETTERS
+	public int getTamanyo() {
+		return casillas.size();
+	}
+	
 	public ArrayList<Casilla> getCasillas() {
-		return casillas;
+		return new ArrayList<>(casillas);
 	}
 
 	public void setCasillas(ArrayList<Casilla> casillas) {
@@ -32,6 +42,7 @@ public class Tablero {
 		return null;
 	}
 	
+	//MÉTODO DE CREAR CASILLA
 	private Casilla crearCasilla(String tipo, int pos) {
 		switch(tipo) {
 			case "Oso":
@@ -108,8 +119,24 @@ public class Tablero {
 		
 	}
 	
-	public void actualizarTablero() {
-		
+	//MÉTODO BUSCAR ULTIMO AGUJERO
+	public int agujeroAnterior(int posActual) {
+		for(int i = posActual-1; i >= 0; i--) {
+			if(casillas.get(i) instanceof Agujero) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	//MÉTODO BUSCAR ULTIMO AGUJERO
+	public int trineoPosterior(int posActual) {
+		for(int i = posActual+1; i < casillas.size(); i++) {
+			if(casillas.get(i) instanceof Trineo) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 }

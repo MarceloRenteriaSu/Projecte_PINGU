@@ -1,27 +1,27 @@
-package clases;
+package MODELOS;
 import java.util.ArrayList;
 
 public class Partida {
 	
 	//ATRIBUTOS
-	protected Tablero tablero;
-	protected ArrayList<Jugador>jugadores;
-	protected int turnos;
-	protected int jugadorActual;
-	protected boolean finalizada;
-	protected Jugador ganador;
+	private Tablero tablero;
+	private ArrayList<Jugador>jugadores;
+	private int turnos;
+	private int jugadorActual;
+	private boolean finalizada;
+	private Jugador ganador;
 	
 	//CONSTRUCTOR
-	public Partida(Tablero tablero, ArrayList<Jugador> jugadores, int turnos, int jugadorActual) {
+	public Partida(Tablero tablero, ArrayList<Jugador> jugadores) {
 		this.tablero = tablero;
-		this.jugadores = jugadores;
-		this.turnos = turnos;
-		this.jugadorActual = jugadorActual;
+		this.jugadores = new ArrayList<>(jugadores);
+		this.turnos = 0;
+		this.jugadorActual = 0;
 		this.finalizada = false;
 		this.ganador = null;
 	}
 	
-	//CONSTRUCTOR
+	//GETTERS Y SETTERS
 	public Tablero getTablero() {
 		return tablero;
 	}

@@ -1,4 +1,9 @@
-package clases;
+package GESTORES;
+
+import MODELOS.Casilla;
+import MODELOS.Jugador;
+import MODELOS.Partida;
+import MODELOS.Pinguino;
 
 public class GestorTablero {
 	//MÉTODO EJECUTARCASILLA

@@ -1,8 +1,8 @@
-package clases;
+package MODELOS;
 import java.util.ArrayList;
 public class Inventario {
 	//ATRIBUTOS
-	protected ArrayList<Item> inv;
+	private ArrayList<Item> inv;
 	//CONSTRUCTOR
 	public Inventario(ArrayList<Item> inv) {
 		this.inv = inv;
