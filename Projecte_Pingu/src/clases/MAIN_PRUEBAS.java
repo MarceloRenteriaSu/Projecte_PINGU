@@ -1,27 +1,24 @@
 package clases;
 
-import java.util.ArrayList;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
 
-import MODELOS.Casilla;
-import MODELOS.Jugador;
-import MODELOS.Partida;
-import MODELOS.Pinguino;
-import MODELOS.Tablero;
+public class MAIN_PRUEBAS extends Application {
 
-public class MAIN_PRUEBAS {
+	@Override
+	public void start(Stage stage) throws Exception {
+
+	    Parent root = FXMLLoader.load(getClass().getResource("/VISTAS/PantallaMenu.fxml"));
+
+	    Scene scene = new Scene(root);
+	    stage.setScene(scene);
+	    stage.show();
+	}
 
     public static void main(String[] args) {
-    	Tablero tableroPrueba = new Tablero(50);
-        for (int i = 0; i < tableroPrueba.getCasillas().size(); i++) {
-            Casilla c = tableroPrueba.getCasilla(i);
-            System.out.printf("Pos %2d → %s%n", i, c.getClass().getSimpleName());
-        }
-
-        ArrayList<Jugador> jugadores = new ArrayList<>();
-        jugadores.add(new Pinguino("Ana", 0, "", null));
-
-        Partida partida = new Partida(tableroPrueba, jugadores);
-        System.out.println("Partida creada con " + partida.getJugadores().size() + " jugadores");
-        System.out.println("Tablero de la partida tiene " + partida.getTablero().getCasillas().size() + " casillas");
+        launch(args);
     }
 }

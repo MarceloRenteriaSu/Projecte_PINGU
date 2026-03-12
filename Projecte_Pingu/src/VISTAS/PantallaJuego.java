@@ -90,13 +90,14 @@ public class PantallaJuego {
 		gestorPartida = new GestorPartida();
 		
 		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
-		Inventario inventario = new Inventario();
+		ArrayList<Item> inv = new ArrayList<Item>();
+		Inventario inventario = new Inventario(inv);
 		Dado dado = new Dado("Normal", 1);
 		inventario.getInv().add(dado);
 		
 		jugadores.add(new Pinguino("Jugador1",0 , "Azul",inventario));
 
-		//gestorPartida.nuevaPartida();
+		gestorPartida.nuevaPartida();
 		
 		gestorPartida.getPartida().setJugadores(jugadores);
 

@@ -4,8 +4,8 @@ public class Inventario {
 	//ATRIBUTOS
 	private ArrayList<Item> inv;
 	//CONSTRUCTOR
-	public Inventario() {
-		this.inv = new ArrayList<>(inv);
+	public Inventario(ArrayList<Item> inv) {
+		this.inv = inv;
 	}
 	//GETTERS Y SETTERS
 	public ArrayList<Item> getInv() {

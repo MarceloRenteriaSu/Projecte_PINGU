@@ -2,57 +2,62 @@ package GESTORES;
 import java.util.ArrayList;
 import java.util.Random;
 
-import MODELOS.Dado;
-import MODELOS.Partida;
-import MODELOS.Tablero;
-import MODELOS.Jugador;
+import MODELOS.*;
 
 public class GestorPartida {
-	protected Partida partida;
-	protected GestorTablero gestorTablero;
-	protected GestorJugador gestorJugador;
-	protected GestorBBDD gestorBBDD;
-	protected Random rd;
-	
-	public void nuevaPartida(ArrayList<Jugador>jugador, Tablero tablero) {
-		
-	}
-	
-	public int tirarDado(Jugador j, Dado dado) {
-		int num = 0;
-		return num;
-	}
-	
-	public void ejecutarTuroCompleto() {
-		
-	}
-	
-	public void procesarTurnoJugador(Jugador j) {
-		
-	}
-	
-	public void actualizarEstadoTablero() {
-		
-	}
-	
-	public void siguienteTurno() {
-		
-	}
-	
-	public Partida getPartida() {
-		return new Partida(null, null);
-	}
-	
-	public void guardarPartida() {
-		
-	}
-	
-	public void cargarPartida(int id) {
-		
-	}
-	
-	
-	
-	
 
+    private Partida partida;
+    private GestorTablero gestorTablero;
+    private GestorJugador gestorJugador;
+    private GestorBBDD gestorBBDD;
+    private Random random;
+
+    public GestorPartida() {
+        this.partida = null;
+        this.gestorTablero = new GestorTablero();
+        this.gestorJugador = new GestorJugador();
+        this.gestorBBDD = new GestorBBDD();
+        this.random = new Random();
+    }
+
+    public void nuevaPartida() {
+    	Tablero t = new Tablero(5);
+    	ArrayList<Jugador> jugadores = new ArrayList<>();
+    	this.partida = new Partida(t, jugadores);
+    }
+
+    public int tirarDado(Jugador j, Dado dadoOpcional) {
+    	int resultado = dadoOpcional.tirar();
+    	gestorJugador.jugadorSeMueve(j, resultado, this.partida.getTablero());
+    	
+    	return resultado;
+    }
+
+    public void ejecutarTurnoCompleto() {
+        // TODO: ejecutar la lógica completa del turno
+    }
+
+    public void procesarTurnoJugador(Jugador j) {
+        // TODO: procesar turno de un jugador
+    }
+
+    public void actualizarEstadoTablero() {
+        // TODO: actualizar estado del tablero
+    }
+
+    public void siguienteTurno() {
+        // TODO: pasar al siguiente turno
+    }
+
+    public Partida getPartida() {
+        return this.partida;
+    }
+
+    public void guardarPartida() {
+        // TODO: guardar la partida usando GestorBBDD
+    }
+
+    public void cargarPartida(int id) {
+        // TODO: cargar partida desde BBDD
+    }
 }
