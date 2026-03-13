@@ -26,7 +26,11 @@ public class GestorPartida {
 
     public int tirarDado(Jugador j, Dado dadoOpcional) {
     	int resultado = dadoOpcional.tirar();
+    	System.out.println("Posición anterior del " + j.getNom() + ": " + j.getPos());
     	gestorJugador.jugadorSeMueve(j, resultado, this.partida.getTablero());
+    	System.out.println(j.getNom() + " avanza " +  resultado );
+    	System.out.println("Posición actual del " + j.getNom() + ": " + j.getPos());
+    	
     	
     	return resultado;
     }
