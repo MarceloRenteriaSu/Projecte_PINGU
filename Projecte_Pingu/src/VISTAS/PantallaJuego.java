@@ -70,7 +70,8 @@ public class PantallaJuego {
 	private GestorPartida gestorPartida;
 	// ONLY FOR TESTING!!!
 	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
-	private static final int COLUMNS = 5;
+	private int columnas;
+	private int filas;
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random rand = new Random();
@@ -81,8 +82,35 @@ public class PantallaJuego {
 	@FXML
 	private void initialize() {
 		eventos.setText("¡El juego ha comenzado!");
-		Tablero t = new Tablero(50);
-		gestorPartida = new GestorPartida();
+	    
+	    // Aquí defines el tamaño de tu tablero
+	    int totalCasillas = 50; 
+	    Tablero t = new Tablero(totalCasillas);
+	    
+	    // --- MAGIA PARA HACERLO CUADRADO ---
+	    // Calculamos la raíz cuadrada para balancear columnas y filas
+	    this.columnas = (int) Math.ceil(Math.sqrt(totalCasillas));
+	    this.filas = (int) Math.ceil((double) totalCasillas / this.columnas);
+
+	    // Limpiamos restricciones previas por si acaso
+	    tablero.getColumnConstraints().clear();
+	    tablero.getRowConstraints().clear();
+
+	    // Inyectamos las columnas proporcionales
+	    for (int i = 0; i < this.columnas; i++) {
+	        javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+	        cc.setPercentWidth(100.0 / this.columnas);
+	        tablero.getColumnConstraints().add(cc);
+	    }
+
+	    // Inyectamos las filas proporcionales
+	    for (int i = 0; i < this.filas; i++) {
+	        javafx.scene.layout.RowConstraints rc = new javafx.scene.layout.RowConstraints();
+	        rc.setPercentHeight(100.0 / this.filas);
+	        tablero.getRowConstraints().add(rc);
+	    }
+
+	    gestorPartida = new GestorPartida();
 		
 		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
 		ArrayList<Item> inv = new ArrayList<Item>();
@@ -108,20 +136,45 @@ public class PantallaJuego {
 		
 		fichas = new Node[]{P1, P2, P3, P4};
 
-		// Show board info
-		mostrarTiposDeCasillasEnTablero(gestorPartida.getPartida().getTablero());
+	    // Colocar las fichas en la posición inicial (0,0) con los márgenes que tenías
+	    int[] margenesIzq = {0, 34, 68, 102};
+	    for (int i = 0; i < fichas.length; i++) {
+	        GridPane.setRowIndex(fichas[i], 0);
+	        GridPane.setColumnIndex(fichas[i], 0);
+	        GridPane.setMargin(fichas[i], new javafx.geometry.Insets(0, 0, 0, margenesIzq[i]));
+	    }
+
+	    // Colocar textos de Start / Finish dinámicamente
+	    Text start = new Text("Start");
+	    start.getStyleClass().add("cell-title");
+	    GridPane.setRowIndex(start, 0);
+	    GridPane.setColumnIndex(start, 0);
+	    GridPane.setHalignment(start, javafx.geometry.HPos.CENTER);
+	    GridPane.setValignment(start, javafx.geometry.VPos.CENTER);
+	    tablero.getChildren().add(start);
+
+	    Text finish = new Text("Finish");
+	    finish.getStyleClass().add("cell-title");
+	    int[] posFinish = obtenerFilaColumna(totalCasillas - 1);
+	    GridPane.setRowIndex(finish, posFinish[0]);
+	    GridPane.setColumnIndex(finish, posFinish[1]);
+	    GridPane.setHalignment(finish, javafx.geometry.HPos.CENTER);
+	    GridPane.setValignment(finish, javafx.geometry.VPos.CENTER);
+	    tablero.getChildren().add(finish);
+
+	    // Show board info
+	    mostrarTiposDeCasillasEnTablero(gestorPartida.getPartida().getTablero());
 	}
 	
 	
 	private int[] obtenerFilaColumna(int posicion) {
-
-	    int row = posicion / COLUMNS;
+		int row = posicion / this.columnas;
 	    int col;
 
 	    if (row % 2 == 0) {
-	        col = posicion % COLUMNS;
+	        col = posicion % this.columnas;
 	    } else {
-	        col = COLUMNS - 1 - (posicion % COLUMNS);
+	        col = this.columnas - 1 - (posicion % this.columnas);
 	    }
 
 	    return new int[]{row, col};
@@ -149,6 +202,9 @@ public class PantallaJuego {
 
 	            GridPane.setRowIndex(texto, pos[0]);
 	            GridPane.setColumnIndex(texto, pos[1]);
+	            
+	            GridPane.setHalignment(texto, javafx.geometry.HPos.CENTER);
+	            GridPane.setValignment(texto, javafx.geometry.VPos.CENTER);
 
 	            tablero.getChildren().add(texto);
 	        }
@@ -229,8 +285,8 @@ public class PantallaJuego {
 	    int newRow = newPos[0];
 	    int newCol = newPos[1];
 
-	    double cellWidth = tablero.getWidth() / COLUMNS;
-	    double cellHeight = tablero.getHeight() / 10;
+	    double cellWidth = tablero.getWidth() / this.columnas;
+	    double cellHeight = tablero.getHeight() / this.filas;
 
 	    double dx = (newCol - oldCol) * cellWidth;
 	    double dy = (newRow - oldRow) * cellHeight;

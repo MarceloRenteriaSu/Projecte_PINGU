@@ -3,10 +3,6 @@ import MODELOS.*;
 
 public class GestorJugador {
 
-    public void jugadorUsaItem(String nombreItem) {
-        // TODO: implementar uso de item por el jugador
-    }
-
     public void jugadorSeMueve(Jugador j, int pasos, Tablero t) {
     	int nuevaPos = j.getPos()+pasos;
     	
@@ -35,5 +31,12 @@ public class GestorJugador {
 
     public void focaInteractua(Pinguino p, Foca f) {
         // TODO: implementar interacción con la foca
+    }
+    
+    public void jugadorUsaItem(Jugador j, Item i) {
+        if (j instanceof Pinguino) {
+            Pinguino p = (Pinguino) j;
+            p.usarItem(i);
+        }
     }
 }
