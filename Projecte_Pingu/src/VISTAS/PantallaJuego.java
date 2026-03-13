@@ -6,6 +6,7 @@ import java.util.Random;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
@@ -73,62 +74,85 @@ public class PantallaJuego {
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random rand = new Random();
+	
+	private int[] posiciones = {0,0,0,0};
+	private Node[] fichas;
 
 	@FXML
 	private void initialize() {
 		eventos.setText("¡El juego ha comenzado!");
-
-		// Generate model board
-		/*
-		 * ArrayList<Jugador> jugadores = new ArrayList<>(); jugadores.add(new
-		 * Pinguino(0, "Jugador 1", "Rojo", new Inventario(new ArrayList<>()))); Tablero
-		 * modeloTablero = new Tablero(new ArrayList<>(), jugadores, 0,
-		 * jugadores.get(0)); modeloTablero.generarCasillasAleatorias();
-		 */
-
-		// Partida p = new Partida();
+		Tablero t = new Tablero(50);
 		gestorPartida = new GestorPartida();
 		
 		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
 		ArrayList<Item> inv = new ArrayList<Item>();
 		Inventario inventario = new Inventario(inv);
+		ArrayList<Item> inv2 = new ArrayList<Item>();
+		Inventario inventario2 = new Inventario(inv2);
+		ArrayList<Item> inv3 = new ArrayList<Item>();
+		Inventario inventario3 = new Inventario(inv3);
+		ArrayList<Item> inv4 = new ArrayList<Item>();
+		Inventario inventario4 = new Inventario(inv4);
 		Dado dado = new Dado("Normal", 1);
 		inventario.getInv().add(dado);
+		inventario2.getInv().add(dado);
+		inventario3.getInv().add(dado);
+		inventario4.getInv().add(dado);
 		
 		jugadores.add(new Pinguino("Jugador1",0 , "Azul",inventario));
+		jugadores.add(new Pinguino("Jugador2",0 , "Rojo",inventario2));
+		jugadores.add(new Pinguino("Jugador3",0 , "Amarillo",inventario3));
+		jugadores.add(new Pinguino("Jugador4",0 , "Verde",inventario4));
 
-		gestorPartida.nuevaPartida();
+		gestorPartida.nuevaPartida(t, jugadores);
 		
-		gestorPartida.getPartida().setJugadores(jugadores);
+		fichas = new Node[]{P1, P2, P3, P4};
 
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorPartida.getPartida().getTablero());
 	}
+	
+	
+	private int[] obtenerFilaColumna(int posicion) {
+
+	    int row = posicion / COLUMNS;
+	    int col;
+
+	    if (row % 2 == 0) {
+	        col = posicion % COLUMNS;
+	    } else {
+	        col = COLUMNS - 1 - (posicion % COLUMNS);
+	    }
+
+	    return new int[]{row, col};
+	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
-		// Clear only the labels we generated in previous calls
+
 		tablero.getChildren().removeIf(node -> TAG_CASILLA_TEXT.equals(node.getUserData()));
 
-		for (int i = 0; i < t.getCasillas().size(); i++) {
-			Casilla casilla = t.getCasillas().get(i);
+	    int totalCasillas = t.getTamanyo();
 
-			// Skip position 0 and 49 if you want them to be special (start/end)
-			if (i > 0 && i < 49) {
-			String tipo = casilla.getClass().getSimpleName();
+	    for (int i = 0; i < totalCasillas; i++) {
 
-			Text texto = new Text(tipo);
-			texto.setUserData(TAG_CASILLA_TEXT);
-			texto.getStyleClass().add("cell-type");
+	        Casilla casilla = t.getCasillas().get(i);
 
-			int row = i / COLUMNS;
-			int col = i % COLUMNS;
+	        if (i > 0 && i < totalCasillas - 1) {
 
-			GridPane.setRowIndex(texto, row);
-			GridPane.setColumnIndex(texto, col);
+	            String tipo = casilla.getClass().getSimpleName();
 
-			tablero.getChildren().add(texto);
-			}
-		}
+	            Text texto = new Text(tipo);
+	            texto.setUserData(TAG_CASILLA_TEXT);
+	            texto.getStyleClass().add("cell-type");
+
+	            int[] pos = obtenerFilaColumna(i);
+
+	            GridPane.setRowIndex(texto, pos[0]);
+	            GridPane.setColumnIndex(texto, pos[1]);
+
+	            tablero.getChildren().add(texto);
+	        }
+	    }
 	}
 
 	// Menu actions
@@ -159,94 +183,71 @@ public class PantallaJuego {
 	// Button actions
 	@FXML
 	private void handleDado(ActionEvent event) {
-		Pinguino pingu = (Pinguino) gestorPartida.getPartida().getJugadores().get(0);
-		Dado d = (Dado) pingu.getInv().getInv().get(0);
-		
-		System.out.println("Pos pingu previa:" + pingu.getPos());
-		
-		int resultado = gestorPartida.tirarDado((Jugador) pingu, d);
-		
-		System.out.println("Pos pingu actual:" + pingu.getPos());
 
-		// Update the Text
-		dadoResultText.setText("Ha salido: " + resultado);
+	    Partida partida = gestorPartida.getPartida();
 
-		// Update the position
-		moveP1(resultado);
+	    int jugador = partida.getJugadorActual();
+
+	    Pinguino pingu = (Pinguino) partida.getJugadores().get(jugador);
+
+	    Dado d = (Dado) pingu.getInv().getInv().get(0);
+
+	    int resultado = gestorPartida.tirarDado(pingu, d);
+	    dadoResultText.setText("Ha salido: " + resultado);
+	    moverJugador(jugador, resultado);
+
+	    partida.siguienteTurno();
 	}
 
 	
-/*	Old simple version
- * private void moveP1(int steps) {
-		p1Position += steps;
+	private void moverJugador(int jugador, int steps) {
 
-		// Bound player
-		if (p1Position >= 50) {
-			p1Position = 49; // 5 columns * 10 rows = 50 cells (index 0 to 49)
-		}
-		
-		if (p1Position < 0) {
-			p1Position = 0;
-		}
-
-		// Check row and column
-		int row = p1Position / COLUMNS;
-		int col = p1Position % COLUMNS;
-
-		// Change P1 property to match row and column
-		GridPane.setRowIndex(P1, row);
-		GridPane.setColumnIndex(P1, col);
-	}*/
-	
-	private void moveP1(int steps) {
-
-	    // Evita spam del botón
 	    dado.setDisable(true);
 
-	    int oldPosition = p1Position;
+	    Node ficha = fichas[jugador];
 
-	    p1Position += steps;
+	    int oldPosition = posiciones[jugador];
 
-	    // Bound player
-	    if (p1Position >= 50) {
-	        p1Position = 49;
+	    posiciones[jugador] += steps;
+
+	    if (posiciones[jugador] >= gestorPartida.getPartida().getTablero().getTamanyo() -1) {
+	        posiciones[jugador] = gestorPartida.getPartida().getTablero().getTamanyo() -1;
 	    }
 
-	    if (p1Position < 0) {
-	        p1Position = 0;
+	    if (posiciones[jugador] < 0) {
+	        posiciones[jugador] = 0;
 	    }
 
-	    // OLD position
-	    int oldRow = oldPosition / COLUMNS;
-	    int oldCol = oldPosition % COLUMNS;
+	    int newPosition = posiciones[jugador];
 
-	    // NEW position
-	    int newRow = p1Position / COLUMNS;
-	    int newCol = p1Position % COLUMNS;
+	    int[] oldPos = obtenerFilaColumna(oldPosition);
+	    int[] newPos = obtenerFilaColumna(newPosition);
 
-	    // Cell size (aproximado)
+	    int oldRow = oldPos[0];
+	    int oldCol = oldPos[1];
+
+	    int newRow = newPos[0];
+	    int newCol = newPos[1];
+
 	    double cellWidth = tablero.getWidth() / COLUMNS;
 	    double cellHeight = tablero.getHeight() / 10;
 
 	    double dx = (newCol - oldCol) * cellWidth;
 	    double dy = (newRow - oldRow) * cellHeight;
 
-	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
+	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), ficha);
 
 	    slide.setByX(dx);
 	    slide.setByY(dy);
 
 	    slide.setOnFinished(e -> {
 
-	        // reset translation
-	        P1.setTranslateX(0);
-	        P1.setTranslateY(0);
+	        ficha.setTranslateX(0);
+	        ficha.setTranslateY(0);
 
-	        // set real position in grid
-	        GridPane.setRowIndex(P1, newRow);
-	        GridPane.setColumnIndex(P1, newCol);
+	        GridPane.setRowIndex(ficha, newRow);
+	        GridPane.setColumnIndex(ficha, newCol);
 
-	        // volver a activar el botón
 	        dado.setDisable(false);
 	    });
 

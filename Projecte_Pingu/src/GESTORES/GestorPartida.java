@@ -20,10 +20,8 @@ public class GestorPartida {
         this.random = new Random();
     }
 
-    public void nuevaPartida() {
-    	Tablero t = new Tablero(5);
-    	ArrayList<Jugador> jugadores = new ArrayList<>();
-    	this.partida = new Partida(t, jugadores);
+    public void nuevaPartida(Tablero t, ArrayList<Jugador> j) {
+    	this.partida = new Partida(t, j);
     }
 
     public int tirarDado(Jugador j, Dado dadoOpcional) {

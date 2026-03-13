@@ -10,8 +10,8 @@ public class GestorJugador {
     public void jugadorSeMueve(Jugador j, int pasos, Tablero t) {
     	int nuevaPos = j.getPos()+pasos;
     	
-    	if(nuevaPos > 49) {
-    		nuevaPos = 49;
+    	if(nuevaPos > t.getTamanyo()-1) {
+    		nuevaPos = t.getTamanyo() -1;
     	}
     	
     	if (nuevaPos < 0 ) {
