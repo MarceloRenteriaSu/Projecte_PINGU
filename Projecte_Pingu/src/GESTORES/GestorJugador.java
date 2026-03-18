@@ -18,19 +18,28 @@ public class GestorJugador {
     }
 
     public void jugadorFinalizaTurno(Jugador j) {
-        // TODO: implementar fin de turno del jugador
+    	if (j instanceof Pinguino) {
+            Pinguino p = (Pinguino) j;
+            p.setJuega(false);
+        }
     }
 
-    public void piguinoEvento(Pinguino p) {
-        // TODO: implementar evento del pingüino
+    public void piguinoEvento(Pinguino p, Partida partida, Casilla c) {
+    	if (p != null && partida != null && c instanceof Evento) {
+            c.realizarAccion(partida, p);
+        }
     }
 
-    public void pingüinoGuerra(Pinguino p1, Pinguino p2) {
-        // TODO: implementar guerra entre pingüinos
+    public void pinguinoGuerra(Pinguino p1, Pinguino p2) {
+    	if (p1 != null && p2 != null) {
+    		p1.GestionarBatalla(p2);
+    	}
     }
 
-    public void focaInteractua(Pinguino p, Foca f) {
-        // TODO: implementar interacción con la foca
+    public void focaInteractua(Pinguino p, Foca f, Partida partida) {
+    	if (p != null && f != null && partida != null) {
+    		 f.golpearJugador(partida, p);
+    	}
     }
     
     public void jugadorUsaItem(Jugador j, Item i) {

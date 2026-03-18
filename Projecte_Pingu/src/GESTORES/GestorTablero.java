@@ -1,9 +1,5 @@
 package GESTORES;
-
-import MODELOS.Casilla;
-import MODELOS.Jugador;
-import MODELOS.Partida;
-import MODELOS.Pinguino;
+import MODELOS.*;
 
 public class GestorTablero {
 	//MÉTODO EJECUTARCASILLA
@@ -22,38 +18,42 @@ public class GestorTablero {
 	
 	//MÉTODO COMPROBAR FIN DE TURNO
 	public void comprobarFinTurno(Partida p) {
-		if(p != null && !p.isFinalizada()) {
-			int Jactual = p.getJugadorActual();
-			if(Jactual >= 0 || Jactual < p.getJugadores().size()) {
-				Pinguino pingu = (Pinguino) p.getJugadores().get(Jactual);
-				boolean turnoTerminado = true;
-				if(!pingu.isJuega()) {
-					turnoTerminado = true;
-					pingu.setJuega(true);
-				}
-				if(turnoTerminado) {
-					p.siguienteTurno();
-					comprobarGanador(p);
-				}
-			}
+		if (p != null && !p.isFinalizada()) {
+	        int indiceActual = p.getJugadorActual();
+	        if (indiceActual >= 0 && indiceActual < p.getJugadores().size()) {
+	        	Jugador jugadorActual = p.getJugadores().get(indiceActual);
+		        if (jugadorActual instanceof Pinguino) {
+		            Pinguino pingu = (Pinguino) jugadorActual;
+		            if (!pingu.isJuega()) {
+		                pingu.setJuega(true);
+		            }
+		            p.siguienteTurno();
+		        } else if (jugadorActual instanceof Foca) {
+		            p.siguienteTurno();
+		        }
+		        //comprobarGanador(p);
+	        }
 		}
 	}
 	
-	//MÉTODO COMPROBAR GANADOR
+	/*//MÉTODO COMPROBAR GANADOR
 	private void comprobarGanador(Partida partida) {
-		int ultimaCasilla = partida.getTablero().getCasillas().size() -1;
-		Pinguino ganador = null;
-		
-		for(Jugador j : partida.getJugadores()) {
-			Pinguino p = (Pinguino) j;
-			if(p.getPos() >= ultimaCasilla) {
-				if(ganador == null) {
-					ganador = p;
-					partida.setGanador(p);
-					partida.setFinalizada(true);
-				}	
-			}
+		if (partida != null && !partida.isFinalizada()) {
+			int ultimaCasilla = partida.getTablero().getCasillas().size() - 1;
+	        for (Jugador j : partida.getJugadores()) {
+	            // Només els pingüins poden guanyar la partida
+	            if (j instanceof Pinguino) {
+	                Pinguino p = (Pinguino) j;
+	                if (p.getPos() >= ultimaCasilla) {
+	                    partida.setGanador(p);
+	                    partida.setFinalizada(true);
+	                    System.out.println("¡Guanya " + p.getNom() + "!");
+	                    return;
+	                }
+	            }
 		}
-	}
+        
+        }
+	}*/
 	
 }
