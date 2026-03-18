@@ -21,45 +21,107 @@ public class GestorPartida {
     }
 
     public void nuevaPartida(Tablero t, ArrayList<Jugador> j) {
-    	this.partida = new Partida(t, j);
+        this.partida = new Partida(t, j);
+        System.out.println("Nova partida creada amb " + j.size() + " jugadors i un taulell de "
+                + t.getTamanyo() + " caselles.");
     }
 
     public int tirarDado(Jugador j, Dado dadoOpcional) {
-    	int resultado = dadoOpcional.tirar();
-    	System.out.println("Posición anterior del " + j.getNom() + ": " + j.getPos());
-    	gestorJugador.jugadorSeMueve(j, resultado, this.partida.getTablero());
-    	System.out.println(j.getNom() + " avanza " +  resultado );
-    	System.out.println("Posición actual del " + j.getNom() + ": " + j.getPos());
-    	
-    	
-    	return resultado;
+        int resultado = dadoOpcional.tirar();
+        gestorJugador.jugadorSeMueve(j, resultado, this.partida.getTablero());
+        System.out.println(j.getNom() + " tira el dau " + dadoOpcional.getNom()
+                + " → " + resultado + " → posició " + j.getPos());
+        return resultado;
     }
 
     public void ejecutarTurnoCompleto() {
-        // TODO: ejecutar la lógica completa del turno
+    	if (partida != null && !partida.isFinalizada()) { 
+	        int indice = partida.getJugadorActual();
+	        Jugador jugadorActual = partida.getJugadores().get(indice);
+	        procesarTurnoJugador(jugadorActual);
+	        actualizarEstadoTablero();
+	        gestorTablero.comprobarFinTurno(partida);
+    	}
     }
 
     public void procesarTurnoJugador(Jugador j) {
-        // TODO: procesar turno de un jugador
+        if (j != null && partida != null) {
+            if (j instanceof Pinguino) {
+                Pinguino p = (Pinguino) j;
+                if (!p.isJuega()) {
+                    System.out.println(p.getNom() + " perd el seu torn.");
+                    p.setJuega(true);
+                }else {
+                    Dado dado = new Dado("Normal", 1);
+                    tirarDado(p, dado);
+                    int pos = p.getPos();
+                    Casilla casilla = partida.getTablero().getCasilla(pos);
+                    if (casilla != null) {
+                        gestorTablero.ejecutarCasilla(partida, p, casilla);
+                    }
+                    for (Jugador altre : partida.getJugadores()) {
+                        if (altre != j && altre instanceof Pinguino) {
+                            Pinguino altreP = (Pinguino) altre;
+                            if (altreP.getPos() == p.getPos()) {
+                                System.out.println(p.getNom() + " i " + altreP.getNom()
+                                        + " coincideixen a la casella " + p.getPos() + "!");
+                                gestorJugador.pinguinoGuerra(p, altreP);
+                                break;
+                            }
+                        }
+                    }
+                    gestorJugador.jugadorFinalizaTurno(p);
+                }
+            } else if (j instanceof Foca) {
+                Foca foca = (Foca) j;
+                foca.moverPosicio(0);
+                for (Jugador altre : partida.getJugadores()) {
+                    if (altre instanceof Pinguino) {
+                        Pinguino pingu = (Pinguino) altre;
+                        if (foca.getPos() == pingu.getPos()) {
+                            System.out.println("La Foca ha colpejat " + pingu.getNom() + "!");
+                            gestorJugador.focaInteractua(pingu, foca, partida);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void actualizarEstadoTablero() {
-        // TODO: actualizar estado del tablero
+    	 if (partida != null) {
+	         for (Jugador j : partida.getJugadores()) {
+	             int max = partida.getTablero().getTamanyo() - 1;
+	             if (j.getPos() > max) {
+	                 j.setPos(max);
+	             }
+	             if (j.getPos() < 0) {
+	                 j.setPos(0);
+	             }
+	         }
+    	 }
     }
 
     public void siguienteTurno() {
-        // TODO: pasar al siguiente turno
+    	if (partida != null && !partida.isFinalizada()) {
+    		partida.siguienteTurno();
+    	}
     }
 
     public Partida getPartida() {
         return this.partida;
     }
 
-    public void guardarPartida() {
-        // TODO: guardar la partida usando GestorBBDD
+    /*public void guardarPartida() {
+    	if (partida != null) {
+            gestorBBDD.guardarPartida(partida);
+        }
     }
 
     public void cargarPartida(int id) {
-        // TODO: cargar partida desde BBDD
-    }
+    	 Partida cargada = gestorBBDD.cargarPartida(id);
+         if (cargada != null) {
+             this.partida = cargada;
+         }
+    }*/
 }
