@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox
+    xmlns="http://javafx.com/javafx/21.0.10"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="VISTAS.PantallaGuerra"
+    stylesheets="@PantallaJuego.css"
+    styleClass="root"
+    spacing="20"
+    alignment="CENTER"
+    prefWidth="420"
+    prefHeight="320">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- Título -->
+    <Text fx:id="titulo" styleClass="big-text" text="⚔ BATALLA DE NEU!" />
+
+    <!-- Info del jugador que decideix -->
+    <Text fx:id="infoDefensor" styleClass="stat" text="" />
+
+    <!-- Info del jugador atacant -->
+    <Text fx:id="infoAtacant" styleClass="stat" text="" />
+
+    <!-- Pregunta -->
+    <Text fx:id="pregunta" styleClass="events"
+          text="Tries la sort o entres en guerra?" />
+
+    <!-- Botons d'acció -->
+    <HBox spacing="16" alignment="CENTER">
+        <Button fx:id="btnDau" text="🎲 Tirar dau i escapar"
+                styleClass="button"
+                onAction="#handleTirarDau"
+                prefWidth="170"/>
+        <Button fx:id="btnBatalla" text="❄ Batalla de neu!"
+                styleClass="button, primary"
+                onAction="#handleBatalla"
+                prefWidth="170"/>
+    </HBox>
+
+    <!-- Resultat (s'omple després de l'acció) -->
+    <Text fx:id="resultat" styleClass="events" text="" />
+
+    <!-- Botó tancar (actiu després de l'acció) -->
+    <Button fx:id="btnTancar" text="Continuar"
+            styleClass="button"
+            onAction="#handleTancar"
+            visible="false"
+            prefWidth="200"/>
+</VBox>

@@ -71,10 +71,10 @@ public class Foca extends Jugador {
 			if(turnosBloquejada == 0) {
 				Soborno = false;
 			}
-		}else {
-			setPos(getPos()+(new Dado("Normal", 0).tirar()));
+		} else {
+			int tirada = new Dado("Normal", 0).tirar();
+			setPos(getPos() + tirada);
 		}
-		
 	}
 	
 	
