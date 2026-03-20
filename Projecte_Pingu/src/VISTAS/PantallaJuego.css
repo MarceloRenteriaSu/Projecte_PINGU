@@ -121,7 +121,41 @@
 #P3 { -fx-fill: #22c55e; }  /* verde */
 #P4 { -fx-fill: #facc15; }  /* amarillo */
 
+/* ========================= */
+/*       FOCA (CPU)          */
+/* ========================= */
+
+#P5 { -fx-fill: #374151; }  /* gris oscuro */
+
+.foca {
+    -fx-stroke: #1f2937;
+    -fx-stroke-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.60), 12, 0.45, 0, 0);
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+}
+
 /* Si quieres marcar el jugador activo, añade/quita esta clase desde Java */
 .current-player {
     -fx-effect: dropshadow(gaussian, gold, 12, 0.6, 0, 0);
+}
+
+/* ========================= */
+/*     PANTALLA FIN          */
+/* ========================= */
+
+.fin-titulo {
+    -fx-font-size: 32px;
+    -fx-font-weight: 800;
+    -fx-fill: #1f2330;
+}
+
+.fin-subtitulo {
+    -fx-font-size: 18px;
+    -fx-opacity: 0.75;
+}
+
+.fin-info {
+    -fx-font-size: 15px;
+    -fx-opacity: 0.85;
 }

@@ -75,3 +75,10 @@
     -fx-font-size: 12px;
     -fx-opacity: 0.6;
 }
+
+/* Feedback (login/register messages) */
+.feedback {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-opacity: 0.9;
+}

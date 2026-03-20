@@ -77,6 +77,104 @@ public class GestorBBDD {
 	}
 
 	/**
+	 * Connexió a la BBDD sense Scanner (per a ús des de JavaFX).
+	 * Si user/pass estan buits, utilitza credencials per defecte.
+	 */
+	public static Connection conectarBBDD(String entorno, String user, String pass) {
+		String url = "centro".equalsIgnoreCase(entorno)
+				? "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
+				: "jdbc:oracle:thin:@//oracle.ilerna.com:1521/XEPDB2";
+
+		if (user == null || user.isEmpty()) user = "system";
+		if (pass == null || pass.isEmpty()) pass = "system";
+
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			Connection con = DriverManager.getConnection(url, user, pass);
+			if (con.isValid(5)) {
+				System.out.println("Connexió BBDD establerta (" + entorno + ").");
+				// Crear taula d'usuaris si no existeix
+				crearTaulaUsuaris(con);
+				return con;
+			}
+		} catch (ClassNotFoundException e) {
+			System.out.println("Driver Oracle no trobat.");
+		} catch (SQLException e) {
+			System.out.println("No s'ha pogut connectar a la BBDD: " + e.getMessage());
+		}
+		return null;
+	}
+
+	/**
+	 * Crea la taula d'usuaris si no existeix.
+	 */
+	private static void crearTaulaUsuaris(Connection con) {
+		try {
+			Statement st = con.createStatement();
+			st.executeUpdate(
+				"CREATE TABLE PINGU_USERS (" +
+				"  USERNAME VARCHAR2(50) PRIMARY KEY," +
+				"  PASSWORD VARCHAR2(100) NOT NULL," +
+				"  PARTIDAS_GANADAS NUMBER DEFAULT 0," +
+				"  FECHA_REGISTRO TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+				")"
+			);
+			System.out.println("Taula PINGU_USERS creada.");
+			st.close();
+		} catch (SQLException e) {
+			// Taula ja existeix (ORA-00955), ignorem l'error
+			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+				System.out.println("Info taula: " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Verifica les credencials d'un usuari.
+	 * @return true si l'usuari existeix i la contrasenya coincideix
+	 */
+	public static boolean loginUsuario(Connection con, String username, String password) {
+		if (con == null) return false;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT COUNT(*) FROM PINGU_USERS WHERE USERNAME = ? AND PASSWORD = ?"
+			);
+			ps.setString(1, username);
+			ps.setString(2, password);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1) > 0;
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error en login: " + e.getMessage());
+		}
+		return false;
+	}
+
+	/**
+	 * Registra un nou usuari a la BBDD.
+	 * @return true si el registre ha estat correcte
+	 */
+	public static boolean registrarUsuario(Connection con, String username, String password) {
+		if (con == null) return false;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"INSERT INTO PINGU_USERS (USERNAME, PASSWORD) VALUES (?, ?)"
+			);
+			ps.setString(1, username);
+			ps.setString(2, password);
+			int filas = ps.executeUpdate();
+			ps.close();
+			return filas > 0;
+		} catch (SQLException e) {
+			System.out.println("Error en registre: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/**
 	 * Cierra la conexión con la BBDD.
 	 *
 	 * @param con Objeto Connection que representa la conexión a la base de datos.

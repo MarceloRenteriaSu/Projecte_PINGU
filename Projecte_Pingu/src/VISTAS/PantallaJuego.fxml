@@ -76,6 +76,7 @@
 			        <Circle fx:id="P2" id="P2" radius="14.0" styleClass="player" />
 			        <Circle fx:id="P3" id="P3" radius="14.0" styleClass="player" />
 			        <Circle fx:id="P4" id="P4" radius="14.0" styleClass="player" />
+			        <Circle fx:id="P5" id="P5" radius="18.0" styleClass="foca" />
    	 			</children>
             </GridPane>
         </StackPane>

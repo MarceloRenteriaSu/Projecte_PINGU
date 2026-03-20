@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox
+    xmlns="http://javafx.com/javafx/21.0.10"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="VISTAS.PantallaFin"
+    stylesheets="@PantallaJuego.css"
+    styleClass="root"
+    spacing="20"
+    alignment="CENTER"
+    prefWidth="460"
+    prefHeight="340">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- Icona i Títol -->
+    <Text fx:id="icona" styleClass="fin-titulo" text="🏆" />
+    <Text fx:id="titulo" styleClass="fin-titulo" text="Fi de la Partida!" />
+
+    <!-- Info del guanyador -->
+    <Text fx:id="guanyador" styleClass="fin-subtitulo" text="" />
+
+    <!-- Stats -->
+    <Text fx:id="statsText" styleClass="fin-info" text="" />
+
+    <!-- Botons -->
+    <HBox spacing="16" alignment="CENTER">
+        <Button fx:id="btnMenu" text="🏠 Tornar al Menú"
+                styleClass="button, primary"
+                onAction="#handleVolverMenu"
+                prefWidth="180"/>
+        <Button fx:id="btnTancar" text="❌ Tancar"
+                styleClass="button"
+                onAction="#handleTancar"
+                prefWidth="180"/>
+    </HBox>
+</VBox>

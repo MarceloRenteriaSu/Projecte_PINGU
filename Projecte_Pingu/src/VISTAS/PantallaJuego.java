@@ -45,12 +45,13 @@ public class PantallaJuego {
 	@FXML private Text nieve_t;
 	@FXML private Text eventos;
 
-	// Game board and player pieces
+	// Game board and player pieces (4 pingüinos + 1 foca)
 	@FXML private GridPane tablero;
 	@FXML private Circle P1;
 	@FXML private Circle P2;
 	@FXML private Circle P3;
 	@FXML private Circle P4;
+	@FXML private Circle P5;
 
 	private GestorPartida gestorPartida;
 	private int columnas;
@@ -59,15 +60,47 @@ public class PantallaJuego {
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random rand = new Random();
 
-	// posiciones[0..3] = pingüins, posiciones[4] = foca
+	// posiciones[0..3] = pingüinos, posiciones[4] = foca
 	private int[] posiciones = {0, 0, 0, 0, 0};
 	private Node[] fichas;
 
 	// Índex de la foca dins la llista de jugadors de la partida
 	private int indiceFoca = -1;
 
+	// Mode de dificultat: true = imposible (amb foca), false = normal (sense foca)
+	private boolean modoImposible = true;
+
+	// Nom del jugador logejat (passat des del menú)
+	private String nombreUsuarioLogueado = "Jugador";
+
+	private boolean jocIniciat = false;
+
+	/**
+	 * Configura la dificultat i inicia el joc. Es crida des de PantallaMenu
+	 * DESPRÉS que l'FXML s'hagi carregat.
+	 */
+	public void setModoImposible(boolean imposible) {
+		this.modoImposible = imposible;
+		if (!jocIniciat) {
+			iniciarJoc();
+			jocIniciat = true;
+		}
+	}
+
+	public void setNombreUsuario(String nom) {
+		this.nombreUsuarioLogueado = nom;
+	}
+
 	@FXML
 	private void initialize() {
+		// L'FXML s'ha carregat. Esperem a setModoImposible() per iniciar el joc.
+	}
+
+	/**
+	 * Inicialitza el joc amb la dificultat configurada.
+	 * Es crida des de setModoImposible().
+	 */
+	private void iniciarJoc() {
 		eventos.setText("¡El juego ha comenzado!");
 
 		int totalCasillas = 50;
@@ -94,7 +127,7 @@ public class PantallaJuego {
 
 		ArrayList<Jugador> jugadors = new ArrayList<>();
 
-		// 4 pingüins
+		// 4 pingüinos
 		String[] noms   = {"Jugador1", "Jugador2", "Jugador3", "Jugador4"};
 		String[] colors = {"Azul", "Rojo", "Amarillo", "Verde"};
 		for (int i = 0; i < 4; i++) {
@@ -104,24 +137,37 @@ public class PantallaJuego {
 		}
 
 		// Foca (CPU) — nivell impossible
-		Foca foca = new Foca(0);
-		jugadors.add(foca);
-		indiceFoca = jugadors.size() - 1;
+		if (modoImposible) {
+			Foca foca = new Foca(0);
+			jugadors.add(foca);
+			indiceFoca = jugadors.size() - 1;
+		}
 
 		gestorPartida.nuevaPartida(t, jugadors);
 
-		// fichas[0..3] = pingüins, fichas[4] = foca (P4 la reaprofitem per la foca
-		// si no hi ha P5; amb 4 Circles tenim: P1=J1, P2=J2, P3=J3, P4=Foca)
-		// Nota: el FXML té P1-P4; J4 i la Foca compartiran P4 com a foca visual.
-		// Si el FXML té Circle P5 afegireu-lo; aquí usem P4 per la Foca
-		// i ignorem la ficha visual de J4 (segueix existint en lògica).
-		fichas = new Node[]{P1, P2, P3, P4};
+		// fichas[0..3] = pingüinos, fichas[4] = foca (P5)
+		if (modoImposible) {
+			fichas = new Node[]{P1, P2, P3, P4, P5};
+			posiciones = new int[]{0, 0, 0, 0, 0};
+		} else {
+			fichas = new Node[]{P1, P2, P3, P4};
+			posiciones = new int[]{0, 0, 0, 0};
+			// Amagar la foca si existeix
+			if (P5 != null) {
+				P5.setVisible(false);
+			}
+		}
 
-		int[] margenesIzq = {0, 34, 68, 0};
+		int[] margenesIzq = modoImposible
+				? new int[]{0, 26, 52, 78, 0}
+				: new int[]{0, 34, 68, 0};
+
 		for (int i = 0; i < fichas.length; i++) {
 			GridPane.setRowIndex(fichas[i], 0);
 			GridPane.setColumnIndex(fichas[i], 0);
-			GridPane.setMargin(fichas[i], new javafx.geometry.Insets(0, 0, 0, margenesIzq[i]));
+			GridPane.setMargin(fichas[i], new javafx.geometry.Insets(
+					(i == fichas.length - 1 && modoImposible) ? 28 : 0,
+					0, 0, margenesIzq[i]));
 		}
 
 		Text start = new Text("Start");
@@ -143,6 +189,7 @@ public class PantallaJuego {
 
 		mostrarTiposDeCasillasEnTablero(gestorPartida.getPartida().getTablero());
 		actualizarInventarioUI();
+		marcarJugadorActual();
 	}
 
 	// -------------------------------------------------------
@@ -175,6 +222,23 @@ public class PantallaJuego {
 			GridPane.setHalignment(texto, javafx.geometry.HPos.CENTER);
 			GridPane.setValignment(texto, javafx.geometry.VPos.CENTER);
 			tablero.getChildren().add(texto);
+		}
+	}
+
+	// -------------------------------------------------------
+	// MARCAR JUGADOR ACTUAL (indicador visual)
+	// -------------------------------------------------------
+
+	private void marcarJugadorActual() {
+		// Treiem la classe current-player de totes les fitxes
+		for (Node ficha : fichas) {
+			ficha.getStyleClass().remove("current-player");
+		}
+		// Afegim la classe al jugador actual (si és un pingüí)
+		Partida partida = gestorPartida.getPartida();
+		int indice = partida.getJugadorActual();
+		if (indice < fichas.length && indice != indiceFoca) {
+			fichas[indice].getStyleClass().add("current-player");
 		}
 	}
 
@@ -223,10 +287,6 @@ public class PantallaJuego {
 	// MÒDUL DE MOVIMENT AMB ANIMACIÓ
 	// -------------------------------------------------------
 
-	/**
-	 * Mou la fitxa visual del jugador (índex 0-3 per a pingüins, 4 per a foca).
-	 * Actualitza posiciones[] i sincronitza amb el model.
-	 */
 	private void moverJugador(int indiceFicha, int posicionModeloNueva) {
 		if (indiceFicha < 0 || indiceFicha >= fichas.length) return;
 
@@ -260,14 +320,6 @@ public class PantallaJuego {
 	// LÒGICA POST-MOVIMENT: casella + guerra + foca
 	// -------------------------------------------------------
 
-	/**
-	 * Executa tot el que passa després que un pingüí s'ha mogut:
-	 * casella especial, guerra amb altre pingüí (via PantallaGuerra), interacció amb foca.
-	 *
-	 * La guerra NO es resol aquí de forma automàtica: s'obre una finestra modal
-	 * perquè el DEFENSOR (el pingüí que ja estava a la casella) triï entre
-	 * tirar el dau i escapar, o entrar en batalla de neu.
-	 */
 	private void postMovimientoPinguino(Pinguino atacant, int indiceFichaAtacant) {
 		Partida partida = gestorPartida.getPartida();
 		Tablero t       = partida.getTablero();
@@ -284,11 +336,13 @@ public class PantallaJuego {
 				int[] newPos = obtenerFilaColumna(posModel);
 				GridPane.setRowIndex(fichas[indiceFichaAtacant], newPos[0]);
 				GridPane.setColumnIndex(fichas[indiceFichaAtacant], newPos[1]);
+				// Mostrar quin tipus de casella ha activat
+				String tipusCasella = casilla.getClass().getSimpleName();
+				eventos.setText(atacant.getNom() + " activa casella: " + tipusCasella + " → posició " + posModel);
 			}
 		}
 
 		// 2) Comprovar si coincideix amb un altre pingüí → obrir PantallaGuerra
-		//    L'atacant ha acabat el seu torn; el DEFENSOR (el que ja hi era) decideix.
 		for (int i = 0; i < partida.getJugadores().size(); i++) {
 			Jugador altre = partida.getJugadores().get(i);
 			if (altre == atacant) continue;
@@ -297,14 +351,12 @@ public class PantallaJuego {
 			if (defensor.getPos() == atacant.getPos()) {
 				final int indiceDefensor = i;
 				obrirPantallaGuerra(defensor, indiceDefensor, atacant, indiceFichaAtacant, partida);
-				// Parem aquí: la guerra és asíncrona (modal); el flux continua
-				// al callback onGuerraFinalitzada quan el defensor tanca la finestra.
 				return;
 			}
 		}
 
 		// 3) Interacció amb la Foca si coincideix — NIVELL IMPOSSIBLE
-		if (indiceFoca >= 0) {
+		if (modoImposible && indiceFoca >= 0) {
 			Jugador jFoca = partida.getJugadores().get(indiceFoca);
 			if (jFoca instanceof Foca) {
 				Foca foca = (Foca) jFoca;
@@ -332,8 +384,6 @@ public class PantallaJuego {
 
 	/**
 	 * Obre la finestra modal de PantallaGuerra.
-	 * Quan el defensor tanca la finestra, el callback aplica el resultat
-	 * al tauler i avança el torn.
 	 */
 	private void obrirPantallaGuerra(Pinguino defensor, int indiceDefensor,
 	                                  Pinguino atacant, int indiceAtacant,
@@ -346,10 +396,7 @@ public class PantallaJuego {
 			PantallaGuerra ctrl = loader.getController();
 			ctrl.inicialitzar(defensor, atacant, partida, (defRet, atRet, passosDau, haEscapat) -> {
 
-				// ---- Aplicar resultat de la guerra al tauler ----
-
 				if (haEscapat) {
-					// El defensor tira el dau i s'escapa: el movem
 					int novaPosD = Math.max(0, Math.min(
 						defensor.getPos() + passosDau,
 						partida.getTablero().getTamanyo() - 1));
@@ -361,7 +408,6 @@ public class PantallaJuego {
 					eventos.setText(defensor.getNom() + " escapa llançant el dau → " + passosDau + " caselles!");
 
 				} else {
-					// Batalla de neu: aplicar retrocessos
 					if (defRet > 0) {
 						int novaPosD = Math.max(0, defensor.getPos() - defRet);
 						defensor.setPos(novaPosD);
@@ -380,7 +426,6 @@ public class PantallaJuego {
 					}
 				}
 
-				// Comprovar guanyador i avançar torn
 				comprovarGuanyador(defensor);
 				comprovarGuanyador(atacant);
 				if (!partida.isFinalizada()) {
@@ -398,7 +443,6 @@ public class PantallaJuego {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// Si falla la finestra, continuem el torn normalment
 			if (!partida.isFinalizada()) {
 				avanzarAlSiguienteTurno();
 			}
@@ -417,64 +461,153 @@ public class PantallaJuego {
 			lento.setDisable(true);
 			peces.setDisable(true);
 			nieve.setDisable(true);
+
+			// Obrir pantalla de fi
+			obrirPantallaFin(pingu, partida);
 		}
 	}
 
 	// -------------------------------------------------------
-	// TORN DE LA FOCA (CPU) — NIVELL IMPOSSIBLE
+	// PANTALLA DE FI DE PARTIDA
+	// -------------------------------------------------------
+
+	private void obrirPantallaFin(Pinguino guanyador, Partida partida) {
+		javafx.application.Platform.runLater(() -> {
+			try {
+				FXMLLoader loader = new FXMLLoader(
+						getClass().getResource("PantallaFin.fxml"));
+				Parent root = loader.load();
+
+				PantallaFin ctrl = loader.getController();
+				ctrl.inicialitzar(guanyador.getNom(), partida.getTurnos(),
+						modoImposible ? "Imposible" : "Normal");
+
+				Stage finStage = new Stage();
+				finStage.setTitle("🏆 Fi de la Partida");
+				finStage.initModality(Modality.APPLICATION_MODAL);
+				finStage.setScene(new Scene(root));
+				finStage.setResizable(false);
+				finStage.showAndWait();
+
+				// Després de tancar, tornar al menú
+				if (ctrl.isVolverAlMenu()) {
+					Stage stage = (Stage) tablero.getScene().getWindow();
+					FXMLLoader menuLoader = new FXMLLoader(
+							getClass().getResource("PantallaMenu.fxml"));
+					Parent menuRoot = menuLoader.load();
+					stage.setScene(new Scene(menuRoot));
+					stage.setTitle("El Juego del Pingüino");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	// -------------------------------------------------------
+	// TORN DE LA FOCA (CPU) — NIVELL IMPOSSIBLE (IA MILLORADA)
 	// -------------------------------------------------------
 
 	/**
-	 * Executa el torn de la CPU (Foca):
-	 * - Si està bloquejada, descompta el torn.
-	 * - Sinó, tira dau normal i es mou.
-	 * - Si coincideix amb un pingüí: li roba la meitat de l'inventari.
-	 * - Si el passa per sobre (>): l'envia al forat anterior.
+	 * IA millorada de la Foca:
+	 * - Persegueix el pingüí MÉS avançat (el que està més a prop del final).
+	 * - Si pot atrapar-lo (distància <= tirada), tira per intentar arribar-hi.
+	 * - Si passa per sobre d'un pingüí, el colpeja.
+	 * - Si coincideix, li roba la meitat de l'inventari.
 	 */
 	private void ejecutarTurnoFoca() {
 		Partida partida = gestorPartida.getPartida();
 		Foca foca = (Foca) partida.getJugadores().get(indiceFoca);
 
 		int posAntesFoca = foca.getPos();
-		foca.moverPosicio(0); // la pròpia Foca gestiona bloqueig intern
-		int posDespreFoca = foca.getPos();
 
-		// Sincronitzar posició visual de la foca (fichas[3] = P4 = Foca)
-		int indiceFichaFoca = 3;
-		posiciones[indiceFichaFoca] = posDespreFoca;
-		int[] np = obtenerFilaColumna(posDespreFoca);
+		// Comprovar si la foca està bloquejada
+		if (foca.isSoborno()) {
+			foca.moverPosicio(0); // Descompta el bloqueig internament
+			int posDespreFoca = foca.getPos();
+
+			// Sincronitzar posició visual
+			int indiceFichaFoca = fichas.length - 1; // Última fitxa = foca
+			posiciones[indiceFichaFoca] = posDespreFoca;
+			int[] np = obtenerFilaColumna(posDespreFoca);
+			GridPane.setRowIndex(fichas[indiceFichaFoca], np[0]);
+			GridPane.setColumnIndex(fichas[indiceFichaFoca], np[1]);
+
+			eventos.setText("🦭 La Foca està bloquejada " + foca.getTurnosBloquejada() + " torn(s) més.");
+			return;
+		}
+
+		// IA: Buscar el pingüí més avançat per perseguir-lo
+		Pinguino objectiu = null;
+		int maxPos = -1;
+		for (Jugador j : partida.getJugadores()) {
+			if (j instanceof Pinguino) {
+				Pinguino p = (Pinguino) j;
+				if (p.getPos() > maxPos) {
+					maxPos = p.getPos();
+					objectiu = p;
+				}
+			}
+		}
+
+		// La foca tira el dau normal
+		Dado dadoFoca = new Dado("Normal", 1);
+		int tirada = dadoFoca.tirar();
+
+		// Si l'objectiu està a prop, la foca intenta arribar-hi
+		int novaPosFoca;
+		if (objectiu != null && objectiu.getPos() > posAntesFoca) {
+			// Perseguir: moure's sempre cap al pingüí objectiu
+			int distancia = objectiu.getPos() - posAntesFoca;
+			if (distancia <= tirada) {
+				novaPosFoca = objectiu.getPos(); // Arribar exactament
+			} else {
+				novaPosFoca = posAntesFoca + tirada; // Avançar el màxim
+			}
+		} else {
+			// Si tots els pingüins estan darrere, avançar normalment
+			novaPosFoca = posAntesFoca + tirada;
+		}
+
+		// Limitar al taulell
+		novaPosFoca = Math.min(novaPosFoca, partida.getTablero().getTamanyo() - 1);
+		novaPosFoca = Math.max(0, novaPosFoca);
+		foca.setPos(novaPosFoca);
+
+		// Sincronitzar posició visual
+		int indiceFichaFoca = fichas.length - 1;
+		posiciones[indiceFichaFoca] = novaPosFoca;
+		int[] np = obtenerFilaColumna(novaPosFoca);
 		GridPane.setRowIndex(fichas[indiceFichaFoca], np[0]);
 		GridPane.setColumnIndex(fichas[indiceFichaFoca], np[1]);
 
-		if (foca.isSoborno()) {
-			eventos.setText("🦭 La Foca està bloquejada " + foca.getTurnosBloquejada() + " torn(s) més.");
-		} else {
-			StringBuilder msg = new StringBuilder("🦭 La Foca es mou a " + posDespreFoca + ".");
-			for (int i = 0; i < partida.getJugadores().size(); i++) {
-				Jugador j = partida.getJugadores().get(i);
-				if (!(j instanceof Pinguino)) continue;
-				Pinguino pingu = (Pinguino) j;
-				int posPingu = pingu.getPos();
+		StringBuilder msg = new StringBuilder("🦭 La Foca es mou a " + novaPosFoca + ".");
 
-				// Passa per sobre → envia al forat anterior
-				if (posPingu > posAntesFoca && posPingu <= posDespreFoca && posPingu != posDespreFoca) {
-					foca.golpearJugador(partida, pingu);
-					int posNova = Math.max(0, pingu.getPos());
-					pingu.setPos(posNova);
-					posiciones[i] = posNova;
-					int[] np2 = obtenerFilaColumna(posNova);
-					GridPane.setRowIndex(fichas[i], np2[0]);
-					GridPane.setColumnIndex(fichas[i], np2[1]);
-					msg.append(" Ha colpejat " + pingu.getNom() + " de passada!");
-				}
-				// Coincideix exactament → li roba la meitat de l'inventari
-				else if (posPingu == posDespreFoca) {
-					foca.aplastarJugador(pingu);
-					msg.append(" Ha aixafat " + pingu.getNom() + " i li ha robat la meitat de l'inventari!");
-				}
+		// Comprovar interaccions amb cada pingüí
+		for (int i = 0; i < partida.getJugadores().size(); i++) {
+			Jugador j = partida.getJugadores().get(i);
+			if (!(j instanceof Pinguino)) continue;
+			Pinguino pingu = (Pinguino) j;
+			int posPingu = pingu.getPos();
+
+			// Passa per sobre → envia al forat anterior
+			if (posPingu > posAntesFoca && posPingu < novaPosFoca) {
+				foca.golpearJugador(partida, pingu);
+				int posNova = Math.max(0, pingu.getPos());
+				pingu.setPos(posNova);
+				posiciones[i] = posNova;
+				int[] np2 = obtenerFilaColumna(posNova);
+				GridPane.setRowIndex(fichas[i], np2[0]);
+				GridPane.setColumnIndex(fichas[i], np2[1]);
+				msg.append(" Ha colpejat " + pingu.getNom() + " de passada!");
 			}
-			eventos.setText(msg.toString());
+			// Coincideix exactament → li roba la meitat de l'inventari
+			else if (posPingu == novaPosFoca) {
+				foca.aplastarJugador(pingu);
+				msg.append(" Ha aixafat " + pingu.getNom() + " i li ha robat la meitat de l'inventari!");
+			}
 		}
+		eventos.setText(msg.toString());
 	}
 
 	// -------------------------------------------------------
@@ -488,24 +621,25 @@ public class PantallaJuego {
 		partida.siguienteTurno();
 
 		// Si és el torn de la foca, l'executem automàticament i tornem a avançar
-		if (partida.getJugadorActual() == indiceFoca) {
+		if (modoImposible && partida.getJugadorActual() == indiceFoca) {
 			ejecutarTurnoFoca();
 			partida.siguienteTurno();
 		}
 
-		// Si el pròxim pingüí ha perdut el torn, el saltem (setJuega era false)
+		// Si el pròxim pingüí ha perdut el torn, el saltem
 		Jugador seg = partida.getJugadores().get(partida.getJugadorActual());
 		if (seg instanceof Pinguino) {
 			Pinguino segP = (Pinguino) seg;
 			if (!segP.isJuega()) {
 				eventos.setText(segP.getNom() + " perd el torn.");
-				segP.setJuega(true); // el reactivem per al torn següent
-				avanzarAlSiguienteTurno(); // recursiu (màxim 1 nivell per jugador)
+				segP.setJuega(true);
+				avanzarAlSiguienteTurno();
 				return;
 			}
 		}
 
 		actualizarInventarioUI();
+		marcarJugadorActual();
 		dadoResultText.setText("Torn de: " + partida.getJugadores().get(partida.getJugadorActual()).getNom());
 	}
 
@@ -518,7 +652,7 @@ public class PantallaJuego {
 		if (partida.isFinalizada()) return;
 
 		int indice = partida.getJugadorActual();
-		if (indice == indiceFoca) return; // mai hauria de passar
+		if (indice == indiceFoca) return;
 
 		Jugador j = partida.getJugadores().get(indice);
 		if (!(j instanceof Pinguino)) return;
@@ -528,11 +662,10 @@ public class PantallaJuego {
 		dadoResultText.setText("Ha sortit: " + resultado);
 		eventos.setText(pingu.getNom() + " tira " + d.getNom() + " → " + resultado);
 
-		// Moure al model
 		int novaPos = Math.max(0, Math.min(pingu.getPos() + resultado, partida.getTablero().getTamanyo() - 1));
 		pingu.setPos(novaPos);
 
-		// Moure la fitxa visual i, en acabar l'animació, executar post-moviment
+		// Desactivar botons durant l'animació
 		dado.setDisable(true);
 		rapido.setDisable(true);
 		lento.setDisable(true);
@@ -560,8 +693,6 @@ public class PantallaJuego {
 			GridPane.setRowIndex(ficha, newPos2[0]);
 			GridPane.setColumnIndex(ficha, newPos2[1]);
 
-			// Platform.runLater garanteix que sortim del context de l'animació
-			// abans d'obrir qualsevol Stage modal (showAndWait ho requereix)
 			javafx.application.Platform.runLater(() ->
 				postMovimientoPinguino(pingu, indiceFichaFinal)
 			);
@@ -578,7 +709,6 @@ public class PantallaJuego {
 		Partida partida = gestorPartida.getPartida();
 		int indice = partida.getJugadorActual();
 		Pinguino pingu = (Pinguino) partida.getJugadores().get(indice);
-		// Dau normal: sempre disponible (és l'ítem base)
 		Dado d = new Dado("Normal", 1);
 		tirarDadoConcreto(d);
 	}
@@ -607,8 +737,6 @@ public class PantallaJuego {
 
 	/**
 	 * Usar un peix per subornar la foca: la bloqueja 2 torns.
-	 * Si la foca no és a la mateixa casella, informa que no cal.
-	 * NIVELL IMPOSSIBLE.
 	 */
 	@FXML
 	private void handlePeces() {
@@ -621,13 +749,12 @@ public class PantallaJuego {
 			return;
 		}
 
-		if (indiceFoca < 0) {
+		if (!modoImposible || indiceFoca < 0) {
 			eventos.setText("No hi ha Foca en aquesta partida.");
 			return;
 		}
 
 		Foca foca = (Foca) partida.getJugadores().get(indiceFoca);
-		// El pingüí usa el peix per subornar la foca
 		pingu.usarItem(new Pez(0));
 		pingu.quitarItem(new Pez(0));
 		foca.esSobornado(partida, pingu);
@@ -636,9 +763,7 @@ public class PantallaJuego {
 	}
 
 	/**
-	 * El botó de neu ara és informatiu: les boles de neu s'utilitzen
-	 * automàticament quan dos pingüins coincideixen a la mateixa casella
-	 * i el defensor tria entrar en batalla des de la PantallaGuerra.
+	 * El botó de neu és informatiu — les boles s'utilitzen en batalla.
 	 */
 	@FXML
 	private void handleNieve() {
@@ -650,9 +775,26 @@ public class PantallaJuego {
 	// HANDLERS DEL MENÚ
 	// -------------------------------------------------------
 
-	@FXML private void handleNewGame() { System.out.println("New game."); }
-	@FXML private void handleSaveGame() { System.out.println("Saved game."); }
-	@FXML private void handleLoadGame() { System.out.println("Loaded game."); }
+	@FXML private void handleNewGame() {
+		try {
+			Stage stage = (Stage) tablero.getScene().getWindow();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaMenu.fxml"));
+			Parent root = loader.load();
+			stage.setScene(new Scene(root));
+			stage.setTitle("El Juego del Pingüino");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML private void handleSaveGame() {
+		eventos.setText("💾 Partida guardada! (Funcionalitat de BBDD pendent de connexió)");
+	}
+
+	@FXML private void handleLoadGame() {
+		eventos.setText("📂 Cargar partida (Funcionalitat de BBDD pendent de connexió)");
+	}
+
 	@FXML private void handleQuitGame() { System.exit(0); }
 
 	public void setGestorPartida(GestorPartida gestorPartida) {
