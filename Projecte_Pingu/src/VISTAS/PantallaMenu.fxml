@@ -3,84 +3,47 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane
+<StackPane
     xmlns="http://javafx.com/javafx/21.0.10"
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaMenu"
     stylesheets="@PantallaMenu.css"
     styleClass="root">
 
-    <top>
-        <MenuBar>
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem fx:id="newGame" mnemonicParsing="false" text="New" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="saveGame" mnemonicParsing="false" text="Save" />
-                        <MenuItem fx:id="loadGame" mnemonicParsing="false" text="Load" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="quitGame" mnemonicParsing="false" text="Quit" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-    </top>
+    <!-- Background image — binds to parent size for auto-resize -->
+    <ImageView fx:id="bgImageView" preserveRatio="false"
+               StackPane.alignment="CENTER" mouseTransparent="true">
+        <image>
+            <Image url="@menu_background.png"/>
+        </image>
+    </ImageView>
 
-    <center>
-        <StackPane>
-            <padding>
-                <Insets top="28" right="28" bottom="28" left="28"/>
-            </padding>
+    <!-- Left-aligned menu content -->
+    <VBox alignment="TOP_LEFT" spacing="0" StackPane.alignment="TOP_LEFT">
+        <padding>
+            <Insets top="50" right="40" bottom="60" left="60"/>
+        </padding>
 
-            <VBox spacing="16" styleClass="card" maxWidth="420">
-                <padding>
-                    <Insets top="18" right="18" bottom="18" left="18"/>
-                </padding>
+        <!-- Game Title -->
+        <Label text="PINGU" styleClass="game-title"/>
 
-                <!-- Cabecera -->
-                <VBox spacing="6" alignment="CENTER">
-                    <Label text="🐧 EL JUEGO DEL PINGÜINO" styleClass="title" wrapText="true"/>
-                </VBox>
+        <!-- Spacer to push buttons down -->
+        <Region VBox.vgrow="ALWAYS"/>
 
-                <Region prefHeight="8"/>
-
-                <!-- Formulario -->
-                <VBox spacing="10">
-                    <Label text="Usuario" styleClass="field-label"/>
-                    <TextField fx:id="userField" promptText="Usuario..." styleClass="field"/>
-
-                    <Label text="Contraseña" styleClass="field-label"/>
-                    <PasswordField fx:id="passField" promptText="Contraseña..." styleClass="field"/>
-                </VBox>
-
-                <Region prefHeight="4"/>
-
-                <!-- Feedback (errors o missatges) -->
-                <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
-
-                <!-- Botonera -->
-                <HBox spacing="10">
-                    <Button fx:id="loginButton" text="🎮 Jugar" onAction="#handleLogin" maxWidth="Infinity" styleClass="primary" HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="registerButton" text="📝 Registro" onAction="#handleRegister" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-                </HBox>
-
-                <Label text="Introduce usuario y contraseña para empezar a jugar."
-                       styleClass="hint" wrapText="true"/>
-            </VBox>
-        </StackPane>
-    </center>
-
-</BorderPane>
+        <!-- Menu Buttons -->
+        <VBox spacing="14" styleClass="menu-buttons">
+            <Button fx:id="btnNewMatch" text="NEW MATCH"
+                    onAction="#handleNewMatch" styleClass="menu-btn"/>
+            <Button fx:id="btnLoadMatch" text="LOAD MATCH"
+                    onAction="#handleLoadMatch" styleClass="menu-btn"/>
+            <Button fx:id="btnExit" text="EXIT"
+                    onAction="#handleExit" styleClass="menu-btn"/>
+        </VBox>
+    </VBox>
+</StackPane>
