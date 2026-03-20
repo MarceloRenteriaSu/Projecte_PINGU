@@ -16,10 +16,12 @@ public class Tablero {
 		this.casillas = new ArrayList<>();
 		if(cantidadCasillas < 50) {
 			this.tamanyo = 50;
-		}else {			
+		} else if(cantidadCasillas > 150) {
+			this.tamanyo = 150;
+		} else {			
 			this.tamanyo = cantidadCasillas;
 		}
-        generarTablero(cantidadCasillas);
+        generarTablero(this.tamanyo);
     }
 	
 	//GETTERS Y SETTERS

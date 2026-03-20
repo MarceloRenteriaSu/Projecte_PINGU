@@ -44,10 +44,10 @@ public class GestorBBDD {
 		// 2) Pedir credenciales (con trim para evitar espacios raros)
 		// PODEIS HARDCODEAR ESTAS CREDENCIALES SI VAIS A USAR SIEMPRE LAS MISMAS
 		//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-		System.out.println("¿Usuario?");
+		System.out.println("DW2526_GR02_PINGU");
 		String user = scan.nextLine().trim();
 
-		System.out.println("¿Contraseña?");
+		System.out.println("ACOMRDT");
 		String pwd = scan.nextLine(); // aquí NO hago trim por si la contraseña tuviera espacios
 
 		// 3) Conectar
@@ -85,8 +85,8 @@ public class GestorBBDD {
 				? "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
 				: "jdbc:oracle:thin:@//oracle.ilerna.com:1521/XEPDB2";
 
-		if (user == null || user.isEmpty()) user = "system";
-		if (pass == null || pass.isEmpty()) pass = "system";
+		if (user == null || user.isEmpty()) user = "DW2526_GR02_PINGU";
+		if (pass == null || pass.isEmpty()) pass = "ACOMRDT";
 
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");

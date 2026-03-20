@@ -107,9 +107,9 @@
 
 .player {
     -fx-stroke: white;
-    -fx-stroke-width: 3;
+    -fx-stroke-width: 2;
 
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.35, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0.35, 0, 2);
 
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
@@ -129,10 +129,8 @@
 
 .foca {
     -fx-stroke: #1f2937;
-    -fx-stroke-width: 3;
-    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.60), 12, 0.45, 0, 0);
-    -fx-scale-x: 1.15;
-    -fx-scale-y: 1.15;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.60), 8, 0.45, 0, 0);
 }
 
 /* Si quieres marcar el jugador activo, añade/quita esta clase desde Java */

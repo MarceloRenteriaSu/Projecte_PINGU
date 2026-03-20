@@ -1,9 +1,7 @@
 package VISTAS;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
@@ -27,30 +25,23 @@ public class PantallaMenu {
 
     @FXML private TextField userField;
     @FXML private PasswordField passField;
-    @FXML private ComboBox<String> dificultadCombo;
     @FXML private Label feedbackLabel;
 
     @FXML private Button loginButton;
     @FXML private Button registerButton;
 
-    // Connexió a la BBDD (es manté oberta durant la sessió)
+    // Connexió a la BBDD
     private Connection conexion = null;
 
     @FXML
     private void initialize() {
         System.out.println("PantallaMenu initialized");
-
-        // Omplir el ComboBox de dificultat
-        dificultadCombo.setItems(FXCollections.observableArrayList("Normal", "Imposible"));
-        dificultadCombo.setValue("Imposible"); // Per defecte: nivell imposible
-
         feedbackLabel.setText("");
 
-        // Intentar connectar a la BBDD automaticament (fuera de centro)
+        // Connectar a la BBDD amb les credencials hardcodeades
         try {
-            conexion = GestorBBDD.conectarBBDD("fuera", "", "");
+            conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
         } catch (Exception e) {
-            // Si no pot connectar, seguim sense BBDD
             System.out.println("No s'ha pogut connectar a la BBDD: " + e.getMessage());
         }
     }
@@ -72,7 +63,6 @@ public class PantallaMenu {
 
     @FXML
     private void handleQuitGame() {
-        System.out.println("Quit Game clicked");
         if (conexion != null) {
             GestorBBDD.cerrar(conexion);
         }
@@ -90,7 +80,6 @@ public class PantallaMenu {
             return;
         }
 
-        // Intentar login amb BBDD
         boolean loginOk = false;
         if (conexion != null) {
             loginOk = GestorBBDD.loginUsuario(conexion, username, password);
@@ -102,14 +91,13 @@ public class PantallaMenu {
             feedbackLabel.setText("✅ Login correcte!");
             feedbackLabel.setStyle("-fx-text-fill: #22c55e;");
         } else {
-            // Sense BBDD: acceptar qualsevol combinació no buida
             feedbackLabel.setText("✅ Mode offline — entrant sense validació.");
             feedbackLabel.setStyle("-fx-text-fill: #f59e0b;");
             loginOk = true;
         }
 
         if (loginOk) {
-            abrirPantallaJuego(event, username);
+            abrirPantallaConfig(event, username);
         }
     }
 
@@ -140,29 +128,24 @@ public class PantallaMenu {
     }
 
     /**
-     * Obre la pantalla de joc amb la dificultat seleccionada.
+     * Obre la pantalla de configuració (noms de jugadors i caselles).
      */
-    private void abrirPantallaJuego(ActionEvent event, String username) {
+    private void abrirPantallaConfig(ActionEvent event, String username) {
         try {
-            String dificultat = dificultadCombo.getValue();
-            boolean imposible = "Imposible".equalsIgnoreCase(dificultat);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaConfig.fxml"));
+            Parent pantallaConfigRoot = loader.load();
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaJuego.fxml"));
-            Parent pantallaJuegoRoot = loader.load();
-
-            // Passar paràmetres al controlador
-            PantallaJuego ctrl = loader.getController();
-            ctrl.setModoImposible(imposible);
+            PantallaConfig ctrl = loader.getController();
             ctrl.setNombreUsuario(username);
 
-            Scene pantallaJuegoScene = new Scene(pantallaJuegoRoot);
+            Scene pantallaConfigScene = new Scene(pantallaConfigRoot);
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(pantallaJuegoScene);
-            stage.setTitle("Joc del Pingüí — " + dificultat);
+            stage.setScene(pantallaConfigScene);
+            stage.setTitle("Configuració de la Partida");
         } catch (Exception e) {
             e.printStackTrace();
-            feedbackLabel.setText("❌ Error al obrir el joc: " + e.getMessage());
+            feedbackLabel.setText("❌ Error al obrir la configuració: " + e.getMessage());
             feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
         }
     }

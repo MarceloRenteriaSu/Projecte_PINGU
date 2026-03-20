@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 /**
  * Controlador de la pantalla de fi de partida.
- * Mostra el guanyador, el nombre de torns i la dificultat.
+ * Mostra el guanyador i el nombre de torns.
  */
 public class PantallaFin {
 
@@ -23,11 +23,18 @@ public class PantallaFin {
     /**
      * Inicialitza la pantalla amb les dades del resultat.
      */
-    public void inicialitzar(String nomGuanyador, int turnos, String dificultat) {
+    public void inicialitzar(String nomGuanyador, int turnos) {
         icona.setText("🏆");
-        titulo.setText("Fi de la Partida!");
-        guanyador.setText("🐧 Guanyador: " + nomGuanyador);
-        statsText.setText("Torns jugats: " + turnos + "  |  Dificultat: " + dificultat);
+        titulo.setText("Fi del Joc!");
+        guanyador.setText("Guanyador: " + nomGuanyador);
+        statsText.setText("Torns jugats: " + turnos);
+    }
+
+    /**
+     * Overload per compatibilitat amb crides antigues (ignorant dificultat).
+     */
+    public void inicialitzar(String nomGuanyador, int turnos, String dificultat) {
+        inicialitzar(nomGuanyador, turnos);
     }
 
     public boolean isVolverAlMenu() {
