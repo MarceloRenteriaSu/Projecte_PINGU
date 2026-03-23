@@ -25,30 +25,15 @@ public class GestorBBDD {
 		// 1) Elegir entorno con validación
 		String entorno = "";
 		boolean valido = false;
-		while (!valido) {
-			// PODEIS HARDCODEAR ESTAS VARIABLES SI VAIS A USAR SIEMPRE LAS MISMAS
-			//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-			System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
-			entorno = scan.nextLine().trim().toLowerCase();
 
-			if (entorno.equalsIgnoreCase("centro") || entorno.equalsIgnoreCase("fuera")) {
-				valido = true;
-			} else {
-				System.out.println("Entrada no válida. Escribe CENTRO o FUERA.");
-			}
-		}
-
-		String url = entorno.equals("centro") ? "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
-				: "jdbc:oracle:thin:@//oracle.ilerna.com:1521/XEPDB2";
+		String url = "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2";
 
 		// 2) Pedir credenciales (con trim para evitar espacios raros)
 		// PODEIS HARDCODEAR ESTAS CREDENCIALES SI VAIS A USAR SIEMPRE LAS MISMAS
 		//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-		System.out.println("DW2526_GR02_PINGU");
-		String user = scan.nextLine().trim();
+		String user = "DW2526_GR02_PINGU";
 
-		System.out.println("ACOMRDT");
-		String pwd = scan.nextLine(); // aquí NO hago trim por si la contraseña tuviera espacios
+		String pwd = "ACOMRDT"; // aquí NO hago trim por si la contraseña tuviera espacios
 
 		// 3) Conectar
 		try {
