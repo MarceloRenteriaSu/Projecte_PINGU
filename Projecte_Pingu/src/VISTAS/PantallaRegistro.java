@@ -35,7 +35,7 @@ public class PantallaRegistro {
         feedbackLabel.setText("");
         // Connectar a la BBDD
         try {
-            conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+            conexion = GestorBBDD.conectarBBDD("DW2526_GR02_PINGU", "ACOMRDT");
         } catch (Exception e) {
             System.out.println("No s'ha pogut connectar a la BBDD: " + e.getMessage());
         }

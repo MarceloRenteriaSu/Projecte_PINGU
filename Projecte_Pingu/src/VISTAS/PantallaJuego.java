@@ -940,7 +940,7 @@ public class PantallaJuego {
 		}
 
 		try {
-			java.sql.Connection con = GESTORES.GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+			java.sql.Connection con = GESTORES.GestorBBDD.conectarBBDD( "DW2526_GR02_PINGU", "ACOMRDT");
 			if (con == null) {
 				eventos.setText("❌ No s'ha pogut connectar a la BBDD.");
 				return;
