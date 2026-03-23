@@ -930,14 +930,102 @@ public class PantallaJuego {
 	}
 
 	@FXML private void handleSaveGame() {
-		eventos.setText("💾 Partida guardada! (Funcionalitat de BBDD pendent de connexió)");
+		if (gestorPartida == null || gestorPartida.getPartida() == null) {
+			eventos.setText("❌ No hi ha partida en curs per guardar.");
+			return;
+		}
+		if (nombreUsuarioLogueado == null || nombreUsuarioLogueado.equals("guest") || nombreUsuarioLogueado.isEmpty()) {
+			eventos.setText("⚠ No pots guardar sense haver-te registrat. Comença una partida nova amb un compte!");
+			return;
+		}
+
+		try {
+			java.sql.Connection con = GESTORES.GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+			if (con == null) {
+				eventos.setText("❌ No s'ha pogut connectar a la BBDD.");
+				return;
+			}
+
+			Partida partida = gestorPartida.getPartida();
+
+			// Recollir noms dels jugadors (només pingüins)
+			StringBuilder noms = new StringBuilder();
+			StringBuilder posicions = new StringBuilder();
+			int numPinguinos = 0;
+			for (Jugador j : partida.getJugadores()) {
+				if (j instanceof Pinguino) {
+					if (numPinguinos > 0) {
+						noms.append(",");
+						posicions.append(",");
+					}
+					noms.append(j.getNom());
+					posicions.append(j.getPos());
+					numPinguinos++;
+				}
+			}
+			// Afegir posició foca si activada
+			if (focaActivada && indiceFoca >= 0) {
+				Jugador foca = partida.getJugadores().get(indiceFoca);
+				posicions.append(",").append(foca.getPos());
+			}
+
+			boolean ok = GESTORES.GestorBBDD.guardarPartida(con,
+				nombreUsuarioLogueado,
+				partida.getTablero().getTamanyo(),
+				numPinguinos,
+				focaActivada,
+				noms.toString(),
+				posicions.toString(),
+				partida.getJugadorActual(),
+				partida.getTurnos()
+			);
+
+			GESTORES.GestorBBDD.cerrar(con);
+
+			if (ok) {
+				eventos.setText("💾 Partida guardada correctament per a " + nombreUsuarioLogueado + "!");
+			} else {
+				eventos.setText("❌ Error guardant la partida.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			eventos.setText("❌ Error: " + e.getMessage());
+		}
 	}
 
 	@FXML private void handleLoadGame() {
-		eventos.setText("📂 Cargar partida (Funcionalitat de BBDD pendent de connexió)");
+		try {
+			Stage stage = (Stage) tablero.getScene().getWindow();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaLogin.fxml"));
+			Parent root = loader.load();
+			stage.setScene(new Scene(root));
+			stage.setTitle("Carregar Partida");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML private void handleQuitGame() { System.exit(0); }
+
+	/**
+	 * Restaura les posicions dels jugadors des d'una partida carregada.
+	 * @param posiciones llista de posicions: [pinguino1, pinguino2, ..., foca (opcional)]
+	 */
+	public void restaurarPosiciones(java.util.ArrayList<Integer> posiciones) {
+		if (gestorPartida == null || gestorPartida.getPartida() == null) return;
+		Partida partida = gestorPartida.getPartida();
+
+		for (int i = 0; i < posiciones.size() && i < partida.getJugadores().size(); i++) {
+			Jugador j = partida.getJugadores().get(i);
+			int pos = posiciones.get(i);
+			j.setPos(pos);
+			if (i < fichas.length) {
+				moverFichaVisual(i, pos);
+			}
+		}
+		actualizarInventarioUI();
+		marcarJugadorActual();
+	}
 
 	public void setGestorPartida(GestorPartida gestorPartida) {
 		this.gestorPartida = gestorPartida;
