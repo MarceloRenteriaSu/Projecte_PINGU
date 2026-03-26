@@ -25,15 +25,30 @@ public class GestorBBDD {
 		// 1) Elegir entorno con validación
 		String entorno = "";
 		boolean valido = false;
+		while (!valido) {
+			// PODEIS HARDCODEAR ESTAS VARIABLES SI VAIS A USAR SIEMPRE LAS MISMAS
+			//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+			System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
+			entorno = scan.nextLine().trim().toLowerCase();
 
-		String url = "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2";
+			if (entorno.equalsIgnoreCase("centro") || entorno.equalsIgnoreCase("fuera")) {
+				valido = true;
+			} else {
+				System.out.println("Entrada no válida. Escribe CENTRO o FUERA.");
+			}
+		}
+
+		String url = entorno.equals("centro") ? "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
+				: "jdbc:oracle:thin:@//oracle.ilerna.com:1521/XEPDB2";
 
 		// 2) Pedir credenciales (con trim para evitar espacios raros)
 		// PODEIS HARDCODEAR ESTAS CREDENCIALES SI VAIS A USAR SIEMPRE LAS MISMAS
 		//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-		String user = "DW2526_GR02_PINGU";
+		System.out.println("DW2526_GR02_PINGU");
+		String user = scan.nextLine().trim();
 
-		String pwd = "ACOMRDT"; // aquí NO hago trim por si la contraseña tuviera espacios
+		System.out.println("ACOMRDT");
+		String pwd = scan.nextLine(); // aquí NO hago trim por si la contraseña tuviera espacios
 
 		// 3) Conectar
 		try {
@@ -65,9 +80,10 @@ public class GestorBBDD {
 	 * Connexió a la BBDD sense Scanner (per a ús des de JavaFX).
 	 * Si user/pass estan buits, utilitza credencials per defecte.
 	 */
-	public static Connection conectarBBDD(String user, String pass) {
-		String url = "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
-	;
+	public static Connection conectarBBDD(String entorno, String user, String pass) {
+		String url = "centro".equalsIgnoreCase(entorno)
+				? "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
+				: "jdbc:oracle:thin:@//oracle.ilerna.com:1521/XEPDB2";
 
 		if (user == null || user.isEmpty()) user = "DW2526_GR02_PINGU";
 		if (pass == null || pass.isEmpty()) pass = "ACOMRDT";
@@ -76,16 +92,15 @@ public class GestorBBDD {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection con = DriverManager.getConnection(url, user, pass);
 			if (con.isValid(5)) {
-				System.out.println("Conexión a la BBDD establecida.");
-				// Crear taules si no existeixen
+				System.out.println("Connexió BBDD establerta (" + entorno + ").");
+				// Crear taula d'usuaris si no existeix
 				crearTaulaUsuaris(con);
-				crearTaulaPartidas(con);
 				return con;
 			}
 		} catch (ClassNotFoundException e) {
-			System.out.println("Driver Oracle no encontrado.");
+			System.out.println("Driver Oracle no trobat.");
 		} catch (SQLException e) {
-			System.out.println("No se ha podido conectar a la BBDD: " + e.getMessage());
+			System.out.println("No s'ha pogut connectar a la BBDD: " + e.getMessage());
 		}
 		return null;
 	}
@@ -112,135 +127,6 @@ public class GestorBBDD {
 				System.out.println("Info taula: " + e.getMessage());
 			}
 		}
-	}
-
-	/**
-	 * Crea la taula de partides guardades si no existeix.
-	 */
-	private static void crearTaulaPartidas(Connection con) {
-		try {
-			Statement st = con.createStatement();
-			st.executeUpdate(
-				"CREATE TABLE PINGU_PARTIDAS (" +
-				"  ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY," +
-				"  USERNAME VARCHAR2(50) NOT NULL," +
-				"  NUM_CASILLAS NUMBER NOT NULL," +
-				"  NUM_JUGADORES NUMBER NOT NULL," +
-				"  FOCA_ACTIVADA NUMBER(1) DEFAULT 1," +
-				"  NOMBRES_JUGADORES VARCHAR2(500)," +
-				"  POSICIONES_JUGADORES VARCHAR2(200)," +
-				"  JUGADOR_ACTUAL NUMBER DEFAULT 0," +
-				"  TURNOS NUMBER DEFAULT 0," +
-				"  FECHA_GUARDADO TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-				"  CONSTRAINT FK_PARTIDA_USER FOREIGN KEY (USERNAME) REFERENCES PINGU_USERS(USERNAME)" +
-				")"
-			);
-			System.out.println("Taula PINGU_PARTIDAS creada.");
-			st.close();
-		} catch (SQLException e) {
-			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
-				System.out.println("Info taula partidas: " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * Guarda o actualitza l'estat d'una partida per a un usuari.
-	 * @return true si s'ha guardat correctament
-	 */
-	public static boolean guardarPartida(Connection con, String username,
-			int numCasillas, int numJugadores, boolean focaActivada,
-			String nombresJugadores, String posicionesJugadores,
-			int jugadorActual, int turnos) {
-		if (con == null) return false;
-		try {
-			PreparedStatement del = con.prepareStatement(
-				"DELETE FROM PINGU_PARTIDAS WHERE USERNAME = ?"
-			);
-			del.setString(1, username);
-			del.executeUpdate();
-			del.close();
-
-			PreparedStatement ps = con.prepareStatement(
-				"INSERT INTO PINGU_PARTIDAS (USERNAME, NUM_CASILLAS, NUM_JUGADORES, FOCA_ACTIVADA, " +
-				"NOMBRES_JUGADORES, POSICIONES_JUGADORES, JUGADOR_ACTUAL, TURNOS) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-			);
-			ps.setString(1, username);
-			ps.setInt(2, numCasillas);
-			ps.setInt(3, numJugadores);
-			ps.setInt(4, focaActivada ? 1 : 0);
-			ps.setString(5, nombresJugadores);
-			ps.setString(6, posicionesJugadores);
-			ps.setInt(7, jugadorActual);
-			ps.setInt(8, turnos);
-			int filas = ps.executeUpdate();
-			ps.close();
-			return filas > 0;
-		} catch (SQLException e) {
-			System.out.println("Error guardant partida: " + e.getMessage());
-			return false;
-		}
-	}
-
-	/**
-	 * Carrega la partida guardada d'un usuari.
-	 * @return Map amb les dades, o null si no n'hi ha
-	 */
-	public static LinkedHashMap<String, String> cargarPartida(Connection con, String username) {
-		if (con == null) return null;
-		try {
-			PreparedStatement ps = con.prepareStatement(
-				"SELECT NUM_CASILLAS, NUM_JUGADORES, FOCA_ACTIVADA, " +
-				"NOMBRES_JUGADORES, POSICIONES_JUGADORES, JUGADOR_ACTUAL, TURNOS " +
-				"FROM PINGU_PARTIDAS WHERE USERNAME = ? ORDER BY FECHA_GUARDADO DESC FETCH FIRST 1 ROWS ONLY"
-			);
-			ps.setString(1, username);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				LinkedHashMap<String, String> datos = new LinkedHashMap<>();
-				datos.put("NUM_CASILLAS", rs.getString("NUM_CASILLAS"));
-				datos.put("NUM_JUGADORES", rs.getString("NUM_JUGADORES"));
-				datos.put("FOCA_ACTIVADA", rs.getString("FOCA_ACTIVADA"));
-				datos.put("NOMBRES_JUGADORES", rs.getString("NOMBRES_JUGADORES"));
-				datos.put("POSICIONES_JUGADORES", rs.getString("POSICIONES_JUGADORES"));
-				datos.put("JUGADOR_ACTUAL", rs.getString("JUGADOR_ACTUAL"));
-				datos.put("TURNOS", rs.getString("TURNOS"));
-				rs.close();
-				ps.close();
-				return datos;
-			}
-			rs.close();
-			ps.close();
-		} catch (SQLException e) {
-			System.out.println("Error carregant partida: " + e.getMessage());
-		}
-		return null;
-	}
-
-	/**
-	 * Comprova si un usuari té una partida guardada.
-	 */
-	public static boolean existePartidaGuardada(Connection con, String username) {
-		if (con == null) return false;
-		try {
-			PreparedStatement ps = con.prepareStatement(
-				"SELECT COUNT(*) FROM PINGU_PARTIDAS WHERE USERNAME = ?"
-			);
-			ps.setString(1, username);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				boolean existe = rs.getInt(1) > 0;
-				rs.close();
-				ps.close();
-				return existe;
-			}
-			rs.close();
-			ps.close();
-		} catch (SQLException e) {
-			System.out.println("Error comprovant partida: " + e.getMessage());
-		}
-		return false;
 	}
 
 	/**

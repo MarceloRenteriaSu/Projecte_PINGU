@@ -39,7 +39,7 @@ public class PantallaMenu {
 
         // Connectar a la BBDD amb les credencials hardcodeades
         try {
-            conexion = GestorBBDD.conectarBBDD("DW2526_GR02_PINGU", "ACOMRDT");
+            conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
         } catch (Exception e) {
             System.out.println("No s'ha pogut connectar a la BBDD: " + e.getMessage());
         }
@@ -48,13 +48,13 @@ public class PantallaMenu {
     @FXML
     private void handleNewMatch(ActionEvent event) {
         System.out.println("New Match clicked");
-        abrirPantalla(event, "PantallaRegistro.fxml", "Registre de Nou Usuari");
+        abrirPantallaConfig(event, "guest");
     }
 
     @FXML
     private void handleLoadMatch(ActionEvent event) {
         System.out.println("Load Match clicked");
-        abrirPantalla(event, "PantallaLogin.fxml", "Carregar Partida");
+        // TODO: Implement load match logic
     }
 
     @FXML
@@ -84,23 +84,6 @@ public class PantallaMenu {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error al obrir la configuració: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Obre una pantalla FXML genèrica.
-     */
-    private void abrirPantalla(ActionEvent event, String fxmlFile, String title) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle(title);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al obrir " + fxmlFile + ": " + e.getMessage());
         }
     }
 }
