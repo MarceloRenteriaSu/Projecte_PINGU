@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane
+    xmlns="http://javafx.com/javafx/21.0.10"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="VISTAS.PantallaMenu"
+    stylesheets="@PantallaMenu.css"
+    styleClass="root">
+
+    <!-- Background image — binds to parent size for auto-resize -->
+    <ImageView fx:id="bgImageView" preserveRatio="false"
+               StackPane.alignment="CENTER" mouseTransparent="true">
+        <image>
+            <Image url="@menu_background.png"/>
+        </image>
+    </ImageView>
+
+    <!-- Left-aligned menu content -->
+    <VBox alignment="TOP_LEFT" spacing="0" StackPane.alignment="TOP_LEFT">
+        <padding>
+            <Insets top="50" right="40" bottom="60" left="60"/>
+        </padding>
+
+        <!-- Game Title -->
+        <Label text="PINGU" styleClass="game-title"/>
+
+        <!-- Spacer to push buttons down -->
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <!-- Menu Buttons -->
+        <VBox spacing="14" styleClass="menu-buttons">
+            <Button fx:id="btnNewMatch" text="NEW MATCH"
+                    onAction="#handleNewMatch" styleClass="menu-btn"/>
+            <Button fx:id="btnLoadMatch" text="LOAD MATCH"
+                    onAction="#handleLoadMatch" styleClass="menu-btn"/>
+            <Button fx:id="btnExit" text="EXIT"
+                    onAction="#handleExit" styleClass="menu-btn"/>
+        </VBox>
+    </VBox>
+</StackPane>
