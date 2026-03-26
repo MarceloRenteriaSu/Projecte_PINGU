@@ -5,64 +5,64 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox
+<StackPane
     xmlns="http://javafx.com/javafx/21.0.10"
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaRegistro"
     stylesheets="@PantallaMenu.css"
     styleClass="root"
-    spacing="14"
-    alignment="CENTER"
-    prefWidth="480"
-    prefHeight="500">
+    prefWidth="1280"
+    prefHeight="720">
 
-    <padding>
-        <Insets top="24" right="28" bottom="24" left="28"/>
-    </padding>
+    <ImageView preserveRatio="false" fitWidth="1280" fitHeight="720"
+               StackPane.alignment="CENTER" mouseTransparent="true">
+        <image><Image url="@menu_background.png"/></image>
+    </ImageView>
 
-    <VBox spacing="10" styleClass="card" maxWidth="420">
+    <Region mouseTransparent="true"
+            style="-fx-background-color: rgba(2,8,22,0.62);"/>
+
+    <VBox spacing="10" styleClass="card"
+          maxWidth="420" StackPane.alignment="CENTER">
         <padding>
-            <Insets top="18" right="18" bottom="18" left="18"/>
+            <Insets top="24" right="24" bottom="24" left="24"/>
         </padding>
 
-        <Label text="🐧 Registre de Nou Usuari" styleClass="title" wrapText="true"/>
+        <Label text="🐧  Registre de Nou Usuari" styleClass="title" wrapText="true"/>
 
-        <Region prefHeight="6"/>
+        <Region prefHeight="4"/>
 
-        <!-- Username -->
         <Label text="Nom d'usuari" styleClass="field-label"/>
         <TextField fx:id="usernameField" promptText="Introdueix el teu nom d'usuari" styleClass="field"/>
 
-        <Region prefHeight="4"/>
+        <Region prefHeight="2"/>
 
-        <!-- Password -->
         <Label text="Contrasenya" styleClass="field-label"/>
         <PasswordField fx:id="passwordField" promptText="Introdueix la contrasenya" styleClass="field"/>
 
-        <Region prefHeight="4"/>
+        <Region prefHeight="2"/>
 
-        <!-- Confirm Password -->
         <Label text="Confirmar contrasenya" styleClass="field-label"/>
         <PasswordField fx:id="confirmPasswordField" promptText="Repeteix la contrasenya" styleClass="field"/>
 
-        <Region prefHeight="8"/>
+        <Region prefHeight="6"/>
 
-        <!-- Feedback -->
         <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
 
-        <!-- Buttons -->
-        <Button fx:id="btnRegistrar" text="✅ Registrar-se i Jugar"
+        <Button fx:id="btnRegistrar" text="✅  Registrar-se i Jugar"
                 onAction="#handleRegistrar"
                 maxWidth="Infinity"
                 styleClass="primary"/>
 
-        <Button fx:id="btnVolver" text="⬅ Tornar al Menú"
+        <Button fx:id="btnVolver" text="⬅  Tornar al Menú"
                 onAction="#handleVolver"
                 maxWidth="Infinity"
                 styleClass="secondary"/>
     </VBox>
-</VBox>
+</StackPane>

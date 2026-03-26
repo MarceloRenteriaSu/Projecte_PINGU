@@ -6,65 +6,67 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox
+<StackPane
     xmlns="http://javafx.com/javafx/21.0.10"
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaConfig"
     stylesheets="@PantallaMenu.css"
     styleClass="root"
-    spacing="14"
-    alignment="CENTER"
-    prefWidth="480"
-    prefHeight="580">
+    prefWidth="1280"
+    prefHeight="720">
 
-    <padding>
-        <Insets top="24" right="28" bottom="24" left="28"/>
-    </padding>
+    <!-- Same pixel-art icy background -->
+    <ImageView preserveRatio="false" fitWidth="1280" fitHeight="720"
+               StackPane.alignment="CENTER" mouseTransparent="true">
+        <image><Image url="@menu_background.png"/></image>
+    </ImageView>
 
-    <VBox spacing="8" styleClass="card" maxWidth="420">
+    <!-- Full dark overlay for readability -->
+    <Region mouseTransparent="true"
+            style="-fx-background-color: rgba(2,8,22,0.62);"/>
+
+    <!-- Centered card -->
+    <VBox spacing="10" styleClass="card"
+          maxWidth="440" StackPane.alignment="CENTER">
         <padding>
-            <Insets top="18" right="18" bottom="18" left="18"/>
+            <Insets top="24" right="24" bottom="24" left="24"/>
         </padding>
 
-        <Label text="⚙ Configuració de la Partida" styleClass="title" wrapText="true"/>
-
-        <Region prefHeight="6"/>
-
-        <!-- Caselles del taulell -->
-        <Label text="Caselles del taulell (50 - 150)" styleClass="field-label"/>
-        <TextField fx:id="casillasField" promptText="50" styleClass="field"/>
+        <Label text="⚙  Configuració de la Partida" styleClass="title" wrapText="true"/>
 
         <Region prefHeight="4"/>
 
-        <!-- Número de jugadors -->
+        <Label text="Caselles del taulell (50 – 150)" styleClass="field-label"/>
+        <TextField fx:id="casillasField" promptText="50" styleClass="field"/>
+
+        <Region prefHeight="2"/>
+
         <Label text="Nombre de jugadors" styleClass="field-label"/>
         <ComboBox fx:id="jugadorsCombo" maxWidth="Infinity" styleClass="field"/>
 
-        <Region prefHeight="4"/>
+        <Region prefHeight="2"/>
 
-        <!-- Activar/desactivar Foca -->
-        <CheckBox fx:id="focaCheckBox" text="🦭 Activar la Foca (CPU)" selected="true"
-                  style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+        <CheckBox fx:id="focaCheckBox" text="🦭  Activar la Foca (CPU)" selected="true"
+                  style="-fx-font-family: 'Courier New'; -fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #9dd0ee;"/>
 
-        <Region prefHeight="4"/>
+        <Region prefHeight="2"/>
 
-        <!-- Noms dels jugadors (dinàmic) -->
         <Label text="Noms dels jugadors" styleClass="field-label"/>
         <VBox fx:id="nomsContainer" spacing="6"/>
 
-        <Region prefHeight="8"/>
+        <Region prefHeight="6"/>
 
-        <!-- Feedback -->
         <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
 
-        <!-- Botó comenzar -->
-        <Button fx:id="btnComenzar" text="🎮 Començar Partida"
+        <Button fx:id="btnComenzar" text="🎮  Començar Partida"
                 onAction="#handleComenzar"
                 maxWidth="Infinity"
                 styleClass="primary"/>
     </VBox>
-</VBox>
+</StackPane>

@@ -18,10 +18,10 @@ public class PantallaMenu {
 
     @FXML private Button btnNewMatch;
     @FXML private Button btnLoadMatch;
+    @FXML private Button btnCredits;
     @FXML private Button btnExit;
     @FXML private ImageView bgImageView;
 
-    // Connexió a la BBDD
     private Connection conexion = null;
 
     @FXML
@@ -37,7 +37,6 @@ public class PantallaMenu {
             }
         });
 
-        // Connectar a la BBDD amb les credencials hardcodeades
         try {
             conexion = GestorBBDD.conectarBBDD("DW2526_GR02_PINGU", "ACOMRDT");
         } catch (Exception e) {
@@ -48,13 +47,25 @@ public class PantallaMenu {
     @FXML
     private void handleNewMatch(ActionEvent event) {
         System.out.println("New Match clicked");
-        abrirPantalla(event, "PantallaRegistro.fxml", "Registre de Nou Usuari");
+        abrirPantalla(event, "PantallaConfig.fxml", "Registre de Nou Usuari");
     }
 
     @FXML
     private void handleLoadMatch(ActionEvent event) {
         System.out.println("Load Match clicked");
         abrirPantalla(event, "PantallaLogin.fxml", "Carregar Partida");
+    }
+
+    @FXML
+    private void handleCredits(ActionEvent event) {
+        System.out.println("Credits clicked");
+        // Mostra un diàleg simple amb els crèdits
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+            javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Crèdits");
+        alert.setHeaderText("El Juego del Pingüí");
+        alert.setContentText("Desenvolupat per DW2526_GR02\n\nGràcies per jugar! ❄🐧");
+        alert.showAndWait();
     }
 
     @FXML
@@ -65,31 +76,6 @@ public class PantallaMenu {
         System.exit(0);
     }
 
-    /**
-     * Obre la pantalla de configuració (noms de jugadors i caselles).
-     */
-    private void abrirPantallaConfig(ActionEvent event, String username) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaConfig.fxml"));
-            Parent pantallaConfigRoot = loader.load();
-
-            PantallaConfig ctrl = loader.getController();
-            ctrl.setNombreUsuario(username);
-
-            Scene pantallaConfigScene = new Scene(pantallaConfigRoot);
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(pantallaConfigScene);
-            stage.setTitle("Configuració de la Partida");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al obrir la configuració: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Obre una pantalla FXML genèrica.
-     */
     private void abrirPantalla(ActionEvent event, String fxmlFile, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
