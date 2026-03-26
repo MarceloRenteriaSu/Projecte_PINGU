@@ -11,10 +11,11 @@ public class MAIN_PRUEBAS extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 
-	    Parent root = FXMLLoader.load(getClass().getResource("/VISTAS/PantallaMenu.fxml"));
+	    Parent root = FXMLLoader.load(getClass().getResource("/VISTAS/PantallaLogin.fxml"));
 
 	    Scene scene = new Scene(root);
 	    stage.setScene(scene);
+	    stage.setTitle("El Joc del Pingu — Login");
 	    stage.show();
 	}
 

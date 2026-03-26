@@ -60,7 +60,7 @@
                 maxWidth="Infinity"
                 styleClass="primary"/>
 
-        <Button fx:id="btnVolver" text="⬅ Tornar al Menú"
+        <Button fx:id="btnVolver" text="⬅ Tornar al Login"
                 onAction="#handleVolver"
                 maxWidth="Infinity"
                 styleClass="secondary"/>

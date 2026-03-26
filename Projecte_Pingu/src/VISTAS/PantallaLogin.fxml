@@ -29,7 +29,7 @@
             <Insets top="18" right="18" bottom="18" left="18"/>
         </padding>
 
-        <Label text="🔑 Carregar Partida" styleClass="title" wrapText="true"/>
+        <Label text="🐧 Inicia Sessió" styleClass="title" wrapText="true"/>
 
         <Region prefHeight="6"/>
 
@@ -49,13 +49,13 @@
         <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
 
         <!-- Buttons -->
-        <Button fx:id="btnLogin" text="🎮 Carregar Partida"
+        <Button fx:id="btnLogin" text="🔑 Iniciar Sessió"
                 onAction="#handleLogin"
                 maxWidth="Infinity"
                 styleClass="primary"/>
 
-        <Button fx:id="btnVolver" text="⬅ Tornar al Menú"
-                onAction="#handleVolver"
+        <Button fx:id="btnRegistrar" text="📝 Registrar-se"
+                onAction="#handleRegistrar"
                 maxWidth="Infinity"
                 styleClass="secondary"/>
     </VBox>

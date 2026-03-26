@@ -66,5 +66,10 @@
                 onAction="#handleComenzar"
                 maxWidth="Infinity"
                 styleClass="primary"/>
+
+        <Button fx:id="btnVolver" text="⬅ Tornar al Menú"
+                onAction="#handleVolver"
+                maxWidth="Infinity"
+                styleClass="secondary"/>
     </VBox>
 </VBox>
