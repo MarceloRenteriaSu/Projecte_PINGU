@@ -9,41 +9,32 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane
-    xmlns="http://javafx.com/javafx/21.0.10"
-    xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="VISTAS.PantallaMenu"
-    stylesheets="@PantallaMenu.css"
-    styleClass="root">
+<StackPane styleClass="root" stylesheets="@PantallaMenu.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="VISTAS.PantallaMenu">
 
     <!-- Background image — binds to parent size for auto-resize -->
-    <ImageView fx:id="bgImageView" preserveRatio="false"
-               StackPane.alignment="CENTER" mouseTransparent="true">
+    <ImageView fx:id="bgImageView" mouseTransparent="true" preserveRatio="false" StackPane.alignment="CENTER">
         <image>
-            <Image url="@menu_background.png"/>
+            <Image url="@menu_background.png" />
         </image>
     </ImageView>
 
     <!-- Left-aligned menu content -->
     <VBox alignment="TOP_LEFT" spacing="0" StackPane.alignment="TOP_LEFT">
         <padding>
-            <Insets top="50" right="40" bottom="60" left="60"/>
+            <Insets bottom="60" left="60" right="40" top="50" />
         </padding>
 
         <!-- Game Title -->
-        <Label text="PINGU" styleClass="game-title"/>
+        <Label styleClass="game-title" text="PINGU" />
 
-        <!-- Spacer to push buttons down -->
-        <Region VBox.vgrow="ALWAYS"/>
+           <!-- Spacer to push buttons down -->
+        <Region VBox.vgrow="ALWAYS" />
+         <Button fx:id="btnNewMatch" onAction="#handleNewMatch" styleClass="menu-btn" text="NEW MATCH" />
 
         <!-- Menu Buttons -->
         <VBox spacing="14" styleClass="menu-buttons">
-            <Button fx:id="btnNewMatch" text="NEW MATCH"
-                    onAction="#handleNewMatch" styleClass="menu-btn"/>
-            <Button fx:id="btnLoadMatch" text="LOAD MATCH"
-                    onAction="#handleLoadMatch" styleClass="menu-btn"/>
-            <Button fx:id="btnExit" text="EXIT"
-                    onAction="#handleExit" styleClass="menu-btn"/>
+            <Button fx:id="btnLoadMatch" onAction="#handleLoadMatch" styleClass="menu-btn" text="LOAD MATCH" />
+            <Button fx:id="btnExit" onAction="#handleExit" styleClass="menu-btn" text="EXIT" />
         </VBox>
     </VBox>
 </StackPane>
