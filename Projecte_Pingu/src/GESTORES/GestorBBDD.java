@@ -93,8 +93,9 @@ public class GestorBBDD {
 			Connection con = DriverManager.getConnection(url, user, pass);
 			if (con.isValid(5)) {
 				System.out.println("Connexió BBDD establerta (" + entorno + ").");
-				// Crear taula d'usuaris si no existeix
+				// Crear taules si no existeixen
 				crearTaulaUsuaris(con);
+				crearTaulaPartidas(con);
 				return con;
 			}
 		} catch (ClassNotFoundException e) {
@@ -128,6 +129,40 @@ public class GestorBBDD {
 			}
 		}
 	}
+
+	/**
+	 * Crea la taula de partides guardades si no existeix.
+	 */
+	private static void crearTaulaPartidas(Connection con) {
+		try {
+			Statement st = con.createStatement();
+			st.executeUpdate(
+				"CREATE TABLE PINGU_PARTIDAS (" +
+				"  USERNAME VARCHAR2(50) PRIMARY KEY," +
+				"  NUM_CASILLAS NUMBER NOT NULL," +
+				"  CASILLAS_TIPOS VARCHAR2(4000)," +
+				"  NUM_JUGADORES NUMBER NOT NULL," +
+				"  NOMBRES_JUGADORES VARCHAR2(500)," +
+				"  POSICIONES VARCHAR2(200)," +
+				"  INVENTARIOS VARCHAR2(4000)," +
+				"  FOCA_ACTIVADA NUMBER(1) DEFAULT 1," +
+				"  FOCA_POS NUMBER DEFAULT 0," +
+				"  FOCA_SOBORNO NUMBER(1) DEFAULT 0," +
+				"  FOCA_TURNOS_BLOQ NUMBER DEFAULT 0," +
+				"  TURNOS NUMBER DEFAULT 0," +
+				"  JUGADOR_ACTUAL NUMBER DEFAULT 0," +
+				"  FECHA_GUARDADO TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+				")"
+			);
+			System.out.println("Taula PINGU_PARTIDAS creada.");
+			st.close();
+		} catch (SQLException e) {
+			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+				System.out.println("Info taula partidas: " + e.getMessage());
+			}
+		}
+	}
+
 
 	/**
 	 * Verifica les credencials d'un usuari.
@@ -170,6 +205,102 @@ public class GestorBBDD {
 			return filas > 0;
 		} catch (SQLException e) {
 			System.out.println("Error en registre: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Guarda (o actualiza) la partida de un usuario en la BBDD.
+	 * Usa MERGE para hacer upsert (una sola partida por usuario).
+	 */
+	public static boolean guardarPartida(Connection con, String username,
+			int numCasillas, String casillasTipos, int numJugadores,
+			String nombresJugadores, String posiciones, String inventarios,
+			int focaActivada, int focaPos, int focaSoborno, int focaTurnosBloq,
+			int turnos, int jugadorActual) {
+		if (con == null) return false;
+		try {
+			con.setAutoCommit(true);
+			// Intentar borrar la partida anterior del usuario
+			borrarPartida(con, username);
+			// Insertar la nueva partida
+			PreparedStatement ps = con.prepareStatement(
+				"INSERT INTO PINGU_PARTIDAS (USERNAME, NUM_CASILLAS, CASILLAS_TIPOS, " +
+				"NUM_JUGADORES, NOMBRES_JUGADORES, POSICIONES, INVENTARIOS, " +
+				"FOCA_ACTIVADA, FOCA_POS, FOCA_SOBORNO, FOCA_TURNOS_BLOQ, " +
+				"TURNOS, JUGADOR_ACTUAL, FECHA_GUARDADO) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)"
+			);
+			ps.setString(1, username);
+			ps.setInt(2, numCasillas);
+			ps.setString(3, casillasTipos);
+			ps.setInt(4, numJugadores);
+			ps.setString(5, nombresJugadores);
+			ps.setString(6, posiciones);
+			ps.setString(7, inventarios);
+			ps.setInt(8, focaActivada);
+			ps.setInt(9, focaPos);
+			ps.setInt(10, focaSoborno);
+			ps.setInt(11, focaTurnosBloq);
+			ps.setInt(12, turnos);
+			ps.setInt(13, jugadorActual);
+			int filas = ps.executeUpdate();
+			ps.close();
+			System.out.println("Partida guardada per " + username + " (filas=" + filas + ")");
+			return filas > 0;
+		} catch (SQLException e) {
+			System.out.println("Error guardant partida: " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * Carrega la partida guardada d'un usuari.
+	 * @return Map amb les dades de la partida, o null si no n'hi ha.
+	 */
+	public static LinkedHashMap<String, String> cargarPartida(Connection con, String username) {
+		if (con == null) return null;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT * FROM PINGU_PARTIDAS WHERE USERNAME = ?"
+			);
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				ResultSetMetaData meta = rs.getMetaData();
+				int cols = meta.getColumnCount();
+				LinkedHashMap<String, String> datos = new LinkedHashMap<>();
+				for (int i = 1; i <= cols; i++) {
+					datos.put(meta.getColumnLabel(i), rs.getString(i));
+				}
+				rs.close();
+				ps.close();
+				return datos;
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error carregant partida: " + e.getMessage());
+		}
+		return null;
+	}
+
+	/**
+	 * Borra la partida guardada d'un usuari.
+	 */
+	public static boolean borrarPartida(Connection con, String username) {
+		if (con == null) return false;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"DELETE FROM PINGU_PARTIDAS WHERE USERNAME = ?"
+			);
+			ps.setString(1, username);
+			int filas = ps.executeUpdate();
+			ps.close();
+			return filas > 0;
+		} catch (SQLException e) {
+			System.out.println("Error esborrant partida: " + e.getMessage());
 			return false;
 		}
 	}

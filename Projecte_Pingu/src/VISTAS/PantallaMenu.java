@@ -72,31 +72,27 @@ public class PantallaMenu {
         	return;
         }
         
-        // Simular que busquem la partida de l'usuari
-        String sql = "SELECT * FROM PINGU_PARTIDAS WHERE USERNAME = '" + nombreUsuarioLogueado + "'";
         try {
-            // Això fallarà si la taula PINGU_PARTIDAS no existeix, però simulem que comprovem
-            java.util.ArrayList<java.util.LinkedHashMap<String, String>> res = GestorBBDD.select(conexion, sql);
-            if (res != null && !res.isEmpty()) {
-                // Existeix
+            java.util.LinkedHashMap<String, String> datos = GestorBBDD.cargarPartida(conexion, nombreUsuarioLogueado);
+            if (datos != null) {
                 System.out.println("Partida trobada per " + nombreUsuarioLogueado);
                 try {
 		            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaJuego.fxml"));
 		            Parent root = loader.load();
 		            PantallaJuego ctrl = loader.getController();
 		            ctrl.setNombreUsuario(nombreUsuarioLogueado);
-		            ctrl.iniciarJoc(); // O el que pertoqui per carregar
+		            ctrl.restaurarPartida(datos);
 		            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		            stage.setScene(new Scene(root));
-		            stage.setTitle("El Joc del Pingu");
+		            stage.setTitle("El Joc del Pingu — Partida Carregada");
 		        } catch (Exception e) {
 		            e.printStackTrace();
+		            mostrarAlerta("Error", "Error al carregar la partida: " + e.getMessage());
 		        }
             } else {
                 mostrarAlerta("Informació", "No tens cap partida guardada en curs.");
             }
         } catch (Exception e) {
-        	// Error, per exemple no existeix la taula encara
         	mostrarAlerta("Error", "No s'ha pogut verificar a la base de dades: " + e.getMessage());
         }
     }
