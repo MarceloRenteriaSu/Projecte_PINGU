@@ -150,4 +150,21 @@ public class PantallaConfig {
             feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
         }
     }
+
+    @FXML
+    private void handleVolver(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaMenu.fxml"));
+            Parent root = loader.load();
+            PantallaMenu ctrl = loader.getController();
+            ctrl.setNombreUsuario(nombreUsuario);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Menú Principal");
+        } catch (Exception e) {
+            e.printStackTrace();
+            feedbackLabel.setText("❌ Error al tornar al menú.");
+            feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
+        }
+    }
 }

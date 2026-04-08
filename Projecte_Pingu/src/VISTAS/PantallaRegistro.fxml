@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox
+    xmlns="http://javafx.com/javafx/21.0.10"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="VISTAS.PantallaRegistro"
+    stylesheets="@PantallaMenu.css"
+    styleClass="root"
+    spacing="14"
+    alignment="CENTER"
+    prefWidth="480"
+    prefHeight="500">
+
+    <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+    </padding>
+
+    <VBox spacing="10" styleClass="card" maxWidth="420">
+        <padding>
+            <Insets top="18" right="18" bottom="18" left="18"/>
+        </padding>
+
+        <Label text="🐧 Registre de Nou Usuari" styleClass="title" wrapText="true"/>
+
+        <Region prefHeight="6"/>
+
+        <!-- Username -->
+        <Label text="Nom d'usuari" styleClass="field-label"/>
+        <TextField fx:id="usernameField" promptText="Introdueix el teu nom d'usuari" styleClass="field"/>
+
+        <Region prefHeight="4"/>
+
+        <!-- Password -->
+        <Label text="Contrasenya" styleClass="field-label"/>
+        <PasswordField fx:id="passwordField" promptText="Introdueix la contrasenya" styleClass="field"/>
+
+        <Region prefHeight="4"/>
+
+        <!-- Confirm Password -->
+        <Label text="Confirmar contrasenya" styleClass="field-label"/>
+        <PasswordField fx:id="confirmPasswordField" promptText="Repeteix la contrasenya" styleClass="field"/>
+
+        <Region prefHeight="8"/>
+
+        <!-- Feedback -->
+        <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
+
+        <!-- Buttons -->
+        <Button fx:id="btnRegistrar" text="✅ Registrar-se i Jugar"
+                onAction="#handleRegistrar"
+                maxWidth="Infinity"
+                styleClass="primary"/>
+
+        <Button fx:id="btnVolver" text="⬅ Tornar al Login"
+                onAction="#handleVolver"
+                maxWidth="Infinity"
+                styleClass="secondary"/>
+    </VBox>
+</VBox>
