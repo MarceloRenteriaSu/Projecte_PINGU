@@ -64,61 +64,45 @@ public class Tablero {
 	
 	private void generarTablero(int cantidad) {
 		Random r = new Random();
-		String[]tipos = {"Oso", "Agujero", "Trineo", "Evento", "SueloQuebradizo"};
+		String[] tipos = {"Oso", "Agujero", "Trineo", "Evento", "SueloQuebradizo"};
 		int[] probs = {25, 50, 65, 80, 100};
-		double[]contadores = {0, 0, 0, 0};
-		if(cantidad < 50) {
+
+		if (cantidad < 50) {
 			cantidad = 50;
 		}
-		String[]tablero = new String[cantidad];
-		int restantes = (4 * (cantidad / 50))-1;
-		int contador = 0;
-		casillas.add(0, new Normal(0));
-		tablero[0] = "Normal";
 
-		for(int i = 1; i < cantidad-1; i++) {
-			int rd = r.nextInt(100)+1;
-			String tipo = "Normal";
-			tablero[i] = "Normal";
-			if(contador != 2) {
+		// First cell is always Normal
+		casillas.add(new Normal(0));
+
+		// Pattern cycle (6 cells): N, S, N, N, S, N
+		// Positions in cycle that are special: index 1 and 4
+		// normal=true at cycle indices: 0, 2, 3, 5 | special at: 1, 4
+		boolean[] esNormal = {true, false, true, true, false, true};
+
+		for (int i = 1; i < cantidad - 1; i++) {
+			int posEnCiclo = (i - 1) % 6;
+			String tipo;
+
+			if (esNormal[posEnCiclo]) {
 				tipo = "Normal";
-				tablero[i] = "Normal";
-				contador++;
-			}else {
-				if(i >= 3) {
-					if(rd < probs[0] && !tablero[i-3].equals(tipos[0]) && contadores[0] < restantes) {
-				        tipo = tipos[0];
-				        contadores[0]++;
-				        tablero[i] = tipos[0];
-					}else if(rd < probs[1] && !tablero[i-3].equals(tipos[1]) && contadores[1] < restantes) {
-				        tipo = tipos[1];
-				        contadores[1]++;
-				        tablero[i] = tipos[1];
-					}else if(rd < probs[2] && !tablero[i-3].equals(tipos[2]) && contadores[2] < restantes) {
-				        tipo = tipos[2];
-				        contadores[2]++;
-				        tablero[i] = tipos[2];
-					}else if(rd < probs[3] && !tablero[i-3].equals(tipos[3]) && contadores[3] < restantes) {
-				        tipo = tipos[3];
-				        contadores[3]++;
-				        tablero[i] = tipos[3];
-					}else if(rd < probs[4] && !tablero[i-3].equals(tipos[4])) {
-						tipo = tipos[4];
-						tablero[i] = tipos[4];
-					}else {
-						tipo = tipos[3];
-						tablero[i] = tipos[3];
+			} else {
+				// Pick a random special type using weighted probabilities
+				int rd = r.nextInt(100) + 1;
+				tipo = tipos[tipos.length - 1]; // default: SueloQuebradizo
+				for (int t = 0; t < probs.length; t++) {
+					if (rd <= probs[t]) {
+						tipo = tipos[t];
+						break;
 					}
 				}
-				contador = 0;
 			}
-			
-			
+
 			Casilla c = crearCasilla(tipo, i);
 			casillas.add(c);
 		}
-		casillas.add(cantidad-1, new Normal(cantidad-1));
-		
+
+		// Last cell is always Normal
+		casillas.add(new Normal(cantidad - 1));
 	}
 	
 	//MÉTODO BUSCAR ULTIMO AGUJERO
