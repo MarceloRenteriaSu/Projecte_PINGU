@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import GESTORES.GestorPartida;
+import GESTORES.GestorBBDD;
 import MODELOS.*;
 
 public class PantallaJuego {
@@ -966,11 +967,318 @@ public class PantallaJuego {
 	}
 
 	@FXML private void handleSaveGame() {
-		eventos.setText("💾 Partida guardada! (Funcionalitat de BBDD pendent de connexió)");
+		Partida partida = gestorPartida.getPartida();
+		if (partida == null) {
+			eventos.setText("⚠ No hi ha partida per guardar.");
+			return;
+		}
+		if (partida.isFinalizada()) {
+			eventos.setText("⚠ La partida ja ha finalitzat, no es pot guardar.");
+			return;
+		}
+
+		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+		if (con == null) {
+			eventos.setText("❌ Error connectant a la base de dades.");
+			return;
+		}
+		try {
+			Tablero t = partida.getTablero();
+			int numCasillas = t.getTamanyo();
+
+			// Serialitzar tipus de caselles
+			StringBuilder sbCasillas = new StringBuilder();
+			for (int i = 0; i < numCasillas; i++) {
+				if (i > 0) sbCasillas.append(",");
+				sbCasillas.append(t.getCasilla(i).getClass().getSimpleName());
+			}
+
+			// Contar pingüinos (excloent foca)
+			int numJugadores = 0;
+			for (Jugador j : partida.getJugadores()) {
+				if (j instanceof Pinguino) numJugadores++;
+			}
+
+			// Serialitzar noms
+			StringBuilder sbNoms = new StringBuilder();
+			boolean first = true;
+			for (Jugador j : partida.getJugadores()) {
+				if (j instanceof Pinguino) {
+					if (!first) sbNoms.append(",");
+					sbNoms.append(j.getNom());
+					first = false;
+				}
+			}
+
+			// Serialitzar posicions
+			StringBuilder sbPos = new StringBuilder();
+			first = true;
+			for (Jugador j : partida.getJugadores()) {
+				if (j instanceof Pinguino) {
+					if (!first) sbPos.append(",");
+					sbPos.append(j.getPos());
+					first = false;
+				}
+			}
+
+			// Serialitzar inventaris: cada jugador separat per ';', cada item 'nom:quantitat' separat per ','
+			StringBuilder sbInv = new StringBuilder();
+			first = true;
+			for (Jugador j : partida.getJugadores()) {
+				if (j instanceof Pinguino) {
+					if (!first) sbInv.append(";");
+					Pinguino p = (Pinguino) j;
+					Inventario inv = p.getInv();
+					boolean firstItem = true;
+					for (Item item : inv.getInv()) {
+						if (!firstItem) sbInv.append(",");
+						sbInv.append(item.getNom()).append(":").append(item.getCantidad());
+						firstItem = false;
+					}
+					first = false;
+				}
+			}
+
+			// Dades de la foca
+			int focaAct = focaActivada ? 1 : 0;
+			int fPos = 0;
+			int fSoborno = 0;
+			int fTurnosBloq = 0;
+			if (focaActivada && indiceFoca >= 0) {
+				Foca foca = (Foca) partida.getJugadores().get(indiceFoca);
+				fPos = foca.getPos();
+				fSoborno = foca.isSoborno() ? 1 : 0;
+				fTurnosBloq = foca.getTurnosBloquejada();
+			}
+
+			boolean ok = GestorBBDD.guardarPartida(con, nombreUsuarioLogueado,
+				numCasillas, sbCasillas.toString(), numJugadores,
+				sbNoms.toString(), sbPos.toString(), sbInv.toString(),
+				focaAct, fPos, fSoborno, fTurnosBloq,
+				partida.getTurnos(), partida.getJugadorActual());
+
+			if (ok) {
+				eventos.setText("💾 Partida guardada correctament!");
+			} else {
+				eventos.setText("❌ Error al guardar la partida.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			eventos.setText("❌ Error al guardar: " + e.getMessage());
+		} finally {
+			GestorBBDD.cerrar(con);
+		}
 	}
 
 	@FXML private void handleLoadGame() {
-		eventos.setText("📂 Cargar partida (Funcionalitat de BBDD pendent de connexió)");
+		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+		if (con == null) {
+			eventos.setText("❌ Error connectant a la base de dades.");
+			return;
+		}
+		try {
+			java.util.LinkedHashMap<String, String> datos = GestorBBDD.cargarPartida(con, nombreUsuarioLogueado);
+			if (datos == null) {
+				eventos.setText("ℹ No tens cap partida guardada.");
+				return;
+			}
+			restaurarPartida(datos);
+			eventos.setText("📂 Partida carregada correctament!");
+		} finally {
+			GestorBBDD.cerrar(con);
+		}
+	}
+
+	/**
+	 * Restaura la partida a partir de les dades carregades de la BBDD.
+	 */
+	public void restaurarPartida(java.util.LinkedHashMap<String, String> datos) {
+		int numCasillas = Integer.parseInt(datos.get("NUM_CASILLAS"));
+		String[] tiposCasillas = datos.get("CASILLAS_TIPOS").split(",");
+		int numJugadores = Integer.parseInt(datos.get("NUM_JUGADORES"));
+		String[] nombres = datos.get("NOMBRES_JUGADORES").split(",");
+		String[] posStr = datos.get("POSICIONES").split(",");
+		String invData = datos.get("INVENTARIOS");
+		boolean ambFoca = "1".equals(datos.get("FOCA_ACTIVADA"));
+		int focaPosDB = Integer.parseInt(datos.getOrDefault("FOCA_POS", "0"));
+		boolean focaSobornoDB = "1".equals(datos.get("FOCA_SOBORNO"));
+		int focaTurnosBloqDB = Integer.parseInt(datos.getOrDefault("FOCA_TURNOS_BLOQ", "0"));
+		int turnosDB = Integer.parseInt(datos.getOrDefault("TURNOS", "0"));
+		int jugadorActualDB = Integer.parseInt(datos.getOrDefault("JUGADOR_ACTUAL", "0"));
+
+		// 1) Reconstruir el Tablero amb els tipus exactes
+		Tablero t = new Tablero(numCasillas);
+		// Substituir les caselles generades aleatòriament pels tipus guardats
+		ArrayList<Casilla> casillasGuardadas = new ArrayList<>();
+		for (int i = 0; i < tiposCasillas.length; i++) {
+			String tipo = tiposCasillas[i].trim();
+			switch (tipo) {
+				case "Oso": casillasGuardadas.add(new Oso(i)); break;
+				case "Agujero": casillasGuardadas.add(new Agujero(i)); break;
+				case "Trineo": casillasGuardadas.add(new Trineo(i)); break;
+				case "Evento": casillasGuardadas.add(new Evento(i)); break;
+				case "SueloQuebradizo": casillasGuardadas.add(new SueloQuebradizo(i)); break;
+				default: casillasGuardadas.add(new Normal(i)); break;
+			}
+		}
+		t.setCasillas(casillasGuardadas);
+
+		// 2) Reconstruir jugadors
+		String[] inventarisParts = (invData != null && !invData.isEmpty()) ? invData.split(";", -1) : new String[numJugadores];
+		String[] colors = {"Azul", "Rojo", "Verde", "Amarillo"};
+
+		ArrayList<Jugador> jugadors = new ArrayList<>();
+		for (int i = 0; i < numJugadores; i++) {
+			int pos = Integer.parseInt(posStr[i].trim());
+			ArrayList<Item> items = new ArrayList<>();
+			// Deserialitzar inventari
+			if (inventarisParts != null && i < inventarisParts.length && inventarisParts[i] != null && !inventarisParts[i].trim().isEmpty()) {
+				String[] itemParts = inventarisParts[i].split(",");
+				for (String itemStr : itemParts) {
+					String[] kv = itemStr.split(":");
+					if (kv.length == 2) {
+						String itemNom = kv[0].trim();
+						int itemCant = Integer.parseInt(kv[1].trim());
+						switch (itemNom) {
+							case "Normal": case "Rapido": case "Lento":
+								items.add(new Dado(itemNom, itemCant));
+								break;
+							case "Pez":
+								items.add(new Pez(itemCant));
+								break;
+							case "Bola":
+								items.add(new Bola(itemCant));
+								break;
+						}
+					}
+				}
+			}
+			// Assegurar que hi ha almenys un dado Normal
+			boolean teDadoNormal = false;
+			for (Item it : items) {
+				if (it.getNom().equals("Normal")) { teDadoNormal = true; break; }
+			}
+			if (!teDadoNormal) items.add(0, new Dado("Normal", 1));
+
+			Pinguino p = new Pinguino(nombres[i].trim(), pos, colors[i % colors.length], new Inventario(items));
+			p.setJuega(true);
+			jugadors.add(p);
+		}
+
+		// 3) Foca
+		this.focaActivada = ambFoca;
+		if (ambFoca) {
+			Foca foca = new Foca(focaPosDB);
+			if (focaSobornoDB) {
+				foca.esSobornado(null, null);
+				foca.setTurnosBloquejada(focaTurnosBloqDB);
+			}
+			jugadors.add(foca);
+			this.indiceFoca = jugadors.size() - 1;
+		} else {
+			this.indiceFoca = -1;
+		}
+
+		// 4) Configurar gestorPartida
+		this.totalPinguinos = numJugadores;
+		gestorPartida = new GestorPartida();
+		gestorPartida.nuevaPartida(t, jugadors);
+		Partida partida = gestorPartida.getPartida();
+		partida.setTurnos(turnosDB);
+		partida.setJugadorActual(jugadorActualDB);
+
+		// 5) Configurar el taulell visual
+		this.columnas = (int) Math.ceil(Math.sqrt(t.getTamanyo()));
+		this.filas = (int) Math.ceil((double) t.getTamanyo() / this.columnas);
+
+		tablero.getColumnConstraints().clear();
+		tablero.getRowConstraints().clear();
+		for (int i = 0; i < this.columnas; i++) {
+			javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+			cc.setPercentWidth(100.0 / this.columnas);
+			tablero.getColumnConstraints().add(cc);
+		}
+		for (int i = 0; i < this.filas; i++) {
+			javafx.scene.layout.RowConstraints rc = new javafx.scene.layout.RowConstraints();
+			rc.setPercentHeight(100.0 / this.filas);
+			tablero.getRowConstraints().add(rc);
+		}
+
+		// 6) Configurar fitxes visuals
+		Circle[] totesLesFitxes = {P1, P2, P3, P4};
+		for (Circle c : totesLesFitxes) c.setVisible(false);
+
+		if (ambFoca) {
+			fichas = new Node[numJugadores + 1];
+			posiciones = new int[numJugadores + 1];
+			for (int i = 0; i < numJugadores; i++) {
+				fichas[i] = totesLesFitxes[i];
+				totesLesFitxes[i].setVisible(true);
+				posiciones[i] = jugadors.get(i).getPos();
+			}
+			fichas[numJugadores] = P5;
+			P5.setVisible(true);
+			posiciones[numJugadores] = focaPosDB;
+		} else {
+			fichas = new Node[numJugadores];
+			posiciones = new int[numJugadores];
+			for (int i = 0; i < numJugadores; i++) {
+				fichas[i] = totesLesFitxes[i];
+				totesLesFitxes[i].setVisible(true);
+				posiciones[i] = jugadors.get(i).getPos();
+			}
+			P5.setVisible(false);
+		}
+
+		// 7) Posicionar fitxes al taulell
+		for (int i = 0; i < fichas.length; i++) {
+			int[] pos = obtenerFilaColumna(posiciones[i]);
+			GridPane.setRowIndex(fichas[i], pos[0]);
+			GridPane.setColumnIndex(fichas[i], pos[1]);
+			GridPane.setHalignment(fichas[i], javafx.geometry.HPos.CENTER);
+			GridPane.setValignment(fichas[i], javafx.geometry.VPos.CENTER);
+			GridPane.setMargin(fichas[i], javafx.geometry.Insets.EMPTY);
+		}
+
+		// 8) Netejar textos de caselles anteriors i redibuixar
+		tablero.getChildren().removeIf(node ->
+			TAG_CASILLA_TEXT.equals(node.getUserData()) ||
+			(node instanceof javafx.scene.text.Text &&
+			 ("Start".equals(((javafx.scene.text.Text) node).getText()) ||
+			  "Finish".equals(((javafx.scene.text.Text) node).getText())))
+		);
+
+		Text start = new Text("Start");
+		start.getStyleClass().add("cell-title");
+		GridPane.setRowIndex(start, 0);
+		GridPane.setColumnIndex(start, 0);
+		GridPane.setHalignment(start, javafx.geometry.HPos.CENTER);
+		GridPane.setValignment(start, javafx.geometry.VPos.CENTER);
+		tablero.getChildren().add(start);
+
+		Text finish = new Text("Finish");
+		finish.getStyleClass().add("cell-title");
+		int[] posFinish = obtenerFilaColumna(t.getTamanyo() - 1);
+		GridPane.setRowIndex(finish, posFinish[0]);
+		GridPane.setColumnIndex(finish, posFinish[1]);
+		GridPane.setHalignment(finish, javafx.geometry.HPos.CENTER);
+		GridPane.setValignment(finish, javafx.geometry.VPos.CENTER);
+		tablero.getChildren().add(finish);
+
+		mostrarTiposDeCasillasEnTablero(t);
+
+		for (int i = 0; i < fichas.length; i++) {
+			redistribuirFichasEnPosicion(posiciones[i]);
+		}
+
+		actualizarInventarioUI();
+		marcarJugadorActual();
+		this.turnosPinguinosEnRonda = 0;
+		this.jocIniciat = true;
+
+		if (!focaActivada) {
+			peces.setDisable(true);
+		}
 	}
 
 	@FXML private void handleQuitGame() { System.exit(0); }
