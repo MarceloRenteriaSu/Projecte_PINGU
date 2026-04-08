@@ -3,6 +3,7 @@ package VISTAS;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -433,6 +434,57 @@ public class PantallaJuego {
 		redistribuirFichasEnPosicion(oldPosition);
 	}
 
+	/**
+	 * Anima el moviment d'una fitxa cel·la per cel·la seguint el camí serp.
+	 * Cada pas dura ~180ms i s'encadenen en una SequentialTransition.
+	 */
+	private void animarMovimientoCasillaPorCasilla(Node ficha, int from, int to, Runnable onFinished) {
+		if (from == to) {
+			if (onFinished != null) onFinished.run();
+			return;
+		}
+
+		int direction = (to > from) ? 1 : -1;
+		int steps = Math.abs(to - from);
+
+		double cellWidth  = tablero.getWidth()  / this.columnas;
+		double cellHeight = tablero.getHeight() / this.filas;
+
+		SequentialTransition sequence = new SequentialTransition();
+
+		for (int s = 0; s < steps; s++) {
+			int currentCell = from + s * direction;
+			int nextCell    = from + (s + 1) * direction;
+
+			int[] currentRC = obtenerFilaColumna(currentCell);
+			int[] nextRC    = obtenerFilaColumna(nextCell);
+
+			double dx = (nextRC[1] - currentRC[1]) * cellWidth;
+			double dy = (nextRC[0] - currentRC[0]) * cellHeight;
+
+			TranslateTransition hop = new TranslateTransition(Duration.millis(180), ficha);
+			hop.setByX(dx);
+			hop.setByY(dy);
+
+			final int nextCellFinal = nextCell;
+			final int[] nextRCFinal = nextRC;
+			hop.setOnFinished(e -> {
+				// Snap piece to the grid cell after each hop
+				ficha.setTranslateX(0);
+				ficha.setTranslateY(0);
+				GridPane.setRowIndex(ficha, nextRCFinal[0]);
+				GridPane.setColumnIndex(ficha, nextRCFinal[1]);
+			});
+
+			sequence.getChildren().add(hop);
+		}
+
+		sequence.setOnFinished(e -> {
+			if (onFinished != null) onFinished.run();
+		});
+		sequence.play();
+	}
+
 	// -------------------------------------------------------
 	// LÒGICA POST-MOVIMENT: casella + guerra + foca
 	// -------------------------------------------------------
@@ -815,32 +867,16 @@ public class PantallaJuego {
 		Node ficha = fichas[indice];
 		int oldPosition = posiciones[indice];
 		posiciones[indice] = novaPos;
-
-		int[] oldPos2 = obtenerFilaColumna(oldPosition);
-		int[] newPos2 = obtenerFilaColumna(novaPos);
-		double cellWidth  = tablero.getWidth()  / this.columnas;
-		double cellHeight = tablero.getHeight() / this.filas;
-		double dx = (newPos2[1] - oldPos2[1]) * cellWidth;
-		double dy = (newPos2[0] - oldPos2[0]) * cellHeight;
-
-		TranslateTransition slide = new TranslateTransition(Duration.millis(350), ficha);
-		slide.setByX(dx);
-		slide.setByY(dy);
 		final int indiceFichaFinal = indice;
-		slide.setOnFinished(e -> {
-			ficha.setTranslateX(0);
-			ficha.setTranslateY(0);
-			GridPane.setRowIndex(ficha, newPos2[0]);
-			GridPane.setColumnIndex(ficha, newPos2[1]);
 
+		// Build cell-by-cell sequential animation along the snake path
+		animarMovimientoCasillaPorCasilla(ficha, oldPosition, novaPos, () -> {
 			redistribuirFichasEnPosicion(novaPos);
 			redistribuirFichasEnPosicion(oldPosition);
-
 			javafx.application.Platform.runLater(() ->
 				postMovimientoPinguino(pingu, indiceFichaFinal)
 			);
 		});
-		slide.play();
 	}
 
 	// -------------------------------------------------------

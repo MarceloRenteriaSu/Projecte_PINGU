@@ -1,98 +1,160 @@
+/* ============================== */
+/*    SNOW FIELD THEME — PINGU    */
+/* ============================== */
+
 .root {
     -fx-font-family: "System";
-    -fx-background-color: #f6f7fb;
+    -fx-background-color: linear-gradient(to bottom, #e8f0fe, #d0e4f7 40%, #c7dff5 70%, #b8d4f0);
 }
 
 /* MENU */
 .menu-bar {
-    -fx-background-color: white;
-    -fx-border-color: #e6e7ee;
+    -fx-background-color: rgba(255,255,255,0.75);
+    -fx-border-color: rgba(180,200,220,0.5);
     -fx-border-width: 0 0 1 0;
 }
 
-/* TABLERO */
-.board {
-    -fx-background-color: white;
-    -fx-background-radius: 14;
-    -fx-padding: 14;
-    -fx-border-color: #e6e7ee;
-    -fx-border-radius: 14;
+/* ============================== */
+/*   SNOW-BACKGROUND WRAPPER     */
+/* ============================== */
 
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 14, 0.15, 0, 2);
+.snow-background {
+    -fx-background-color:
+        radial-gradient(center 20% 30%, radius 60%, rgba(255,255,255,0.95), transparent),
+        radial-gradient(center 80% 70%, radius 50%, rgba(220,235,255,0.7), transparent),
+        linear-gradient(to bottom right, #eaf3ff, #dce8f8);
+    -fx-background-radius: 18;
 }
 
-/* TEXTOS DEL TABLERO */
+/* ============================== */
+/*        TABLERO (BOARD)         */
+/* ============================== */
+
+.board {
+    /* Layered snow-field gradient */
+    -fx-background-color:
+        radial-gradient(center 30% 25%, radius 65%, rgba(255,255,255,0.9), transparent),
+        radial-gradient(center 75% 80%, radius 55%, rgba(200,225,255,0.5), transparent),
+        linear-gradient(to bottom right, #f0f6ff, #e2ecf9 50%, #d6e4f5);
+    -fx-background-radius: 16;
+    -fx-padding: 14;
+
+    /* Icy border */
+    -fx-border-color: rgba(160,195,230,0.6);
+    -fx-border-radius: 16;
+    -fx-border-width: 1.5;
+
+    /* Snow depth shadow */
+    -fx-effect: dropshadow(gaussian, rgba(100,140,200,0.25), 20, 0.15, 0, 4);
+}
+
+/* Grid lines — faint icy paths on snow */
+.board .grid-line {
+    -fx-stroke: rgba(140,180,220,0.30);
+    -fx-stroke-width: 1;
+    -fx-stroke-dash-array: 6 4;
+}
+
+/* ============================== */
+/*      TEXTOS DEL TABLERO       */
+/* ============================== */
+
 .cell-title {
     -fx-font-size: 22px;
-    -fx-opacity: 0.65;
+    -fx-fill: #2c3e5a;
+    -fx-opacity: 0.70;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.9), 2, 1, 0, 0);
 }
 
 .cell-type {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
+    -fx-fill: #34506e;
     -fx-opacity: 0.85;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.8), 1, 1, 0, 0);
 }
 
-/* BARRA INFERIOR */
+/* ============================== */
+/*       BARRA INFERIOR          */
+/* ============================== */
+
 .bottom-bar {
     -fx-background-color: transparent;
 }
 
-/* TARJETAS */
+/* ============================== */
+/*    TARJETAS (FROSTED GLASS)   */
+/* ============================== */
+
 .card {
-    -fx-background-color: white;
+    -fx-background-color: rgba(255,255,255,0.72);
     -fx-background-radius: 14;
     -fx-padding: 14;
-    -fx-border-color: #e6e7ee;
+    -fx-border-color: rgba(180,210,240,0.55);
     -fx-border-radius: 14;
+    -fx-border-width: 1;
 
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 14, 0.15, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(80,120,180,0.18), 14, 0.12, 0, 2);
 }
 
 .card-title {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-opacity: 0.75;
+    -fx-text-fill: #2c3e5a;
+    -fx-opacity: 0.80;
 }
 
 .big-text {
     -fx-font-size: 22px;
     -fx-font-weight: bold;
+    -fx-fill: #1e3352;
 }
 
 .stat {
     -fx-font-size: 15px;
-    -fx-opacity: 0.85;
+    -fx-fill: #34506e;
+    -fx-opacity: 0.88;
 }
 
 .events {
     -fx-font-size: 14px;
-    -fx-opacity: 0.85;
+    -fx-fill: #34506e;
+    -fx-opacity: 0.88;
 }
 
-/* BOTONES */
+/* ============================== */
+/*           BOTONES              */
+/* ============================== */
+
 .button {
     -fx-background-radius: 10;
     -fx-padding: 8 14;
-    -fx-background-color: #eef0f6;
-    -fx-text-fill: #1f2330;
+    -fx-background-color: rgba(220,232,248,0.85);
+    -fx-text-fill: #1e3352;
     -fx-font-weight: bold;
+    -fx-border-color: rgba(160,195,230,0.4);
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
 }
 
 .button:hover {
-    -fx-background-color: #e6e8f0;
+    -fx-background-color: rgba(200,220,245,0.95);
 }
 
 .button.primary {
-    -fx-background-color: #2f6fed;
+    -fx-background-color: linear-gradient(to bottom, #4a8af4, #2f6fed);
     -fx-text-fill: white;
+    -fx-border-color: rgba(47,111,237,0.5);
 }
 
 .button.primary:hover {
-    -fx-background-color: #295fd0;
+    -fx-background-color: linear-gradient(to bottom, #3c7ae0, #2760d4);
 }
 
-/* SCROLL */
+/* ============================== */
+/*           SCROLL               */
+/* ============================== */
+
 .objects-scroll {
     -fx-background-color: transparent;
 }
@@ -101,51 +163,54 @@
     -fx-background-color: transparent;
 }
 
-/* ========================= */
-/*        JUGADORES          */
-/* ========================= */
+/* ============================== */
+/*          JUGADORES             */
+/* ============================== */
 
 .player {
     -fx-stroke: white;
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 2.5;
 
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0.35, 0, 2);
+    /* Snow glow around pieces */
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.9), 8, 0.5, 0, 0),
+                dropshadow(gaussian, rgba(0,0,0,0.35), 5, 0.3, 0, 2);
 
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
 
-/* Colores por ID (robusto en JavaFX 21) */
+/* Colores por ID */
 #P1 { -fx-fill: #2f6fed; }  /* azul */
 #P2 { -fx-fill: #ef4444; }  /* rojo */
 #P3 { -fx-fill: #22c55e; }  /* verde */
 #P4 { -fx-fill: #facc15; }  /* amarillo */
 
-/* ========================= */
-/*       FOCA (CPU)          */
-/* ========================= */
+/* ============================== */
+/*        FOCA (CPU)              */
+/* ============================== */
 
 #P5 { -fx-fill: #374151; }  /* gris oscuro */
 
 .foca {
     -fx-stroke: #1f2937;
     -fx-stroke-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.60), 8, 0.45, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.55), 8, 0.4, 0, 0);
 }
 
-/* Si quieres marcar el jugador activo, añade/quita esta clase desde Java */
+/* Jugador activo — golden glow on snow */
 .current-player {
-    -fx-effect: dropshadow(gaussian, gold, 12, 0.6, 0, 0);
+    -fx-effect: dropshadow(gaussian, gold, 14, 0.65, 0, 0),
+                dropshadow(gaussian, rgba(255,215,0,0.4), 6, 0.3, 0, 0);
 }
 
-/* ========================= */
-/*     PANTALLA FIN          */
-/* ========================= */
+/* ============================== */
+/*       PANTALLA FIN             */
+/* ============================== */
 
 .fin-titulo {
     -fx-font-size: 32px;
     -fx-font-weight: 800;
-    -fx-fill: #1f2330;
+    -fx-fill: #1e3352;
 }
 
 .fin-subtitulo {
