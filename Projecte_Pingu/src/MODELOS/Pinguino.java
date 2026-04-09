@@ -9,7 +9,7 @@ public class Pinguino extends Jugador {
 	//CONSTRUCTOR
 	public Pinguino(String nom, int pos, String color, Inventario inv) {
 		super(nom, pos);
-		this.color = null;
+		this.color = color;
 		this.inv = inv;
 	}
 	

@@ -4,13 +4,14 @@ public class Foca extends Jugador {
 	//ATRIBUTOS
 	private boolean Soborno;
 	private int turnosBloquejada;
+
 	//CONSTRUCTOR
 	public Foca(int pos) {
 		super("Foca", pos);
 		this.Soborno = false;
 		this.turnosBloquejada = 0;
 	}
-	
+
 	public boolean isSoborno() {
 		return Soborno;
 	}
@@ -32,38 +33,41 @@ public class Foca extends Jugador {
 	public void setTurnosBloquejada(int turnosBloquejada) {
 		this.turnosBloquejada = turnosBloquejada;
 	}
-	
-	public void aplastarJugador(Pinguino p) {
-		p.perderMitadItems();
-	}
-	
+
+	/**
+	 * La Foca passa per sobre d'un pingüí de passada.
+	 * El pingüí perd la meitat del seu inventari.
+	 */
 	public void golpearJugador(Partida p, Pinguino pingu) {
 		if(p != null && pingu != null) {
-			int posActual = pingu.getPos();
-			int posAgujeroAnterior = p.getTablero().agujeroAnterior(posActual);
-			int nuevaPos;
-			if(posAgujeroAnterior >= 0) {
-				nuevaPos = posAgujeroAnterior;
-			}else {
-				nuevaPos = 0;
-			}
+			pingu.perderMitadItems();
+		}
+	}
+
+	/**
+	 * La Foca s'atura a la mateixa casella que un pingüí.
+	 * - Si el pingüí té peixos: els utilitza per subornar la Foca.
+	 * - Si no té peixos: el pingüí és enviat a l'Agujero anterior o a l'inici.
+	 */
+	public void aplastarJugador(Partida partida, Pinguino pingu) {
+		if(partida != null && pingu != null) {
 			if(pingu.getInv().contarItem(new Pez(0)) >= 1) {
-				pingu.usarItem(new Pez(0));
-				esSobornado(p, pingu);
-			}else {
-				pingu.setJuega(true);
+				pingu.quitarItem(new Pez(0));
+				esSobornado(partida, pingu);
+			} else {
+				int posActual = pingu.getPos();
+				int posAgujeroAnterior = partida.getTablero().agujeroAnterior(posActual);
+				int nuevaPos = (posAgujeroAnterior >= 0) ? posAgujeroAnterior : 0;
 				pingu.setPos(nuevaPos);
-				pingu.perderTurno();
-				
 			}
 		}
 	}
-	
+
 	public void esSobornado(Partida partida, Pinguino p) {
 		this.Soborno = true;
 		this.turnosBloquejada = 2;
 	}
-	
+
 	@Override
 	public void moverPosicio(int p) {
 		if(turnosBloquejada > 0) {
@@ -76,6 +80,4 @@ public class Foca extends Jugador {
 			setPos(getPos() + tirada);
 		}
 	}
-	
-	
 }

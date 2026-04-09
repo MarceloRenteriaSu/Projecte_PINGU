@@ -15,7 +15,7 @@ public class GestorTablero {
 			}
 		}
 	}
-	
+
 	//MÉTODO COMPROBAR FIN DE TURNO
 	public void comprobarFinTurno(Partida p) {
 		if (p != null && !p.isFinalizada()) {
@@ -31,29 +31,7 @@ public class GestorTablero {
 		        } else if (jugadorActual instanceof Foca) {
 		            p.siguienteTurno();
 		        }
-		        //comprobarGanador(p);
 	        }
 		}
 	}
-	
-	/*//MÉTODO COMPROBAR GANADOR
-	private void comprobarGanador(Partida partida) {
-		if (partida != null && !partida.isFinalizada()) {
-			int ultimaCasilla = partida.getTablero().getCasillas().size() - 1;
-	        for (Jugador j : partida.getJugadores()) {
-	            // Només els pingüins poden guanyar la partida
-	            if (j instanceof Pinguino) {
-	                Pinguino p = (Pinguino) j;
-	                if (p.getPos() >= ultimaCasilla) {
-	                    partida.setGanador(p);
-	                    partida.setFinalizada(true);
-	                    System.out.println("¡Guanya " + p.getNom() + "!");
-	                    return;
-	                }
-	            }
-		}
-        
-        }
-	}*/
-	
 }
