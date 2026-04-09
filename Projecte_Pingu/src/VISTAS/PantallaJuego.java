@@ -221,23 +221,6 @@ public class PantallaJuego {
 		// Offsets petits perquè no es sobreposin dins la mateixa casella
 		distribuirFichasEnCasilla(0);
 
-		Text start = new Text("Start");
-		start.getStyleClass().add("cell-title");
-		GridPane.setRowIndex(start, 0);
-		GridPane.setColumnIndex(start, 0);
-		GridPane.setHalignment(start, javafx.geometry.HPos.CENTER);
-		GridPane.setValignment(start, javafx.geometry.VPos.CENTER);
-		tablero.getChildren().add(start);
-
-		Text finish = new Text("Finish");
-		finish.getStyleClass().add("cell-title");
-		int[] posFinish = obtenerFilaColumna(t.getTamanyo() - 1);
-		GridPane.setRowIndex(finish, posFinish[0]);
-		GridPane.setColumnIndex(finish, posFinish[1]);
-		GridPane.setHalignment(finish, javafx.geometry.HPos.CENTER);
-		GridPane.setValignment(finish, javafx.geometry.VPos.CENTER);
-		tablero.getChildren().add(finish);
-
 		mostrarTiposDeCasillasEnTablero(gestorPartida.getPartida().getTablero());
 		actualizarInventarioUI();
 		marcarJugadorActual();
@@ -340,12 +323,25 @@ public class PantallaJuego {
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
 		tablero.getChildren().removeIf(node -> TAG_CASILLA_TEXT.equals(node.getUserData()));
 		int totalCasillas = t.getTamanyo();
-		for (int i = 1; i < totalCasillas - 1; i++) {
+		for (int i = 0; i < totalCasillas; i++) {
 			Casilla casilla = t.getCasillas().get(i);
 			String tipo = casilla.getClass().getSimpleName();
-			Text texto = new Text(tipo);
+			String label;
+			if (i == 0) {
+				label = "0\nStart";
+			} else if (i == totalCasillas - 1) {
+				label = i + "\nFinish";
+			} else {
+				label = i + "\n" + tipo;
+			}
+			Text texto = new Text(label);
 			texto.setUserData(TAG_CASILLA_TEXT);
-			texto.getStyleClass().add("cell-type");
+			texto.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+			if (i == 0 || i == totalCasillas - 1) {
+				texto.getStyleClass().add("cell-title");
+			} else {
+				texto.getStyleClass().add("cell-type");
+			}
 			int[] pos = obtenerFilaColumna(i);
 			GridPane.setRowIndex(texto, pos[0]);
 			GridPane.setColumnIndex(texto, pos[1]);
@@ -512,8 +508,27 @@ public class PantallaJuego {
 					eventos.setText(atacant.getNom() + ": " + desc);
 				}
 			} else {
-				String tipusCasella = casilla.getClass().getSimpleName();
-				if (!(casilla instanceof Normal)) {
+				if (casilla instanceof Agujero) {
+					eventos.setText(atacant.getNom() + " ⚫ Ha caigut en un Forat! Retrocedeix!");
+				} else if (casilla instanceof Oso) {
+					if (atacant.getPos() == posBefore) {
+						eventos.setText(atacant.getNom() + " 🐻 Ós Polar! Ha usat un Peix per escapar!");
+					} else {
+						eventos.setText(atacant.getNom() + " 🐻 Ós Polar! Torna a l'inici!");
+					}
+				} else if (casilla instanceof SueloQuebradizo) {
+					int totalItems = atacant.getInv().totalItems();
+					if (totalItems > 5) {
+						eventos.setText(atacant.getNom() + " 🧊 Sòl trencat! Massa pes, torna a l'inici!");
+					} else if (totalItems > 0) {
+						eventos.setText(atacant.getNom() + " 🧊 Sòl trencat! Perd el pròxim torn!");
+					} else {
+						eventos.setText(atacant.getNom() + " 🧊 Sòl trencat! Inventari buit, res passa.");
+					}
+				} else if (casilla instanceof Trineo) {
+					eventos.setText(atacant.getNom() + " 🛷 Trineo! Avança ràpidament!");
+				} else if (!(casilla instanceof Normal)) {
+					String tipusCasella = casilla.getClass().getSimpleName();
 					eventos.setText(atacant.getNom() + " activa casella: " + tipusCasella);
 				}
 			}
@@ -1242,28 +1257,8 @@ public class PantallaJuego {
 
 		// 8) Netejar textos de caselles anteriors i redibuixar
 		tablero.getChildren().removeIf(node ->
-			TAG_CASILLA_TEXT.equals(node.getUserData()) ||
-			(node instanceof javafx.scene.text.Text &&
-			 ("Start".equals(((javafx.scene.text.Text) node).getText()) ||
-			  "Finish".equals(((javafx.scene.text.Text) node).getText())))
+			TAG_CASILLA_TEXT.equals(node.getUserData())
 		);
-
-		Text start = new Text("Start");
-		start.getStyleClass().add("cell-title");
-		GridPane.setRowIndex(start, 0);
-		GridPane.setColumnIndex(start, 0);
-		GridPane.setHalignment(start, javafx.geometry.HPos.CENTER);
-		GridPane.setValignment(start, javafx.geometry.VPos.CENTER);
-		tablero.getChildren().add(start);
-
-		Text finish = new Text("Finish");
-		finish.getStyleClass().add("cell-title");
-		int[] posFinish = obtenerFilaColumna(t.getTamanyo() - 1);
-		GridPane.setRowIndex(finish, posFinish[0]);
-		GridPane.setColumnIndex(finish, posFinish[1]);
-		GridPane.setHalignment(finish, javafx.geometry.HPos.CENTER);
-		GridPane.setValignment(finish, javafx.geometry.VPos.CENTER);
-		tablero.getChildren().add(finish);
 
 		mostrarTiposDeCasillasEnTablero(t);
 

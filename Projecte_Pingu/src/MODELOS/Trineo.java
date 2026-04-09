@@ -19,7 +19,7 @@ public class Trineo extends Casilla {
 					nuevaPos = posTrineoProximo;
 				}else {
 					int avanzar = tamanyo/10;
-					nuevaPos = avanzar;
+					nuevaPos = posActual + avanzar;
 					if(nuevaPos >= tamanyo) {
 						nuevaPos = tamanyo-1;
 					}

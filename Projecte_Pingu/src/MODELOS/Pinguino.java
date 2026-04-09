@@ -9,7 +9,7 @@ public class Pinguino extends Jugador {
 	//CONSTRUCTOR
 	public Pinguino(String nom, int pos, String color, Inventario inv) {
 		super(nom, pos);
-		this.color = null;
+		this.color = color;
 		this.inv = inv;
 	}
 	
@@ -57,21 +57,35 @@ public class Pinguino extends Jugador {
 	
 	//MÉTODO PARA USAR ITEM
 	public void usarItem(Item i) {
+		Item encontrado = null;
+		for(Item exist : inv.getInv()) {
+			if(exist.getNom().equalsIgnoreCase(i.getNom())) {
+				encontrado = exist;
+				break;
+			}
+		}
+		if(encontrado == null) return;
 		
 		if(i instanceof Pez) {
-			if(inv.contarItem(i) >= 1) {
-				i.setCantidad(i.getCantidad()-1);
+			if(encontrado.getCantidad() >= 1) {
+				encontrado.setCantidad(encontrado.getCantidad()-1);
+				if(encontrado.getCantidad() <= 0) {
+					inv.getInv().remove(encontrado);
+				}
 			}
 		}else if(i instanceof Dado) {
 			String nombre = i.getNom();
 			switch(nombre) {
 			case "Normal":
-					i.setCantidad(1);
+					encontrado.setCantidad(1);
 				break;
 			case "Rapido":
 			case "Lento":
-				if(inv.contarItem(i) >= 1) {
-					i.setCantidad(i.getCantidad()-1);
+				if(encontrado.getCantidad() >= 1) {
+					encontrado.setCantidad(encontrado.getCantidad()-1);
+					if(encontrado.getCantidad() <= 0) {
+						inv.getInv().remove(encontrado);
+					}
 				}
 				break;
 			}

@@ -99,7 +99,7 @@ public class PantallaMenu {
 
     @FXML
     private void handleCredits(ActionEvent event) {
-        mostrarAlerta("Crèdits", "Creadors del joc:\n- ACOM\n- DW2526 GR02");
+        mostrarAlerta("Creditos", "Creadors del joc:\n- CARLOS OROS BENDEZÚ\n- MARCELO RENTERIA SU\n- DENIS TINEO DIAS");
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {
