@@ -26,8 +26,6 @@ public class GestorBBDD {
 		String entorno = "";
 		boolean valido = false;
 		while (!valido) {
-			// PODEIS HARDCODEAR ESTAS VARIABLES SI VAIS A USAR SIEMPRE LAS MISMAS
-			//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 			System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
 			entorno = scan.nextLine().trim().toLowerCase();
 
@@ -41,23 +39,16 @@ public class GestorBBDD {
 		String url = entorno.equals("centro") ? "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
 				: "jdbc:oracle:thin:@//oracle.ilerna.com:1521/XEPDB2";
 
-		// 2) Pedir credenciales (con trim para evitar espacios raros)
-		// PODEIS HARDCODEAR ESTAS CREDENCIALES SI VAIS A USAR SIEMPRE LAS MISMAS
-		//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 		System.out.println("DW2526_GR02_PINGU");
 		String user = scan.nextLine().trim();
 
 		System.out.println("ACOMRDT");
-		String pwd = scan.nextLine(); // aquí NO hago trim por si la contraseña tuviera espacios
+		String pwd = scan.nextLine();
 
-		// 3) Conectar
 		try {
-			// En muchos casos con JDBC moderno no hace falta, pero lo dejamos por si acaso
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-
 			Connection con = DriverManager.getConnection(url, user, pwd);
 
-			// 4) Comprobar que la conexión es válida (timeout 5 s)
 			if (con.isValid(5)) {
 				System.out.println("Conectados a la base de datos (" + entorno.toUpperCase() + ").");
 			} else {
@@ -93,8 +84,9 @@ public class GestorBBDD {
 			Connection con = DriverManager.getConnection(url, user, pass);
 			if (con.isValid(5)) {
 				System.out.println("Connexió BBDD establerta (" + entorno + ").");
-				// Crear taules si no existeixen
 				crearTaulaUsuaris(con);
+				migrarTaulaPartidas(con);
+				crearSequenciaPartidas(con);
 				crearTaulaPartidas(con);
 				return con;
 			}
@@ -123,22 +115,82 @@ public class GestorBBDD {
 			System.out.println("Taula PINGU_USERS creada.");
 			st.close();
 		} catch (SQLException e) {
-			// Taula ja existeix (ORA-00955), ignorem l'error
 			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
-				System.out.println("Info taula: " + e.getMessage());
+				System.out.println("Info taula usuaris: " + e.getMessage());
 			}
 		}
 	}
 
 	/**
-	 * Crea la taula de partides guardades si no existeix.
+	 * Si la taula PINGU_PARTIDAS existeix amb l'esquema antic (sense columna ID),
+	 * l'elimina per poder recrear-la amb el nou esquema multi-partida.
+	 */
+	private static void migrarTaulaPartidas(Connection con) {
+		try {
+			// Check if PINGU_PARTIDAS table exists
+			PreparedStatement psExists = con.prepareStatement(
+				"SELECT COUNT(*) FROM USER_TABLES WHERE TABLE_NAME = 'PINGU_PARTIDAS'"
+			);
+			ResultSet rsExists = psExists.executeQuery();
+			boolean tableExists = rsExists.next() && rsExists.getInt(1) > 0;
+			rsExists.close();
+			psExists.close();
+
+			if (!tableExists) return; // Table doesn't exist yet, nothing to migrate
+
+			// Check if ID column exists (new schema)
+			PreparedStatement psId = con.prepareStatement(
+				"SELECT COUNT(*) FROM USER_TAB_COLUMNS " +
+				"WHERE TABLE_NAME = 'PINGU_PARTIDAS' AND COLUMN_NAME = 'ID'"
+			);
+			ResultSet rsId = psId.executeQuery();
+			boolean hasId = rsId.next() && rsId.getInt(1) > 0;
+			rsId.close();
+			psId.close();
+
+			if (!hasId) {
+				// Old schema detected — drop and recreate
+				Statement st = con.createStatement();
+				st.executeUpdate("DROP TABLE PINGU_PARTIDAS");
+				st.close();
+				System.out.println("Taula PINGU_PARTIDAS antiga eliminada (migrant a esquema multi-partida).");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error durant migració de PINGU_PARTIDAS: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Crea la seqüència Oracle per generar IDs únics de partida.
+	 */
+	private static void crearSequenciaPartidas(Connection con) {
+		try {
+			Statement st = con.createStatement();
+			st.executeUpdate(
+				"CREATE SEQUENCE PINGU_PARTIDAS_SEQ START WITH 1 INCREMENT BY 1 NOCACHE NOORDER"
+			);
+			System.out.println("Seqüència PINGU_PARTIDAS_SEQ creada.");
+			st.close();
+		} catch (SQLException e) {
+			// ORA-00955: name already used → sequence already exists, OK
+			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+				System.out.println("Info seqüència: " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Crea la taula de partides guardades (esquema multi-partida) si no existeix.
+	 * Suporta múltiples partides per usuari gràcies a la clau primària ID.
 	 */
 	private static void crearTaulaPartidas(Connection con) {
 		try {
 			Statement st = con.createStatement();
 			st.executeUpdate(
 				"CREATE TABLE PINGU_PARTIDAS (" +
-				"  USERNAME VARCHAR2(50) PRIMARY KEY," +
+				"  ID NUMBER PRIMARY KEY," +
+				"  USERNAME VARCHAR2(50) NOT NULL," +
+				"  NOM_PARTIDA VARCHAR2(100) DEFAULT 'Partida'," +
 				"  NUM_CASILLAS NUMBER NOT NULL," +
 				"  CASILLAS_TIPOS VARCHAR2(4000)," +
 				"  NUM_JUGADORES NUMBER NOT NULL," +
@@ -154,7 +206,7 @@ public class GestorBBDD {
 				"  FECHA_GUARDADO TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
 				")"
 			);
-			System.out.println("Taula PINGU_PARTIDAS creada.");
+			System.out.println("Taula PINGU_PARTIDAS creada (esquema multi-partida).");
 			st.close();
 		} catch (SQLException e) {
 			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
@@ -210,10 +262,12 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Guarda (o actualiza) la partida de un usuario en la BBDD.
-	 * Usa MERGE para hacer upsert (una sola partida por usuario).
+	 * Guarda una nova partida per a un usuari (permet múltiples partides per usuari).
+	 * Utilitza la seqüència PINGU_PARTIDAS_SEQ per generar l'ID únic.
+	 *
+	 * @param nomPartida Nom descriptiu que l'usuari ha donat a la partida
 	 */
-	public static boolean guardarPartida(Connection con, String username,
+	public static boolean guardarPartida(Connection con, String username, String nomPartida,
 			int numCasillas, String casillasTipos, int numJugadores,
 			String nombresJugadores, String posiciones, String inventarios,
 			int focaActivada, int focaPos, int focaSoborno, int focaTurnosBloq,
@@ -221,32 +275,31 @@ public class GestorBBDD {
 		if (con == null) return false;
 		try {
 			con.setAutoCommit(true);
-			// Intentar borrar la partida anterior del usuario
-			borrarPartida(con, username);
-			// Insertar la nueva partida
 			PreparedStatement ps = con.prepareStatement(
-				"INSERT INTO PINGU_PARTIDAS (USERNAME, NUM_CASILLAS, CASILLAS_TIPOS, " +
+				"INSERT INTO PINGU_PARTIDAS " +
+				"(ID, USERNAME, NOM_PARTIDA, NUM_CASILLAS, CASILLAS_TIPOS, " +
 				"NUM_JUGADORES, NOMBRES_JUGADORES, POSICIONES, INVENTARIOS, " +
 				"FOCA_ACTIVADA, FOCA_POS, FOCA_SOBORNO, FOCA_TURNOS_BLOQ, " +
 				"TURNOS, JUGADOR_ACTUAL, FECHA_GUARDADO) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)"
+				"VALUES (PINGU_PARTIDAS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)"
 			);
 			ps.setString(1, username);
-			ps.setInt(2, numCasillas);
-			ps.setString(3, casillasTipos);
-			ps.setInt(4, numJugadores);
-			ps.setString(5, nombresJugadores);
-			ps.setString(6, posiciones);
-			ps.setString(7, inventarios);
-			ps.setInt(8, focaActivada);
-			ps.setInt(9, focaPos);
-			ps.setInt(10, focaSoborno);
-			ps.setInt(11, focaTurnosBloq);
-			ps.setInt(12, turnos);
-			ps.setInt(13, jugadorActual);
+			ps.setString(2, (nomPartida != null && !nomPartida.trim().isEmpty()) ? nomPartida.trim() : "Partida");
+			ps.setInt(3, numCasillas);
+			ps.setString(4, casillasTipos);
+			ps.setInt(5, numJugadores);
+			ps.setString(6, nombresJugadores);
+			ps.setString(7, posiciones);
+			ps.setString(8, inventarios);
+			ps.setInt(9, focaActivada);
+			ps.setInt(10, focaPos);
+			ps.setInt(11, focaSoborno);
+			ps.setInt(12, focaTurnosBloq);
+			ps.setInt(13, turnos);
+			ps.setInt(14, jugadorActual);
 			int filas = ps.executeUpdate();
 			ps.close();
-			System.out.println("Partida guardada per " + username + " (filas=" + filas + ")");
+			System.out.println("Partida '" + nomPartida + "' guardada per " + username + " (filas=" + filas + ")");
 			return filas > 0;
 		} catch (SQLException e) {
 			System.out.println("Error guardant partida: " + e.getMessage());
@@ -256,16 +309,51 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Carrega la partida guardada d'un usuari.
-	 * @return Map amb les dades de la partida, o null si no n'hi ha.
+	 * Llista totes les partides guardades d'un usuari, ordenades per data (més recent primer).
+	 * Retorna les columnes bàsiques per mostrar a la pantalla de selecció.
+	 *
+	 * @return ArrayList amb un LinkedHashMap per partida (ID, NOM_PARTIDA, NOMBRES_JUGADORES, TURNOS, FECHA_GUARDADO)
 	 */
-	public static LinkedHashMap<String, String> cargarPartida(Connection con, String username) {
+	public static ArrayList<LinkedHashMap<String, String>> listarPartidas(Connection con, String username) {
+		ArrayList<LinkedHashMap<String, String>> lista = new ArrayList<>();
+		if (con == null) return lista;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT ID, NOM_PARTIDA, NOMBRES_JUGADORES, TURNOS, FECHA_GUARDADO " +
+				"FROM PINGU_PARTIDAS WHERE USERNAME = ? ORDER BY FECHA_GUARDADO DESC"
+			);
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				LinkedHashMap<String, String> fila = new LinkedHashMap<>();
+				fila.put("ID",                rs.getString("ID"));
+				fila.put("NOM_PARTIDA",       rs.getString("NOM_PARTIDA"));
+				fila.put("NOMBRES_JUGADORS",  rs.getString("NOMBRES_JUGADORES"));
+				fila.put("TURNOS",            rs.getString("TURNOS"));
+				fila.put("FECHA_GUARDADO",    rs.getString("FECHA_GUARDADO"));
+				lista.add(fila);
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error llistant partides: " + e.getMessage());
+		}
+		return lista;
+	}
+
+	/**
+	 * Carrega totes les dades d'una partida concreta pel seu ID.
+	 *
+	 * @param id ID de la partida (columna ID de PINGU_PARTIDAS)
+	 * @return Map amb totes les columnes de la partida, o null si no existeix
+	 */
+	public static LinkedHashMap<String, String> cargarPartidaPorId(Connection con, int id) {
 		if (con == null) return null;
 		try {
 			PreparedStatement ps = con.prepareStatement(
-				"SELECT * FROM PINGU_PARTIDAS WHERE USERNAME = ?"
+				"SELECT * FROM PINGU_PARTIDAS WHERE ID = ?"
 			);
-			ps.setString(1, username);
+			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				ResultSetMetaData meta = rs.getMetaData();
@@ -281,13 +369,35 @@ public class GestorBBDD {
 			rs.close();
 			ps.close();
 		} catch (SQLException e) {
-			System.out.println("Error carregant partida: " + e.getMessage());
+			System.out.println("Error carregant partida per ID: " + e.getMessage());
 		}
 		return null;
 	}
 
 	/**
-	 * Borra la partida guardada d'un usuari.
+	 * Esborra una partida concreta pel seu ID.
+	 *
+	 * @param id ID de la partida a esborrar
+	 */
+	public static boolean borrarPartidaPorId(Connection con, int id) {
+		if (con == null) return false;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"DELETE FROM PINGU_PARTIDAS WHERE ID = ?"
+			);
+			ps.setInt(1, id);
+			int filas = ps.executeUpdate();
+			ps.close();
+			System.out.println("Partida ID=" + id + " esborrada (filas=" + filas + ")");
+			return filas > 0;
+		} catch (SQLException e) {
+			System.out.println("Error esborrant partida per ID: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Esborra totes les partides guardades d'un usuari.
 	 */
 	public static boolean borrarPartida(Connection con, String username) {
 		if (con == null) return false;
@@ -300,15 +410,13 @@ public class GestorBBDD {
 			ps.close();
 			return filas > 0;
 		} catch (SQLException e) {
-			System.out.println("Error esborrant partida: " + e.getMessage());
+			System.out.println("Error esborrant partides de l'usuari: " + e.getMessage());
 			return false;
 		}
 	}
 
 	/**
 	 * Cierra la conexión con la BBDD.
-	 *
-	 * @param con Objeto Connection que representa la conexión a la base de datos.
 	 */
 	public static void cerrar(Connection con) {
 		if (con != null) {
@@ -321,9 +429,6 @@ public class GestorBBDD {
 
 	/**
 	 * Realiza una inserción en la base de datos.
-	 *
-	 * @param con Objeto Connection que representa la conexión a la base de datos.
-	 * @param sql Sentencia SQL de inserción que hayáis creado.
 	 */
 	public static int insert(Connection con, String sql) {
 		return executeInsUpDel(con, sql, "Insert");
@@ -331,9 +436,6 @@ public class GestorBBDD {
 
 	/**
 	 * Realiza una actualización en la base de datos.
-	 *
-	 * @param con Objeto Connection que representa la conexión a la base de datos.
-	 * @param sql Sentencia SQL de actualización que hayáis creado.
 	 */
 	public static int update(Connection con, String sql) {
 		return executeInsUpDel(con, sql, "Update");
@@ -341,9 +443,6 @@ public class GestorBBDD {
 
 	/**
 	 * Realiza una eliminación en la base de datos.
-	 *
-	 * @param con Objeto Connection que representa la conexión a la base de datos.
-	 * @param sql Sentencia SQL de eliminación que hayáis creado.
 	 */
 	public static int delete(Connection con, String sql) {
 		return executeInsUpDel(con, sql, "Delete");
@@ -351,14 +450,8 @@ public class GestorBBDD {
 
 	/**
 	 * Realiza una consulta en la base de datos y devuelve los resultados.
-	 *
-	 * @param con Objeto Connection que representa la conexión a la base de datos.
-	 * @param sql Sentencia SQL de consulta.
-	 * @return Devuelve un ArrayList con todas las filas del SELECT. Cada fila es un
-	 *         Map con sus columnas (columna -> valor).
 	 */
 	public static ArrayList<LinkedHashMap<String, String>> select(Connection con, String sql) {
-
 		ArrayList<LinkedHashMap<String, String>> resultados = new ArrayList<>();
 
 		if (con == null) {
@@ -367,22 +460,18 @@ public class GestorBBDD {
 		}
 
 		try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-
 			ResultSetMetaData meta = rs.getMetaData();
 			int numColumnas = meta.getColumnCount();
 
 			while (rs.next()) {
 				LinkedHashMap<String, String> fila = new LinkedHashMap<>();
-
 				for (int i = 1; i <= numColumnas; i++) {
 					String columna = meta.getColumnLabel(i);
 					String valor = rs.getString(i);
 					fila.put(columna, valor);
 				}
-
 				resultados.add(fila);
 			}
-
 		} catch (SQLException e) {
 			System.out.println("Error en SELECT: " + e.getMessage());
 		}
@@ -391,14 +480,7 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Imprime los resultados de una consulta SELECT en la base de datos. EN ESTE
-	 * CASO SÍ PODÉIS IMPRIMIR MÁS DE UNA FILA.
-	 *
-	 * @param con                         Objeto Connection que representa la
-	 *                                    conexión a la base de datos.
-	 * @param sql                         Sentencia SQL de consulta.
-	 * @param listaElementosSeleccionados Array de Strings con los nombres de las
-	 *                                    columnas seleccionadas.
+	 * Imprime los resultados de una consulta SELECT en la base de datos.
 	 */
 	public static void print(Connection con, String sql, String[] listaElementosSeleccionados) {
 		if (con == null) {
@@ -407,7 +489,6 @@ public class GestorBBDD {
 		}
 
 		try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-
 			int fila = 0;
 			boolean hayResultados = false;
 
@@ -423,7 +504,6 @@ public class GestorBBDD {
 			if (!hayResultados) {
 				System.out.println("No se ha encontrado nada");
 			}
-
 		} catch (SQLException e) {
 			System.out.println("Error en SELECT: " + e.getMessage());
 		}
@@ -431,12 +511,6 @@ public class GestorBBDD {
 
 	/**
 	 * Ejecuta las consultas Insert, Update o Delete.
-	 *
-	 * @param con      Objeto Connection que representa la conexión a la base de
-	 *                 datos.
-	 * @param sql      Sentencia SQL que se va a ejecutar.
-	 * @param etiqueta Consulta a ejecutar -> Insert / Update / Delete
-	 * @return Número de filas afectadas
 	 */
 	public static int executeInsUpDel(Connection con, String sql, String etiqueta) {
 		if (con == null) {

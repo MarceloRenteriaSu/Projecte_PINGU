@@ -24,8 +24,8 @@ public class Trineo extends Casilla {
 						nuevaPos = tamanyo-1;
 					}
 				}
-				pingu.setPos(nuevaPos);
-			//}
+			}
+			pingu.setPos(nuevaPos);
 		}
 	}
 }

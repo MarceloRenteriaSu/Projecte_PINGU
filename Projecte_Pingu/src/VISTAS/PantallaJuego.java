@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -556,11 +557,15 @@ public class PantallaJuego {
 			if (jFoca instanceof Foca) {
 				Foca foca = (Foca) jFoca;
 				if (foca.getPos() == atacant.getPos()) {
-					foca.golpearJugador(partida, atacant);
+					foca.aplastarJugador(partida, atacant);
 					int posModel = Math.max(0, atacant.getPos());
 					atacant.setPos(posModel);
 					moverFichaVisual(indiceFichaAtacant, posModel);
-					eventos.setText("🦭 La Foca ha colpejat " + atacant.getNom() + "!");
+					if (foca.isSoborno()) {
+						eventos.setText("🦭 " + atacant.getNom() + " ha subornat la Foca amb un peix!");
+					} else {
+						eventos.setText("🦭 La Foca ha atrapat " + atacant.getNom() + "! → casella " + posModel);
+					}
 					actualizarInventarioUI();
 				}
 			}
@@ -684,6 +689,8 @@ public class PantallaJuego {
 					FXMLLoader menuLoader = new FXMLLoader(
 							getClass().getResource("PantallaMenu.fxml"));
 					Parent menuRoot = menuLoader.load();
+					PantallaMenu menuCtrl = menuLoader.getController();
+					menuCtrl.setNombreUsuario(nombreUsuarioLogueado);
 					stage.setScene(new Scene(menuRoot));
 					stage.setTitle("El Juego del Pingüino");
 				}
@@ -760,16 +767,21 @@ public class PantallaJuego {
 
 			if (posPingu > posAntesFoca && posPingu < novaPosFoca) {
 				foca.golpearJugador(partida, pingu);
+				msg.append(" Ha passat per sobre " + pingu.getNom() + " i l'ha fet perdre la meitat dels items!");
+			} else if (posPingu == novaPosFoca) {
+				foca.aplastarJugador(partida, pingu);
 				int posNova = Math.max(0, pingu.getPos());
 				pingu.setPos(posNova);
 				moverFichaVisual(i, posNova);
-				msg.append(" Ha colpejat " + pingu.getNom() + " de passada!");
-			} else if (posPingu == novaPosFoca) {
-				foca.aplastarJugador(pingu);
-				msg.append(" Ha aixafat " + pingu.getNom() + "!");
+				if (foca.isSoborno()) {
+					msg.append(" " + pingu.getNom() + " ha subornat la Foca amb un peix!");
+				} else {
+					msg.append(" Ha atrapat " + pingu.getNom() + "! → casella " + posNova);
+				}
 			}
 		}
 		eventos.setText(msg.toString());
+		actualizarInventarioUI();
 
 		// Comprovar si la foca ha guanyat
 		comprovarGuanyadorFoca(foca);
@@ -974,6 +986,8 @@ public class PantallaJuego {
 			Stage stage = (Stage) tablero.getScene().getWindow();
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaMenu.fxml"));
 			Parent root = loader.load();
+			PantallaMenu menuCtrl = loader.getController();
+			menuCtrl.setNombreUsuario(nombreUsuarioLogueado);
 			stage.setScene(new Scene(root));
 			stage.setTitle("El Juego del Pingüino");
 		} catch (Exception e) {
@@ -991,6 +1005,16 @@ public class PantallaJuego {
 			eventos.setText("⚠ La partida ja ha finalitzat, no es pot guardar.");
 			return;
 		}
+
+		// Ask the user for a save name
+		TextInputDialog dialog = new TextInputDialog("Partida de " + nombreUsuarioLogueado);
+		dialog.setTitle("Guardar Partida");
+		dialog.setHeaderText(null);
+		dialog.setContentText("Nom de la partida:");
+		java.util.Optional<String> result = dialog.showAndWait();
+		if (!result.isPresent()) return; // User cancelled
+		String nomPartida = result.get().trim();
+		if (nomPartida.isEmpty()) nomPartida = "Partida";
 
 		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
 		if (con == null) {
@@ -1066,14 +1090,14 @@ public class PantallaJuego {
 				fTurnosBloq = foca.getTurnosBloquejada();
 			}
 
-			boolean ok = GestorBBDD.guardarPartida(con, nombreUsuarioLogueado,
+			boolean ok = GestorBBDD.guardarPartida(con, nombreUsuarioLogueado, nomPartida,
 				numCasillas, sbCasillas.toString(), numJugadores,
 				sbNoms.toString(), sbPos.toString(), sbInv.toString(),
 				focaAct, fPos, fSoborno, fTurnosBloq,
 				partida.getTurnos(), partida.getJugadorActual());
 
 			if (ok) {
-				eventos.setText("💾 Partida guardada correctament!");
+				eventos.setText("💾 Partida '" + nomPartida + "' guardada correctament!");
 			} else {
 				eventos.setText("❌ Error al guardar la partida.");
 			}
@@ -1092,13 +1116,26 @@ public class PantallaJuego {
 			return;
 		}
 		try {
-			java.util.LinkedHashMap<String, String> datos = GestorBBDD.cargarPartida(con, nombreUsuarioLogueado);
-			if (datos == null) {
-				eventos.setText("ℹ No tens cap partida guardada.");
-				return;
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaCargarPartida.fxml"));
+			Parent root = loader.load();
+			PantallaCargarPartida ctrl = loader.getController();
+			ctrl.inicialitzar(con, nombreUsuarioLogueado);
+
+			Stage selStage = new Stage();
+			selStage.setTitle("Carregar Partida");
+			selStage.initModality(Modality.APPLICATION_MODAL);
+			selStage.setScene(new Scene(root, 720, 460));
+			selStage.setResizable(true);
+			selStage.showAndWait();
+
+			if (ctrl.isLoaded()) {
+				java.util.LinkedHashMap<String, String> datos = ctrl.getSelectedPartida();
+				restaurarPartida(datos);
+				eventos.setText("📂 Partida carregada correctament!");
 			}
-			restaurarPartida(datos);
-			eventos.setText("📂 Partida carregada correctament!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			eventos.setText("❌ Error al carregar: " + e.getMessage());
 		} finally {
 			GestorBBDD.cerrar(con);
 		}

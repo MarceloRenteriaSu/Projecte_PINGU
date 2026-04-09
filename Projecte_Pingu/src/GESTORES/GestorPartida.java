@@ -9,14 +9,12 @@ public class GestorPartida {
     private Partida partida;
     private GestorTablero gestorTablero;
     private GestorJugador gestorJugador;
-    private GestorBBDD gestorBBDD;
     private Random random;
 
     public GestorPartida() {
         this.partida = null;
         this.gestorTablero = new GestorTablero();
         this.gestorJugador = new GestorJugador();
-        this.gestorBBDD = new GestorBBDD();
         this.random = new Random();
     }
 
@@ -35,7 +33,7 @@ public class GestorPartida {
     }
 
     public void ejecutarTurnoCompleto() {
-    	if (partida != null && !partida.isFinalizada()) { 
+    	if (partida != null && !partida.isFinalizada()) {
 	        int indice = partida.getJugadorActual();
 	        Jugador jugadorActual = partida.getJugadores().get(indice);
 	        procesarTurnoJugador(jugadorActual);
@@ -51,7 +49,7 @@ public class GestorPartida {
                 if (!p.isJuega()) {
                     System.out.println(p.getNom() + " perd el seu torn.");
                     p.setJuega(true);
-                }else {
+                } else {
                     Dado dado = new Dado("Normal", 1);
                     tirarDado(p, dado);
                     int pos = p.getPos();
@@ -111,17 +109,4 @@ public class GestorPartida {
     public Partida getPartida() {
         return this.partida;
     }
-
-    /*public void guardarPartida() {
-    	if (partida != null) {
-            gestorBBDD.guardarPartida(partida);
-        }
-    }
-
-    public void cargarPartida(int id) {
-    	 Partida cargada = gestorBBDD.cargarPartida(id);
-         if (cargada != null) {
-             this.partida = cargada;
-         }
-    }*/
 }

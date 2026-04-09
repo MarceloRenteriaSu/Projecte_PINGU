@@ -1,20 +1,23 @@
 package VISTAS;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.Alert.AlertType;
 import java.sql.Connection;
+import java.util.LinkedHashMap;
+
 import GESTORES.GestorBBDD;
 
 public class PantallaMenu {
@@ -26,7 +29,6 @@ public class PantallaMenu {
     @FXML private ImageView bgImageView;
     @FXML private Label usernameLabel;
 
-    // Connexió a la BBDD
     private Connection conexion = null;
     private String nombreUsuarioLogueado = "guest";
 
@@ -41,7 +43,6 @@ public class PantallaMenu {
     private void initialize() {
         System.out.println("PantallaMenu initialized");
 
-        // Bind background image to always fill the parent StackPane
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
@@ -50,7 +51,6 @@ public class PantallaMenu {
             }
         });
 
-        // Connectar a la BBDD amb les credencials hardcodeades
         try {
             conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
         } catch (Exception e) {
@@ -68,32 +68,39 @@ public class PantallaMenu {
     private void handleLoadMatch(ActionEvent event) {
         System.out.println("Load Match clicked");
         if (conexion == null) {
-        	mostrarAlerta("Error", "No hi ha connexió a la base de dades.");
-        	return;
+            mostrarAlerta("Error", "No hi ha connexió a la base de dades.");
+            return;
         }
-        
+
         try {
-            java.util.LinkedHashMap<String, String> datos = GestorBBDD.cargarPartida(conexion, nombreUsuarioLogueado);
-            if (datos != null) {
-                System.out.println("Partida trobada per " + nombreUsuarioLogueado);
-                try {
-		            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaJuego.fxml"));
-		            Parent root = loader.load();
-		            PantallaJuego ctrl = loader.getController();
-		            ctrl.setNombreUsuario(nombreUsuarioLogueado);
-		            ctrl.restaurarPartida(datos);
-		            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		            stage.setScene(new Scene(root));
-		            stage.setTitle("El Joc del Pingu — Partida Carregada");
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		            mostrarAlerta("Error", "Error al carregar la partida: " + e.getMessage());
-		        }
-            } else {
-                mostrarAlerta("Informació", "No tens cap partida guardada en curs.");
+            // Open the match-selection screen as a modal dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaCargarPartida.fxml"));
+            Parent root = loader.load();
+            PantallaCargarPartida ctrl = loader.getController();
+            ctrl.inicialitzar(conexion, nombreUsuarioLogueado);
+
+            Stage selStage = new Stage();
+            selStage.setTitle("Carregar Partida");
+            selStage.initModality(Modality.APPLICATION_MODAL);
+            selStage.setScene(new Scene(root, 720, 460));
+            selStage.setResizable(true);
+            selStage.showAndWait();
+
+            // After the dialog closes, check if the user selected a match
+            if (ctrl.isLoaded()) {
+                LinkedHashMap<String, String> datos = ctrl.getSelectedPartida();
+                FXMLLoader juegoLoader = new FXMLLoader(getClass().getResource("PantallaJuego.fxml"));
+                Parent juegoRoot = juegoLoader.load();
+                PantallaJuego juegoCtrl = juegoLoader.getController();
+                juegoCtrl.setNombreUsuario(nombreUsuarioLogueado);
+                juegoCtrl.restaurarPartida(datos);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(juegoRoot));
+                stage.setTitle("El Joc del Pingu — Partida Carregada");
             }
         } catch (Exception e) {
-        	mostrarAlerta("Error", "No s'ha pogut verificar a la base de dades: " + e.getMessage());
+            e.printStackTrace();
+            mostrarAlerta("Error", "Error al obrir la pantalla de càrrega: " + e.getMessage());
         }
     }
 
@@ -118,9 +125,6 @@ public class PantallaMenu {
         System.exit(0);
     }
 
-    /**
-     * Obre la pantalla de configuració (noms de jugadors i caselles).
-     */
     private void abrirPantallaConfig(ActionEvent event, String username) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaConfig.fxml"));
