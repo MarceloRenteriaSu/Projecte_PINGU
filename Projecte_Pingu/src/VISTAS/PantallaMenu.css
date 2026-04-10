@@ -1,73 +1,120 @@
 /* ========================================
-   PantallaMenu.css — Icy Pixel Art Menu
+   PantallaMenu.css — Pixel Art Pingu Menu
+   Wooden panel + interactive buttons
    ======================================== */
 
-.root {
-    -fx-background-color: #050a12;
-}
+/* ── Wooden Panel (outer frame) ── */
+.wooden-panel {
+    /* Dark brown wooden frame */
+    -fx-background-color:
+        #3b1e0a,                                                          /* outermost border */
+        linear-gradient(to bottom, #5a3415, #4a2810, #3b1e0a),           /* dark wood frame */
+        linear-gradient(to bottom, #6b4025, #5a3418);                    /* inner frame edge */
+    -fx-background-insets: 0, 3, 7;
+    -fx-background-radius: 10, 8, 6;
 
-/* ── Game Title ── */
-.game-title {
-    -fx-font-family: "Courier New";
-    -fx-font-size: 68px;
-    -fx-font-weight: 900;
-    -fx-text-fill: #e0f0ff;
-    -fx-effect: dropshadow(gaussian, rgba(80, 180, 255, 0.5), 12, 0.4, 0, 0),
-                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 6, 0.7, 3, 3);
-    -fx-label-padding: 0 0 10 0;
-}
-
-/* ── Menu Buttons Container ── */
-.menu-buttons {
     -fx-padding: 0;
+
+    /* Depth shadow */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 16, 0.3, 4, 4),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.4), 30, 0.2, 0, 0);
 }
 
-/* ── Menu Button Base ── */
+/* ── Snow decoration on top of panel ── */
+.panel-snow-top {
+    -fx-background-color:
+        linear-gradient(to bottom, rgba(240, 248, 255, 0.95), rgba(200, 230, 255, 0.7), transparent);
+    -fx-background-radius: 8 8 0 0;
+    -fx-background-insets: 0;
+    -fx-padding: 2 12 0 12;
+}
+
+.snow-deco {
+    -fx-font-size: 16px;
+    -fx-text-fill: #c8e8ff;
+    -fx-effect: dropshadow(gaussian, rgba(150, 210, 255, 0.8), 6, 0.5, 0, 0);
+}
+
+/* ── Panel inner (darker wood interior) ── */
+.panel-inner {
+    -fx-background-color:
+        linear-gradient(to bottom, #4a2a12 0%, #3e2210 40%, #352010 100%);
+    -fx-background-radius: 0 0 4 4;
+    -fx-background-insets: 0;
+}
+
+/* ── Menu Button — Wooden plank ── */
 .menu-btn {
     -fx-font-family: "Courier New";
-    -fx-font-size: 22px;
+    -fx-font-size: 18px;
     -fx-font-weight: 800;
-    -fx-text-fill: #d8ecff;
+    -fx-text-fill: #2e1508;
+    -fx-letter-spacing: 1;
 
-    /* Icy semi-transparent background */
-    -fx-background-color: linear-gradient(to right, rgba(40, 100, 160, 0.65), rgba(20, 60, 110, 0.35), transparent);
-    -fx-background-radius: 6;
-    -fx-border-color: rgba(120, 200, 255, 0.25);
-    -fx-border-width: 1;
-    -fx-border-radius: 6;
+    /* Layered wooden plank gradient */
+    -fx-background-color:
+        #6b3a12,                                                         /* border / outline */
+        linear-gradient(to bottom, #d49e5c 0%, #c4883c 20%, #b87838 50%, #a86830 80%, #9a5828 100%);
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5, 3;
 
-    -fx-padding: 10 80 10 16;
+    -fx-padding: 10 20 10 20;
     -fx-cursor: hand;
-    -fx-alignment: CENTER_LEFT;
+    -fx-alignment: CENTER;
+    -fx-min-height: 44;
 
-    /* Subtle base glow */
-    -fx-effect: dropshadow(gaussian, rgba(60, 160, 255, 0.2), 6, 0.2, 0, 0),
-                dropshadow(gaussian, rgba(0, 0, 0, 0.7), 4, 0.5, 2, 2);
+    /* Subtle depth */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 3, 0.3, 1, 2),
+                innershadow(gaussian, rgba(255, 220, 160, 0.25), 3, 0.2, 0, -1);
 }
 
-/* ── Hover — bright icy glow ── */
+/* ── Hover — brighter, warmer wood ── */
 .menu-btn:hover {
-    -fx-text-fill: #ffffff;
-    -fx-background-color: linear-gradient(to right, rgba(60, 140, 220, 0.8), rgba(30, 80, 150, 0.5), transparent);
-    -fx-border-color: rgba(140, 220, 255, 0.6);
-    -fx-effect: dropshadow(gaussian, rgba(100, 200, 255, 0.7), 18, 0.4, 0, 0),
-                dropshadow(gaussian, rgba(60, 180, 255, 0.4), 30, 0.3, 0, 0);
+    -fx-text-fill: #1a0a02;
+    -fx-background-color:
+        #8b4a18,
+        linear-gradient(to bottom, #e4b070 0%, #d4984c 20%, #c88844 50%, #bc7838 80%, #aa6830 100%);
+    -fx-background-insets: 0, 2;
+    -fx-effect: dropshadow(gaussian, rgba(255, 200, 100, 0.5), 10, 0.3, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.5), 4, 0.3, 1, 2),
+                innershadow(gaussian, rgba(255, 240, 200, 0.4), 5, 0.3, 0, -1);
+    /* Slight scale-up effect via padding */
+    -fx-padding: 11 22 11 22;
 }
 
-/* ── Pressed ── */
+/* ── Pressed — darker, recessed wood ── */
 .menu-btn:pressed {
-    -fx-text-fill: #a0d8ff;
-    -fx-background-color: linear-gradient(to right, rgba(30, 90, 160, 0.9), rgba(15, 50, 100, 0.6), transparent);
-    -fx-border-color: rgba(100, 200, 255, 0.8);
-    -fx-effect: dropshadow(gaussian, rgba(100, 200, 255, 0.9), 22, 0.5, 0, 0),
-                innershadow(gaussian, rgba(80, 180, 255, 0.3), 6, 0.3, 0, 0);
+    -fx-text-fill: #4a2a10;
+    -fx-background-color:
+        #5a2e0a,
+        linear-gradient(to bottom, #9a6028 0%, #8a5020 20%, #7a4418 50%, #6b3a12 80%, #5a3010 100%);
+    -fx-background-insets: 0, 2;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.6), 6, 0.4, 1, 2);
+    -fx-padding: 11 20 9 20;
 }
 
-/* ── Focus (keyboard navigation) ── */
+/* ── Focus ring ── */
 .menu-btn:focused {
-    -fx-text-fill: #ffffff;
-    -fx-border-color: rgba(140, 220, 255, 0.5);
-    -fx-background-insets: 0;
-    -fx-effect: dropshadow(gaussian, rgba(100, 200, 255, 0.55), 14, 0.35, 0, 0),
-                dropshadow(gaussian, rgba(0, 0, 0, 0.6), 4, 0.4, 2, 2);
+    -fx-border-color: rgba(255, 220, 160, 0.7);
+    -fx-border-width: 2;
+    -fx-border-radius: 4;
+    -fx-border-insets: 1;
+}
+
+/* ── Version Label ── */
+.version-label {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 4, 0.6, 1, 1);
+}
+
+/* ── Username Label ── */
+.username-label {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 4, 0.6, 1, 1);
 }

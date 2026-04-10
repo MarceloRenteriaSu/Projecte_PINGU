@@ -24,9 +24,11 @@ public class PantallaMenu {
 
     @FXML private Button btnNewMatch;
     @FXML private Button btnLoadMatch;
+    @FXML private Button btnAjustes;
     @FXML private Button btnCredits;
     @FXML private Button btnExit;
     @FXML private ImageView bgImageView;
+    @FXML private ImageView titleImageView;
     @FXML private Label usernameLabel;
 
     private Connection conexion = null;
@@ -43,6 +45,7 @@ public class PantallaMenu {
     private void initialize() {
         System.out.println("PantallaMenu initialized");
 
+        // Background image stretches to fill the window
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
@@ -50,6 +53,16 @@ public class PantallaMenu {
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
             }
         });
+
+        // Title image scales proportionally with the window
+        if (titleImageView != null) {
+            titleImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    StackPane root = (StackPane) titleImageView.getScene().getRoot();
+                    titleImageView.fitWidthProperty().bind(root.widthProperty().multiply(0.42));
+                }
+            });
+        }
 
         try {
             conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
@@ -60,13 +73,13 @@ public class PantallaMenu {
 
     @FXML
     private void handleNewMatch(ActionEvent event) {
-        System.out.println("New Match clicked");
+        System.out.println("Nueva Partida clicked");
         abrirPantallaConfig(event, nombreUsuarioLogueado);
     }
 
     @FXML
     private void handleLoadMatch(ActionEvent event) {
-        System.out.println("Load Match clicked");
+        System.out.println("Cargar Partida clicked");
         if (conexion == null) {
             mostrarAlerta("Error", "No hi ha connexió a la base de dades.");
             return;
@@ -102,6 +115,12 @@ public class PantallaMenu {
             e.printStackTrace();
             mostrarAlerta("Error", "Error al obrir la pantalla de càrrega: " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void handleAjustes(ActionEvent event) {
+        System.out.println("Ajustes clicked");
+        mostrarAlerta("Ajustes", "Pantalla de ajustes en desarrollo.");
     }
 
     @FXML

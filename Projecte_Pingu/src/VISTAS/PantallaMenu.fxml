@@ -5,38 +5,90 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane styleClass="root" stylesheets="@PantallaMenu.css" xmlns="http://javafx.com/javafx/21.0.10" xmlns:fx="http://javafx.com/fxml/1" fx:controller="VISTAS.PantallaMenu">
+<StackPane stylesheets="@PantallaMenu.css"
+           xmlns="http://javafx.com/javafx/21.0.10"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="VISTAS.PantallaMenu"
+           prefWidth="1024" prefHeight="576">
 
-    <!-- Background image — binds to parent size for auto-resize -->
-    <ImageView fx:id="bgImageView" mouseTransparent="true" preserveRatio="false" StackPane.alignment="CENTER">
+    <!-- Background landscape image -->
+    <ImageView fx:id="bgImageView" mouseTransparent="true" preserveRatio="false"
+               StackPane.alignment="CENTER">
         <image>
             <Image url="@menu_background.png" />
         </image>
     </ImageView>
 
-    <!-- Left-aligned menu content -->
-    <VBox alignment="TOP_LEFT" spacing="0" StackPane.alignment="TOP_LEFT">
+    <!-- Main layout split: panel left + title right -->
+    <HBox alignment="CENTER" spacing="20" StackPane.alignment="CENTER"
+          maxHeight="Infinity" maxWidth="Infinity">
         <padding>
-            <Insets bottom="60" left="60" right="40" top="50" />
+            <Insets bottom="30" left="40" right="40" top="20" />
         </padding>
 
-        <!-- Game Title -->
-        <Label styleClass="game-title" text="PINGU" />
-        <Label fx:id="usernameLabel" style="-fx-font-size: 16px; -fx-text-fill: white;" text="Jugador: " />
+        <!-- ======== LEFT: Wooden Panel with Buttons ======== -->
+        <VBox alignment="CENTER" spacing="0" styleClass="wooden-panel"
+              prefWidth="320" maxWidth="360" HBox.hgrow="NEVER">
 
-           <!-- Spacer to push buttons down -->
-        <Region VBox.vgrow="ALWAYS" />
-         <Button fx:id="btnNewMatch" onAction="#handleNewMatch" styleClass="menu-btn" text="NEW MATCH" />
+            <!-- Snow/ice decoration on top of panel -->
+            <HBox alignment="CENTER" styleClass="panel-snow-top" minHeight="18" maxHeight="18">
+                <Label text="❄" styleClass="snow-deco" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="❄" styleClass="snow-deco" />
+            </HBox>
 
-        <!-- Menu Buttons -->
-        <VBox spacing="14" styleClass="menu-buttons">
-            <Button fx:id="btnLoadMatch" onAction="#handleLoadMatch" styleClass="menu-btn" text="LOAD MATCH" />
-            <Button fx:id="btnCredits" onAction="#handleCredits" styleClass="menu-btn" text="CREDITS" />
-            <Button fx:id="btnExit" onAction="#handleExit" styleClass="menu-btn" text="EXIT" />
+            <!-- Inner area with buttons -->
+            <VBox alignment="CENTER" spacing="12" styleClass="panel-inner">
+                <padding>
+                    <Insets bottom="25" left="30" right="30" top="20" />
+                </padding>
+
+                <Button fx:id="btnNewMatch" onAction="#handleNewMatch"
+                        styleClass="menu-btn" text="NUEVA PARTIDA" maxWidth="Infinity" />
+                <Button fx:id="btnLoadMatch" onAction="#handleLoadMatch"
+                        styleClass="menu-btn" text="CARGAR PARTIDA" maxWidth="Infinity" />
+                <Button fx:id="btnAjustes" onAction="#handleAjustes"
+                        styleClass="menu-btn" text="AJUSTES" maxWidth="Infinity" />
+                <Button fx:id="btnCredits" onAction="#handleCredits"
+                        styleClass="menu-btn" text="CREDITOS" maxWidth="Infinity" />
+                <Button fx:id="btnExit" onAction="#handleExit"
+                        styleClass="menu-btn" text="SALIR" maxWidth="Infinity" />
+            </VBox>
         </VBox>
-    </VBox>
+
+        <!-- Spacer -->
+        <Region HBox.hgrow="SOMETIMES" prefWidth="20" />
+
+        <!-- ======== RIGHT: Game Title Image ======== -->
+        <VBox alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="500">
+            <ImageView fx:id="titleImageView" preserveRatio="true"
+                       fitWidth="420" mouseTransparent="true">
+                <image>
+                    <Image url="@title_pinguino.png" />
+                </image>
+            </ImageView>
+        </VBox>
+    </HBox>
+
+    <!-- Version label bottom-center -->
+    <Label styleClass="version-label" text="V1.0.3"
+           StackPane.alignment="BOTTOM_CENTER">
+        <StackPane.margin>
+            <Insets bottom="8" />
+        </StackPane.margin>
+    </Label>
+
+    <!-- Username label top-right -->
+    <Label fx:id="usernameLabel" styleClass="username-label" text="Jugador: "
+           StackPane.alignment="TOP_RIGHT">
+        <StackPane.margin>
+            <Insets right="16" top="8" />
+        </StackPane.margin>
+    </Label>
+
 </StackPane>
