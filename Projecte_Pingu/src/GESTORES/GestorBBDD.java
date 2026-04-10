@@ -217,7 +217,29 @@ public class GestorBBDD {
 
 
 	/**
-	 * Verifica les credencials d'un usuari.
+	 * Comprova si un nom d'usuari ja existeix a la BBDD.
+	 * @return true si l'usuari ja existeix
+	 */
+	public static boolean usuarioExiste(Connection con, String username) {
+		if (con == null) return false;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT COUNT(*) FROM PINGU_USERS WHERE USERNAME = ?"
+			);
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			boolean existe = rs.next() && rs.getInt(1) > 0;
+			rs.close();
+			ps.close();
+			return existe;
+		} catch (SQLException e) {
+			System.out.println("Error comprovant existència d'usuari: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Verifica les credencials d'un usuari contra la base de dades.
 	 * @return true si l'usuari existeix i la contrasenya coincideix
 	 */
 	public static boolean loginUsuario(Connection con, String username, String password) {
@@ -229,23 +251,23 @@ public class GestorBBDD {
 			ps.setString(1, username);
 			ps.setString(2, password);
 			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt(1) > 0;
-			}
+			boolean valid = rs.next() && rs.getInt(1) > 0;
 			rs.close();
 			ps.close();
+			return valid;
 		} catch (SQLException e) {
 			System.out.println("Error en login: " + e.getMessage());
+			return false;
 		}
-		return false;
 	}
 
 	/**
 	 * Registra un nou usuari a la BBDD.
-	 * @return true si el registre ha estat correcte
+	 * Retorna 0 si ok, 1 si l'usuari ja existeix, -1 si hi ha un altre error.
 	 */
-	public static boolean registrarUsuario(Connection con, String username, String password) {
-		if (con == null) return false;
+	public static int registrarUsuario(Connection con, String username, String password) {
+		if (con == null) return -1;
+		if (usuarioExiste(con, username)) return 1;
 		try {
 			PreparedStatement ps = con.prepareStatement(
 				"INSERT INTO PINGU_USERS (USERNAME, PASSWORD) VALUES (?, ?)"
@@ -254,10 +276,10 @@ public class GestorBBDD {
 			ps.setString(2, password);
 			int filas = ps.executeUpdate();
 			ps.close();
-			return filas > 0;
+			return filas > 0 ? 0 : -1;
 		} catch (SQLException e) {
 			System.out.println("Error en registre: " + e.getMessage());
-			return false;
+			return -1;
 		}
 	}
 

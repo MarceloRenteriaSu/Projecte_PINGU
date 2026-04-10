@@ -52,14 +52,16 @@ public class PantallaRegistro {
             return;
         }
 
-        boolean ok = GestorBBDD.registrarUsuario(con, username.trim(), password);
+        int resultat = GestorBBDD.registrarUsuario(con, username.trim(), password);
         GestorBBDD.cerrar(con);
 
-        if (ok) {
+        if (resultat == 0) {
             System.out.println("Registre completat amb èxit.");
             irALogin(event);
+        } else if (resultat == 1) {
+            mostrarError("El nom d'usuari ja existeix. Tria un altre nom.");
         } else {
-            mostrarError("Error al registrar. Potser l'usuari ja existeix.");
+            mostrarError("Error al registrar. Torna-ho a provar.");
         }
     }
 
