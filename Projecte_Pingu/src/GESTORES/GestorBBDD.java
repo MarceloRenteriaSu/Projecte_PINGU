@@ -50,7 +50,7 @@ public class GestorBBDD {
 			Connection con = DriverManager.getConnection(url, user, pwd);
 
 			if (con.isValid(5)) {
-				System.out.println("Conectados a la base de datos (" + entorno.toUpperCase() + ").");
+				System.out.println("Conectados a la base de datos.");
 			} else {
 				System.out.println("Conexión creada, pero no parece válida. Revisa red/URL.");
 			}
