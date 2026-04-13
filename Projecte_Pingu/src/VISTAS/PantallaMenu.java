@@ -57,6 +57,7 @@ public class PantallaMenu {
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
             }
+            
         });
 
         // Title image: remove black background pixels, then scale with window
