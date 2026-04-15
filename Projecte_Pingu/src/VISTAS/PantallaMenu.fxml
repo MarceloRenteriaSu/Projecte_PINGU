@@ -28,7 +28,7 @@
 
         <!-- Imagen del título (sin fondo) -->
         <ImageView fx:id="titleImageView" preserveRatio="true"
-                   fitWidth="480" mouseTransparent="true">
+                   fitWidth="600" mouseTransparent="true">
             <image>
                 <Image url="@title_pinguino.png" />
             </image>
