@@ -80,6 +80,9 @@ public class PantallaJuego {
 	// Nom del jugador logejat
 	private String nombreUsuarioLogueado = "Jugador";
 
+	// ID de la partida carregada des de la BBDD (-1 si és partida nova sense guardar)
+	private int partidaGuardadaId = -1;
+
 	private boolean jocIniciat = false;
 
 	/**
@@ -92,7 +95,7 @@ public class PantallaJuego {
 			noms.add("Jugador2");
 			noms.add("Jugador3");
 			noms.add("Jugador4");
-			configurarJoc(50, noms, true);
+			configurarJoc(50, noms, null, true);
 			jocIniciat = true;
 		}
 	}
@@ -103,7 +106,7 @@ public class PantallaJuego {
 	 */
 	public void iniciarJoc(int numCasillas, ArrayList<String> noms) {
 		if (!jocIniciat) {
-			configurarJoc(numCasillas, noms, true);
+			configurarJoc(numCasillas, noms, null, true);
 			jocIniciat = true;
 		}
 	}
@@ -113,7 +116,18 @@ public class PantallaJuego {
 	 */
 	public void iniciarJoc(int numCasillas, ArrayList<String> noms, boolean ambFoca) {
 		if (!jocIniciat) {
-			configurarJoc(numCasillas, noms, ambFoca);
+			configurarJoc(numCasillas, noms, null, ambFoca);
+			jocIniciat = true;
+		}
+	}
+
+	/**
+	 * Inicia el joc amb paràmetres personalitzats, colors de jugador i opció de foca.
+	 * @param hexColors llista de colors en format "#RRGGBB", un per jugador
+	 */
+	public void iniciarJoc(int numCasillas, ArrayList<String> noms, ArrayList<String> hexColors, boolean ambFoca) {
+		if (!jocIniciat) {
+			configurarJoc(numCasillas, noms, hexColors, ambFoca);
 			jocIniciat = true;
 		}
 	}
@@ -130,7 +144,7 @@ public class PantallaJuego {
 	/**
 	 * Configura el joc complet: tablero, jugadors, fitxes centrades.
 	 */
-	private void configurarJoc(int totalCasillas, ArrayList<String> noms, boolean ambFoca) {
+	private void configurarJoc(int totalCasillas, ArrayList<String> noms, ArrayList<String> hexColors, boolean ambFoca) {
 		eventos.setText("¡El juego ha comenzado!");
 		this.focaActivada = ambFoca;
 
@@ -195,6 +209,9 @@ public class PantallaJuego {
 				fichas[i] = totesLesFitxes[i];
 				totesLesFitxes[i].setVisible(true);
 				posiciones[i] = 0;
+				if (hexColors != null && i < hexColors.size()) {
+					totesLesFitxes[i].setStyle("-fx-fill: " + hexColors.get(i) + ";");
+				}
 			}
 			fichas[numPinguinos] = P5;
 			P5.setVisible(true);
@@ -207,6 +224,9 @@ public class PantallaJuego {
 				fichas[i] = totesLesFitxes[i];
 				totesLesFitxes[i].setVisible(true);
 				posiciones[i] = 0;
+				if (hexColors != null && i < hexColors.size()) {
+					totesLesFitxes[i].setStyle("-fx-fill: " + hexColors.get(i) + ";");
+				}
 			}
 			P5.setVisible(false);
 		}
@@ -660,6 +680,16 @@ public class PantallaJuego {
 		peces.setDisable(true);
 		nieve.setDisable(true);
 
+		// Si la partida va ser carregada des de la BBDD, eliminar-la ara que ha acabat
+		if (partidaGuardadaId != -1) {
+			java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+			if (con != null) {
+				GestorBBDD.borrarPartidaPorId(con, partidaGuardadaId);
+				GestorBBDD.cerrar(con);
+			}
+			partidaGuardadaId = -1;
+		}
+
 		obrirPantallaFin(nomGuanyador, partida);
 	}
 
@@ -1032,49 +1062,32 @@ public class PantallaJuego {
 				sbCasillas.append(t.getCasilla(i).getClass().getSimpleName());
 			}
 
-			// Contar pingüinos (excloent foca)
+			// Comptar pingüins (excloent foca)
 			int numJugadores = 0;
 			for (Jugador j : partida.getJugadores()) {
 				if (j instanceof Pinguino) numJugadores++;
 			}
 
-			// Serialitzar noms
-			StringBuilder sbNoms = new StringBuilder();
-			boolean first = true;
-			for (Jugador j : partida.getJugadores()) {
-				if (j instanceof Pinguino) {
-					if (!first) sbNoms.append(",");
-					sbNoms.append(j.getNom());
-					first = false;
-				}
-			}
+			// Construir arrays de pingüins i inventaris
+			String[] nombresPings = new String[numJugadores];
+			int[] posicionesPings = new int[numJugadores];
+			String[][] inventariosPings = new String[numJugadores][];
 
-			// Serialitzar posicions
-			StringBuilder sbPos = new StringBuilder();
-			first = true;
+			int idx = 0;
 			for (Jugador j : partida.getJugadores()) {
 				if (j instanceof Pinguino) {
-					if (!first) sbPos.append(",");
-					sbPos.append(j.getPos());
-					first = false;
-				}
-			}
-
-			// Serialitzar inventaris: cada jugador separat per ';', cada item 'nom:quantitat' separat per ','
-			StringBuilder sbInv = new StringBuilder();
-			first = true;
-			for (Jugador j : partida.getJugadores()) {
-				if (j instanceof Pinguino) {
-					if (!first) sbInv.append(";");
 					Pinguino p = (Pinguino) j;
+					nombresPings[idx] = p.getNom();
+					posicionesPings[idx] = p.getPos();
 					Inventario inv = p.getInv();
-					boolean firstItem = true;
-					for (Item item : inv.getInv()) {
-						if (!firstItem) sbInv.append(",");
-						sbInv.append(item.getNom()).append(":").append(item.getCantidad());
-						firstItem = false;
+					java.util.List<Item> items = inv.getInv();
+					String[] itemStrs = new String[items.size()];
+					for (int k = 0; k < items.size(); k++) {
+						Item item = items.get(k);
+						itemStrs[k] = item.getNom() + ":" + item.getCantidad();
 					}
-					first = false;
+					inventariosPings[idx] = itemStrs;
+					idx++;
 				}
 			}
 
@@ -1091,10 +1104,10 @@ public class PantallaJuego {
 			}
 
 			boolean ok = GestorBBDD.guardarPartida(con, nombreUsuarioLogueado, nomPartida,
-				numCasillas, sbCasillas.toString(), numJugadores,
-				sbNoms.toString(), sbPos.toString(), sbInv.toString(),
+				numCasillas, sbCasillas.toString(),
 				focaAct, fPos, fSoborno, fTurnosBloq,
-				partida.getTurnos(), partida.getJugadorActual());
+				partida.getTurnos(), partida.getJugadorActual(),
+				nombresPings, posicionesPings, inventariosPings);
 
 			if (ok) {
 				eventos.setText("💾 Partida '" + nomPartida + "' guardada correctament!");
@@ -1145,6 +1158,10 @@ public class PantallaJuego {
 	 * Restaura la partida a partir de les dades carregades de la BBDD.
 	 */
 	public void restaurarPartida(java.util.LinkedHashMap<String, String> datos) {
+		// Guardar l'ID de la BBDD per poder eliminar-la quan acabi la partida
+		String idStr = datos.get("ID");
+		partidaGuardadaId = (idStr != null) ? Integer.parseInt(idStr) : -1;
+
 		int numCasillas = Integer.parseInt(datos.get("NUM_CASILLAS"));
 		String[] tiposCasillas = datos.get("CASILLAS_TIPOS").split(",");
 		int numJugadores = Integer.parseInt(datos.get("NUM_JUGADORES"));

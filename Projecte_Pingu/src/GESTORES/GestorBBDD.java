@@ -88,6 +88,8 @@ public class GestorBBDD {
 				migrarTaulaPartidas(con);
 				crearSequenciaPartidas(con);
 				crearTaulaPartidas(con);
+				crearTaulaPinguinos(con);
+				crearTaulaInventaris(con);
 				return con;
 			}
 		} catch (ClassNotFoundException e) {
@@ -138,7 +140,28 @@ public class GestorBBDD {
 
 			if (!tableExists) return; // Table doesn't exist yet, nothing to migrate
 
-			// Check if ID column exists (new schema)
+			// Check if the old schema still has the NOMBRES_JUGADORES column (pre-split schema)
+			PreparedStatement psOld = con.prepareStatement(
+				"SELECT COUNT(*) FROM USER_TAB_COLUMNS " +
+				"WHERE TABLE_NAME = 'PINGU_PARTIDAS' AND COLUMN_NAME = 'NOMBRES_JUGADORES'"
+			);
+			ResultSet rsOld = psOld.executeQuery();
+			boolean hasOldColumn = rsOld.next() && rsOld.getInt(1) > 0;
+			rsOld.close();
+			psOld.close();
+
+			if (hasOldColumn) {
+				// Old single-table schema detected — drop child tables first (if they exist), then parent
+				Statement st = con.createStatement();
+				try { st.executeUpdate("DROP TABLE PINGU_INVENTARIS"); } catch (SQLException ignored) {}
+				try { st.executeUpdate("DROP TABLE PINGU_PINGUINOS"); } catch (SQLException ignored) {}
+				st.executeUpdate("DROP TABLE PINGU_PARTIDAS");
+				st.close();
+				System.out.println("Esquema antic eliminat (migrant a esquema de 3 taules).");
+				return;
+			}
+
+			// Also check if ID column exists (very old single-row schema without ID)
 			PreparedStatement psId = con.prepareStatement(
 				"SELECT COUNT(*) FROM USER_TAB_COLUMNS " +
 				"WHERE TABLE_NAME = 'PINGU_PARTIDAS' AND COLUMN_NAME = 'ID'"
@@ -149,7 +172,6 @@ public class GestorBBDD {
 			psId.close();
 
 			if (!hasId) {
-				// Old schema detected — drop and recreate
 				Statement st = con.createStatement();
 				st.executeUpdate("DROP TABLE PINGU_PARTIDAS");
 				st.close();
@@ -180,8 +202,9 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Crea la taula de partides guardades (esquema multi-partida) si no existeix.
-	 * Suporta múltiples partides per usuari gràcies a la clau primària ID.
+	 * Crea la taula de partides guardades si no existeix.
+	 * Només emmagatzema les dades generals de la partida.
+	 * Els pingüins es guarden a PINGU_PINGUINOS i els inventaris a PINGU_INVENTARIS.
 	 */
 	private static void crearTaulaPartidas(Connection con) {
 		try {
@@ -193,10 +216,6 @@ public class GestorBBDD {
 				"  NOM_PARTIDA VARCHAR2(100) DEFAULT 'Partida'," +
 				"  NUM_CASILLAS NUMBER NOT NULL," +
 				"  CASILLAS_TIPOS VARCHAR2(4000)," +
-				"  NUM_JUGADORES NUMBER NOT NULL," +
-				"  NOMBRES_JUGADORES VARCHAR2(500)," +
-				"  POSICIONES VARCHAR2(200)," +
-				"  INVENTARIOS VARCHAR2(4000)," +
 				"  FOCA_ACTIVADA NUMBER(1) DEFAULT 1," +
 				"  FOCA_POS NUMBER DEFAULT 0," +
 				"  FOCA_SOBORNO NUMBER(1) DEFAULT 0," +
@@ -206,11 +225,80 @@ public class GestorBBDD {
 				"  FECHA_GUARDADO TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
 				")"
 			);
-			System.out.println("Taula PINGU_PARTIDAS creada (esquema multi-partida).");
+			System.out.println("Taula PINGU_PARTIDAS creada.");
 			st.close();
 		} catch (SQLException e) {
 			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
 				System.out.println("Info taula partidas: " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Crea la seqüència i la taula de pingüins per partida si no existeixen.
+	 * Cada fila és un pingüí d'una partida concreta.
+	 */
+	private static void crearTaulaPinguinos(Connection con) {
+		try {
+			Statement st = con.createStatement();
+			try {
+				st.executeUpdate(
+					"CREATE SEQUENCE PINGU_PINGUINOS_SEQ START WITH 1 INCREMENT BY 1 NOCACHE NOORDER"
+				);
+				System.out.println("Seqüència PINGU_PINGUINOS_SEQ creada.");
+			} catch (SQLException e) {
+				if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+					System.out.println("Info seqüència pinguinos: " + e.getMessage());
+				}
+			}
+			st.executeUpdate(
+				"CREATE TABLE PINGU_PINGUINOS (" +
+				"  ID NUMBER PRIMARY KEY," +
+				"  PARTIDA_ID NUMBER NOT NULL," +
+				"  INDEX_JUG NUMBER NOT NULL," +
+				"  NOM VARCHAR2(100) NOT NULL," +
+				"  POSICIO NUMBER DEFAULT 0" +
+				")"
+			);
+			System.out.println("Taula PINGU_PINGUINOS creada.");
+			st.close();
+		} catch (SQLException e) {
+			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+				System.out.println("Info taula pinguinos: " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Crea la seqüència i la taula d'inventaris per pingüí si no existeixen.
+	 * Cada fila és un tipus d'ítem a l'inventari d'un pingüí.
+	 */
+	private static void crearTaulaInventaris(Connection con) {
+		try {
+			Statement st = con.createStatement();
+			try {
+				st.executeUpdate(
+					"CREATE SEQUENCE PINGU_INVENTARIS_SEQ START WITH 1 INCREMENT BY 1 NOCACHE NOORDER"
+				);
+				System.out.println("Seqüència PINGU_INVENTARIS_SEQ creada.");
+			} catch (SQLException e) {
+				if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+					System.out.println("Info seqüència inventaris: " + e.getMessage());
+				}
+			}
+			st.executeUpdate(
+				"CREATE TABLE PINGU_INVENTARIS (" +
+				"  ID NUMBER PRIMARY KEY," +
+				"  PINGUINO_ID NUMBER NOT NULL," +
+				"  NOM_ITEM VARCHAR2(50) NOT NULL," +
+				"  QUANTITAT NUMBER DEFAULT 0" +
+				")"
+			);
+			System.out.println("Taula PINGU_INVENTARIS creada.");
+			st.close();
+		} catch (SQLException e) {
+			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+				System.out.println("Info taula inventaris: " + e.getMessage());
 			}
 		}
 	}
@@ -284,46 +372,101 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Guarda una nova partida per a un usuari (permet múltiples partides per usuari).
-	 * Utilitza la seqüència PINGU_PARTIDAS_SEQ per generar l'ID únic.
+	 * Guarda una nova partida repartida en tres taules:
+	 *   PINGU_PARTIDAS  — dades generals de la partida
+	 *   PINGU_PINGUINOS — un registre per cada pingüí
+	 *   PINGU_INVENTARIS — un registre per cada ítem de cada pingüí
 	 *
-	 * @param nomPartida Nom descriptiu que l'usuari ha donat a la partida
+	 * @param nombresPinguinos   Noms dels pingüins en ordre de torn
+	 * @param posicionesPinguinos Posicions al tauler de cada pingüí
+	 * @param inventariosPinguinos [i][j] = "NomItem:quantitat" per al pingüí i, ítem j
 	 */
 	public static boolean guardarPartida(Connection con, String username, String nomPartida,
-			int numCasillas, String casillasTipos, int numJugadores,
-			String nombresJugadores, String posiciones, String inventarios,
+			int numCasillas, String casillasTipos,
 			int focaActivada, int focaPos, int focaSoborno, int focaTurnosBloq,
-			int turnos, int jugadorActual) {
+			int turnos, int jugadorActual,
+			String[] nombresPinguinos, int[] posicionesPinguinos,
+			String[][] inventariosPinguinos) {
 		if (con == null) return false;
 		try {
-			con.setAutoCommit(true);
-			PreparedStatement ps = con.prepareStatement(
+			con.setAutoCommit(false);
+
+			// 1) Insertar la partida principal
+			PreparedStatement ps1 = con.prepareStatement(
 				"INSERT INTO PINGU_PARTIDAS " +
 				"(ID, USERNAME, NOM_PARTIDA, NUM_CASILLAS, CASILLAS_TIPOS, " +
-				"NUM_JUGADORES, NOMBRES_JUGADORES, POSICIONES, INVENTARIOS, " +
 				"FOCA_ACTIVADA, FOCA_POS, FOCA_SOBORNO, FOCA_TURNOS_BLOQ, " +
 				"TURNOS, JUGADOR_ACTUAL, FECHA_GUARDADO) " +
-				"VALUES (PINGU_PARTIDAS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)"
+				"VALUES (PINGU_PARTIDAS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)"
 			);
-			ps.setString(1, username);
-			ps.setString(2, (nomPartida != null && !nomPartida.trim().isEmpty()) ? nomPartida.trim() : "Partida");
-			ps.setInt(3, numCasillas);
-			ps.setString(4, casillasTipos);
-			ps.setInt(5, numJugadores);
-			ps.setString(6, nombresJugadores);
-			ps.setString(7, posiciones);
-			ps.setString(8, inventarios);
-			ps.setInt(9, focaActivada);
-			ps.setInt(10, focaPos);
-			ps.setInt(11, focaSoborno);
-			ps.setInt(12, focaTurnosBloq);
-			ps.setInt(13, turnos);
-			ps.setInt(14, jugadorActual);
-			int filas = ps.executeUpdate();
-			ps.close();
-			System.out.println("Partida '" + nomPartida + "' guardada per " + username + " (filas=" + filas + ")");
-			return filas > 0;
+			ps1.setString(1, username);
+			ps1.setString(2, (nomPartida != null && !nomPartida.trim().isEmpty()) ? nomPartida.trim() : "Partida");
+			ps1.setInt(3, numCasillas);
+			ps1.setString(4, casillasTipos);
+			ps1.setInt(5, focaActivada);
+			ps1.setInt(6, focaPos);
+			ps1.setInt(7, focaSoborno);
+			ps1.setInt(8, focaTurnosBloq);
+			ps1.setInt(9, turnos);
+			ps1.setInt(10, jugadorActual);
+			ps1.executeUpdate();
+			ps1.close();
+
+			// Recuperar l'ID generat per la seqüència
+			Statement stId = con.createStatement();
+			ResultSet rsId = stId.executeQuery("SELECT PINGU_PARTIDAS_SEQ.CURRVAL FROM DUAL");
+			rsId.next();
+			int partidaId = rsId.getInt(1);
+			rsId.close();
+			stId.close();
+
+			// 2) Insertar cada pingüí i els seus ítems
+			for (int i = 0; i < nombresPinguinos.length; i++) {
+				PreparedStatement ps2 = con.prepareStatement(
+					"INSERT INTO PINGU_PINGUINOS (ID, PARTIDA_ID, INDEX_JUG, NOM, POSICIO) " +
+					"VALUES (PINGU_PINGUINOS_SEQ.NEXTVAL, ?, ?, ?, ?)"
+				);
+				ps2.setInt(1, partidaId);
+				ps2.setInt(2, i);
+				ps2.setString(3, nombresPinguinos[i]);
+				ps2.setInt(4, posicionesPinguinos[i]);
+				ps2.executeUpdate();
+				ps2.close();
+
+				// Recuperar l'ID del pingüí inserit
+				Statement stPingId = con.createStatement();
+				ResultSet rsPingId = stPingId.executeQuery("SELECT PINGU_PINGUINOS_SEQ.CURRVAL FROM DUAL");
+				rsPingId.next();
+				int pinguinoId = rsPingId.getInt(1);
+				rsPingId.close();
+				stPingId.close();
+
+				// 3) Insertar els ítems de l'inventari d'aquest pingüí
+				if (inventariosPinguinos != null && i < inventariosPinguinos.length
+						&& inventariosPinguinos[i] != null) {
+					for (String itemStr : inventariosPinguinos[i]) {
+						String[] kv = itemStr.split(":");
+						if (kv.length == 2) {
+							PreparedStatement ps3 = con.prepareStatement(
+								"INSERT INTO PINGU_INVENTARIS (ID, PINGUINO_ID, NOM_ITEM, QUANTITAT) " +
+								"VALUES (PINGU_INVENTARIS_SEQ.NEXTVAL, ?, ?, ?)"
+							);
+							ps3.setInt(1, pinguinoId);
+							ps3.setString(2, kv[0].trim());
+							ps3.setInt(3, Integer.parseInt(kv[1].trim()));
+							ps3.executeUpdate();
+							ps3.close();
+						}
+					}
+				}
+			}
+
+			con.commit();
+			con.setAutoCommit(true);
+			System.out.println("Partida '" + nomPartida + "' guardada per " + username + " (3 taules).");
+			return true;
 		} catch (SQLException e) {
+			try { con.rollback(); con.setAutoCommit(true); } catch (SQLException ex) { /* ignored */ }
 			System.out.println("Error guardant partida: " + e.getMessage());
 			e.printStackTrace();
 			return false;
@@ -332,27 +475,32 @@ public class GestorBBDD {
 
 	/**
 	 * Llista totes les partides guardades d'un usuari, ordenades per data (més recent primer).
-	 * Retorna les columnes bàsiques per mostrar a la pantalla de selecció.
+	 * Els noms dels jugadors s'obtenen de la taula PINGU_PINGUINOS mitjançant LISTAGG.
 	 *
-	 * @return ArrayList amb un LinkedHashMap per partida (ID, NOM_PARTIDA, NOMBRES_JUGADORES, TURNOS, FECHA_GUARDADO)
+	 * @return ArrayList amb un LinkedHashMap per partida (ID, NOM_PARTIDA, NOMBRES_JUGADORS, TURNOS, FECHA_GUARDADO)
 	 */
 	public static ArrayList<LinkedHashMap<String, String>> listarPartidas(Connection con, String username) {
 		ArrayList<LinkedHashMap<String, String>> lista = new ArrayList<>();
 		if (con == null) return lista;
 		try {
 			PreparedStatement ps = con.prepareStatement(
-				"SELECT ID, NOM_PARTIDA, NOMBRES_JUGADORES, TURNOS, FECHA_GUARDADO " +
-				"FROM PINGU_PARTIDAS WHERE USERNAME = ? ORDER BY FECHA_GUARDADO DESC"
+				"SELECT p.ID, p.NOM_PARTIDA, " +
+				"  (SELECT LISTAGG(pj.NOM, ',') WITHIN GROUP (ORDER BY pj.INDEX_JUG) " +
+				"   FROM PINGU_PINGUINOS pj WHERE pj.PARTIDA_ID = p.ID) AS NOMBRES_JUGADORS, " +
+				"  p.TURNOS, p.FECHA_GUARDADO " +
+				"FROM PINGU_PARTIDAS p " +
+				"WHERE p.USERNAME = ? " +
+				"ORDER BY p.FECHA_GUARDADO DESC"
 			);
 			ps.setString(1, username);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				LinkedHashMap<String, String> fila = new LinkedHashMap<>();
-				fila.put("ID",                rs.getString("ID"));
-				fila.put("NOM_PARTIDA",       rs.getString("NOM_PARTIDA"));
-				fila.put("NOMBRES_JUGADORS",  rs.getString("NOMBRES_JUGADORES"));
-				fila.put("TURNOS",            rs.getString("TURNOS"));
-				fila.put("FECHA_GUARDADO",    rs.getString("FECHA_GUARDADO"));
+				fila.put("ID",             rs.getString("ID"));
+				fila.put("NOM_PARTIDA",    rs.getString("NOM_PARTIDA"));
+				fila.put("NOMBRES_JUGADORS", rs.getString("NOMBRES_JUGADORS"));
+				fila.put("TURNOS",         rs.getString("TURNOS"));
+				fila.put("FECHA_GUARDADO", rs.getString("FECHA_GUARDADO"));
 				lista.add(fila);
 			}
 			rs.close();
@@ -364,32 +512,85 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Carrega totes les dades d'una partida concreta pel seu ID.
+	 * Carrega totes les dades d'una partida concreta pel seu ID, llegint les tres taules:
+	 * PINGU_PARTIDAS, PINGU_PINGUINOS i PINGU_INVENTARIS.
+	 * El mapa resultant inclou les claus NUM_JUGADORES, NOMBRES_JUGADORES, POSICIONES i
+	 * INVENTARIOS reconstruïdes per mantenir compatibilitat amb restaurarPartida().
 	 *
-	 * @param id ID de la partida (columna ID de PINGU_PARTIDAS)
-	 * @return Map amb totes les columnes de la partida, o null si no existeix
+	 * @param id ID de la partida
+	 * @return Map amb totes les dades de la partida, o null si no existeix
 	 */
 	public static LinkedHashMap<String, String> cargarPartidaPorId(Connection con, int id) {
 		if (con == null) return null;
 		try {
+			// 1) Dades generals de la partida
 			PreparedStatement ps = con.prepareStatement(
 				"SELECT * FROM PINGU_PARTIDAS WHERE ID = ?"
 			);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				ResultSetMetaData meta = rs.getMetaData();
-				int cols = meta.getColumnCount();
-				LinkedHashMap<String, String> datos = new LinkedHashMap<>();
-				for (int i = 1; i <= cols; i++) {
-					datos.put(meta.getColumnLabel(i), rs.getString(i));
-				}
-				rs.close();
-				ps.close();
-				return datos;
+			if (!rs.next()) {
+				rs.close(); ps.close();
+				return null;
+			}
+			LinkedHashMap<String, String> datos = new LinkedHashMap<>();
+			ResultSetMetaData meta = rs.getMetaData();
+			for (int i = 1; i <= meta.getColumnCount(); i++) {
+				datos.put(meta.getColumnLabel(i), rs.getString(i));
 			}
 			rs.close();
 			ps.close();
+
+			// 2) Pingüins d'aquesta partida, ordenats per índex
+			PreparedStatement ps2 = con.prepareStatement(
+				"SELECT ID, INDEX_JUG, NOM, POSICIO " +
+				"FROM PINGU_PINGUINOS WHERE PARTIDA_ID = ? ORDER BY INDEX_JUG"
+			);
+			ps2.setInt(1, id);
+			ResultSet rs2 = ps2.executeQuery();
+
+			StringBuilder sbNoms = new StringBuilder();
+			StringBuilder sbPos  = new StringBuilder();
+			StringBuilder sbInv  = new StringBuilder();
+			int numJugadores = 0;
+
+			while (rs2.next()) {
+				int pinguinoId = rs2.getInt("ID");
+				if (numJugadores > 0) {
+					sbNoms.append(",");
+					sbPos.append(",");
+					sbInv.append(";");
+				}
+				sbNoms.append(rs2.getString("NOM"));
+				sbPos.append(rs2.getInt("POSICIO"));
+				numJugadores++;
+
+				// 3) Ítems de l'inventari d'aquest pingüí
+				PreparedStatement ps3 = con.prepareStatement(
+					"SELECT NOM_ITEM, QUANTITAT FROM PINGU_INVENTARIS WHERE PINGUINO_ID = ?"
+				);
+				ps3.setInt(1, pinguinoId);
+				ResultSet rs3 = ps3.executeQuery();
+				boolean firstItem = true;
+				while (rs3.next()) {
+					if (!firstItem) sbInv.append(",");
+					sbInv.append(rs3.getString("NOM_ITEM"))
+					     .append(":").append(rs3.getInt("QUANTITAT"));
+					firstItem = false;
+				}
+				rs3.close();
+				ps3.close();
+			}
+			rs2.close();
+			ps2.close();
+
+			// Afegir camps reconstruïts perquè restaurarPartida() els pugui llegir
+			datos.put("NUM_JUGADORES",    String.valueOf(numJugadores));
+			datos.put("NOMBRES_JUGADORES", sbNoms.toString());
+			datos.put("POSICIONES",        sbPos.toString());
+			datos.put("INVENTARIOS",       sbInv.toString());
+
+			return datos;
 		} catch (SQLException e) {
 			System.out.println("Error carregant partida per ID: " + e.getMessage());
 		}
@@ -397,20 +598,40 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Esborra una partida concreta pel seu ID.
+	 * Esborra una partida concreta pel seu ID, eliminant en cascada
+	 * els registres de PINGU_INVENTARIS i PINGU_PINGUINOS associats.
 	 *
 	 * @param id ID de la partida a esborrar
 	 */
 	public static boolean borrarPartidaPorId(Connection con, int id) {
 		if (con == null) return false;
 		try {
-			PreparedStatement ps = con.prepareStatement(
+			// Eliminar inventaris dels pingüins d'aquesta partida
+			PreparedStatement ps1 = con.prepareStatement(
+				"DELETE FROM PINGU_INVENTARIS WHERE PINGUINO_ID IN " +
+				"(SELECT ID FROM PINGU_PINGUINOS WHERE PARTIDA_ID = ?)"
+			);
+			ps1.setInt(1, id);
+			ps1.executeUpdate();
+			ps1.close();
+
+			// Eliminar pingüins d'aquesta partida
+			PreparedStatement ps2 = con.prepareStatement(
+				"DELETE FROM PINGU_PINGUINOS WHERE PARTIDA_ID = ?"
+			);
+			ps2.setInt(1, id);
+			ps2.executeUpdate();
+			ps2.close();
+
+			// Eliminar la partida
+			PreparedStatement ps3 = con.prepareStatement(
 				"DELETE FROM PINGU_PARTIDAS WHERE ID = ?"
 			);
-			ps.setInt(1, id);
-			int filas = ps.executeUpdate();
-			ps.close();
-			System.out.println("Partida ID=" + id + " esborrada (filas=" + filas + ")");
+			ps3.setInt(1, id);
+			int filas = ps3.executeUpdate();
+			ps3.close();
+
+			System.out.println("Partida ID=" + id + " esborrada en cascada (filas=" + filas + ")");
 			return filas > 0;
 		} catch (SQLException e) {
 			System.out.println("Error esborrant partida per ID: " + e.getMessage());
@@ -419,17 +640,40 @@ public class GestorBBDD {
 	}
 
 	/**
-	 * Esborra totes les partides guardades d'un usuari.
+	 * Esborra totes les partides guardades d'un usuari, eliminant en cascada
+	 * els registres de PINGU_INVENTARIS i PINGU_PINGUINOS associats.
 	 */
 	public static boolean borrarPartida(Connection con, String username) {
 		if (con == null) return false;
 		try {
-			PreparedStatement ps = con.prepareStatement(
+			// Eliminar inventaris dels pingüins de totes les partides de l'usuari
+			PreparedStatement ps1 = con.prepareStatement(
+				"DELETE FROM PINGU_INVENTARIS WHERE PINGUINO_ID IN " +
+				"(SELECT pj.ID FROM PINGU_PINGUINOS pj " +
+				" JOIN PINGU_PARTIDAS p ON pj.PARTIDA_ID = p.ID " +
+				" WHERE p.USERNAME = ?)"
+			);
+			ps1.setString(1, username);
+			ps1.executeUpdate();
+			ps1.close();
+
+			// Eliminar pingüins de totes les partides de l'usuari
+			PreparedStatement ps2 = con.prepareStatement(
+				"DELETE FROM PINGU_PINGUINOS WHERE PARTIDA_ID IN " +
+				"(SELECT ID FROM PINGU_PARTIDAS WHERE USERNAME = ?)"
+			);
+			ps2.setString(1, username);
+			ps2.executeUpdate();
+			ps2.close();
+
+			// Eliminar les partides de l'usuari
+			PreparedStatement ps3 = con.prepareStatement(
 				"DELETE FROM PINGU_PARTIDAS WHERE USERNAME = ?"
 			);
-			ps.setString(1, username);
-			int filas = ps.executeUpdate();
-			ps.close();
+			ps3.setString(1, username);
+			int filas = ps3.executeUpdate();
+			ps3.close();
+
 			return filas > 0;
 		} catch (SQLException e) {
 			System.out.println("Error esborrant partides de l'usuari: " + e.getMessage());
