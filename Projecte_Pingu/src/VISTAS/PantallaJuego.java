@@ -501,21 +501,21 @@ public class PantallaJuego {
 				atacant.setPos(posModel);
 				moverFichaVisual(indiceFichaAtacant, posModel);
 			}
-			// Mostrar l'event que ha passat si és una casella Evento
+			// Mostrar le evento 
 			if (casilla instanceof Evento) {
 				Evento ev = (Evento) casilla;
-				String desc = ev.getUltimoEventoDescripcion();
+				String desc = ev.getNoti();
 				if (desc != null && !desc.isEmpty()) {
 					eventos.setText(atacant.getNom() + ": " + desc);
 				}
 			} else {
 				if (casilla instanceof Agujero) {
-					eventos.setText(atacant.getNom() + " ⚫ Ha caigut en un Forat! Retrocedeix!");
+					eventos.setText(atacant.getNom() + " ha caido en un agujero.");
 				} else if (casilla instanceof Oso) {
 					if (atacant.getPos() == posBefore) {
-						eventos.setText(atacant.getNom() + " 🐻 Ós Polar! Ha usat un Peix per escapar!");
+						eventos.setText(atacant.getNom() + " ha sobornado al oso con un pescado.");
 					} else {
-						eventos.setText(atacant.getNom() + " 🐻 Ós Polar! Torna a l'inici!");
+						eventos.setText("El Oso ha lanzado a " + atacant.getNom() + " al inicio del tablero.");
 					}
 				} else if (casilla instanceof SueloQuebradizo) {
 					int totalItems = atacant.getInv().totalItems();

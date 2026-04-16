@@ -3,15 +3,14 @@ import java.util.Random;
 
 public class Evento extends Casilla {
 
-	// Guardem l'últim event que ha passat per mostrar-lo a la UI
-	private String ultimoEventoDescripcion = "";
+	private String notificacion = "";
 
 	public Evento(int pos) {
 		super(pos);
 	}
 
-	public String getUltimoEventoDescripcion() {
-		return ultimoEventoDescripcion;
+	public String getNoti() {
+		return notificacion;
 	}
 	
 	@Override
@@ -22,7 +21,7 @@ public class Evento extends Casilla {
 			Random rd = new Random();
 			String evento = "";
 			String[] tipos = {"Dados", "MotoDeNieve", "Bola", "Pez", "PerderT", "PerderObj"};
-			int[] probs = {15, 30, 60, 80, 90, 100};
+			int[] probs = {10, 20, 60, 80, 90, 100};
 			int prob = rd.nextInt(100)+1;
 			
 			if(prob < probs[0]) {
@@ -44,33 +43,33 @@ public class Evento extends Casilla {
 				int tipo = r.nextInt(10)+1;
 				if(tipo > 4) {
 					pingu.agregarItem(new Dado("Lento", 1));
-					ultimoEventoDescripcion = "🎲 Ha obtingut un Dado Lento!";
+					notificacion = pingu.getNom() + " ha obtenido 1 dado lento.";
 				}else {
 					pingu.agregarItem(new Dado("Rapido", 1));
-					ultimoEventoDescripcion = "🎲 Ha obtingut un Dado Ràpid!";
+					notificacion = pingu.getNom() + " ha obtinido 1 dado rapido.";
 				}
 				break;
 			case "MotoDeNieve":
 				Trineo moto = new Trineo(pingu.getPos());
 				moto.realizarAccion(p, pingu);
-				ultimoEventoDescripcion = "🛷 Moto de Neu! Avança fins al pròxim trineo!";
+				notificacion = "¡Moto de nieve!" + pingu.getNom() + " avanza al siguiente trineo.";
 				break;
 			case "Bola":
 				int cantidad = r.nextInt(3)+1;
 				pingu.agregarItem(new Bola(cantidad));
-				ultimoEventoDescripcion = "❄ Ha obtingut " + cantidad + " Bola(es) de Neu!";
+				notificacion = pingu.getNom() + " ha obtinido " + cantidad + " bola/s de nieve.";
 				break;
 			case "Pez":
 				pingu.agregarItem(new Pez(1));
-				ultimoEventoDescripcion = "🐟 Ha obtingut un Peix!";
+				notificacion = pingu.getNom() + " ha obtino 1 pez.";
 				break;
 			case "PerderT":
 				pingu.perderTurno();
-				ultimoEventoDescripcion = "⏭ Perd el pròxim torn!";
+				notificacion = pingu.getNom() + " pierde 1 turno.";
 				break;
 			case "PerderObj":
 				pingu.quitarItemAleatorio();
-				ultimoEventoDescripcion = "💔 Ha perdut un objecte aleatori!";
+				notificacion = pingu.getNom() + " ha perdido 1 objeto aleatorio.";
 				break;
 			}	
 		}
