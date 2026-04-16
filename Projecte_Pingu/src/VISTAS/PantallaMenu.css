@@ -1,32 +1,31 @@
 /* ========================================
-   PantallaMenu.css — Estilo Stardew Valley
-   Botones individuales como carteles de madera
+   PantallaMenu.css — Estilo Pingüino Helado
+   Botones con aspecto de hielo/escarcha
    ======================================== */
 
-/* ── Menu Button — Marco de madera individual (estilo cartel) ── */
+/* ── Menu Button — Bloque de hielo ── */
 .menu-btn {
     -fx-font-family: "Courier New";
     -fx-font-size: 15px;
     -fx-font-weight: 800;
-    -fx-text-fill: #2e1205;
+    -fx-text-fill: #e8f8ff;
     -fx-text-alignment: center;
     -fx-alignment: CENTER;
     -fx-wrap-text: true;
 
-    /* 3 capas: borde oscuro exterior → marco madera oscura → interior madera clara */
+    /* 3 capas: borde hielo oscuro → marco azul medio → interior hielo translúcido */
     -fx-background-color:
-        #1e0c02,
-        linear-gradient(to bottom, #7a4a20, #6a3c18, #5a3010),
+        #1a3a5c,
+        linear-gradient(to bottom, #2a6090, #1e4d78, #163d68),
         linear-gradient(to bottom,
-            #e8c880 0%,
-            #d4a850 15%,
-            #c89840 35%,
-            #b88030 55%,
-            #c49040 75%,
-            #d0a050 90%,
-            #b87830 100%);
-    -fx-background-insets: 0, 4, 8;
-    -fx-background-radius: 10, 7, 4;
+            rgba(200,235,255,0.95) 0%,
+            rgba(160,210,245,0.90) 20%,
+            rgba(120,185,235,0.85) 45%,
+            rgba(100,165,220,0.88) 65%,
+            rgba(140,200,240,0.90) 85%,
+            rgba(180,225,250,0.92) 100%);
+    -fx-background-insets: 0, 3, 6;
+    -fx-background-radius: 8, 6, 4;
 
     -fx-min-width: 110;
     -fx-pref-width: 120;
@@ -36,54 +35,77 @@
     -fx-cursor: hand;
 
     -fx-effect:
-        dropshadow(gaussian, rgba(0,0,0,0.75), 8, 0.30, 0, 4),
-        dropshadow(gaussian, rgba(0,0,0,0.40), 16, 0.15, 0, 0);
+        dropshadow(gaussian, rgba(30,100,180,0.70), 10, 0.30, 0, 4),
+        dropshadow(gaussian, rgba(150,220,255,0.35), 14, 0.20, 0, 0);
 }
 
 /* ── Hover ── */
 .menu-btn:hover {
-    -fx-text-fill: #1a0900;
+    -fx-text-fill: #ffffff;
     -fx-background-color:
-        #1e0c02,
-        linear-gradient(to bottom, #9a6030, #7a4820, #6a3818),
+        #0e2a4a,
+        linear-gradient(to bottom, #3a78b0, #2a60a0, #1e5090),
         linear-gradient(to bottom,
-            #f4d890 0%,
-            #e4b85c 15%,
-            #d8a848 35%,
-            #c89038 55%,
-            #d4a04a 75%,
-            #e0b060 90%,
-            #c88840 100%);
-    -fx-background-insets: 0, 4, 8;
-    -fx-background-radius: 10, 7, 4;
+            rgba(220,245,255,0.98) 0%,
+            rgba(185,228,252,0.95) 20%,
+            rgba(145,205,248,0.92) 45%,
+            rgba(120,190,242,0.94) 65%,
+            rgba(160,215,250,0.95) 85%,
+            rgba(200,235,255,0.97) 100%);
+    -fx-background-insets: 0, 3, 6;
+    -fx-background-radius: 8, 6, 4;
     -fx-effect:
-        dropshadow(gaussian, rgba(255,200,80,0.60), 14, 0.35, 0, 0),
-        dropshadow(gaussian, rgba(0,0,0,0.70), 8, 0.30, 0, 4);
+        dropshadow(gaussian, rgba(100,200,255,0.80), 16, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(20,80,160,0.65), 10, 0.30, 0, 4);
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
 
 /* ── Pressed ── */
 .menu-btn:pressed {
-    -fx-text-fill: #3a1808;
+    -fx-text-fill: #c8eaff;
     -fx-background-color:
-        #1e0c02,
-        linear-gradient(to bottom, #5a3010, #4a2408, #3a1c06),
+        #0a1e38,
+        linear-gradient(to bottom, #163868, #102e58, #0c2448),
         linear-gradient(to bottom,
-            #9a6828 0%,
-            #8a5820 20%,
-            #7a4818 50%,
-            #6a3c12 80%,
-            #5a3010 100%);
-    -fx-background-insets: 0, 4, 8;
-    -fx-background-radius: 10, 7, 4;
-    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.70), 8, 0.45, 1, 3);
+            rgba(80,140,200,0.92) 0%,
+            rgba(60,120,185,0.90) 30%,
+            rgba(45,100,170,0.88) 65%,
+            rgba(55,115,180,0.90) 100%);
+    -fx-background-insets: 0, 3, 6;
+    -fx-background-radius: 8, 6, 4;
+    -fx-effect: innershadow(gaussian, rgba(0,30,80,0.80), 10, 0.50, 1, 3);
     -fx-scale-x: 0.97;
     -fx-scale-y: 0.97;
 }
 
 /* ── Focus: sin borde visible ── */
 .menu-btn:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Image Button (graphic-only, no background) ── */
+.img-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 8, 0.25, 0, 3);
+}
+.img-btn:hover {
+    -fx-scale-x: 1.07;
+    -fx-scale-y: 1.07;
+    -fx-effect:
+        dropshadow(gaussian, rgba(100,200,255,0.75), 14, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.55), 8, 0.25, 0, 3);
+}
+.img-btn:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 4, 0.30, 0, 2);
+}
+.img-btn:focused {
     -fx-border-color: transparent;
     -fx-border-width: 0;
 }
