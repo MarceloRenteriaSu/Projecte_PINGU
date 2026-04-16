@@ -190,11 +190,18 @@ public class PantallaMenu {
             PantallaConfig ctrl = loader.getController();
             ctrl.setNombreUsuario(username);
 
-            Scene pantallaConfigScene = new Scene(pantallaConfigRoot);
+            Stage menuStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            ctrl.setMenuStage(menuStage);
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(pantallaConfigScene);
-            stage.setTitle("Configuració de la Partida");
+            Stage configStage = new Stage();
+            configStage.initOwner(menuStage);
+            configStage.initModality(Modality.WINDOW_MODAL);
+            configStage.setTitle("Configuració de la Partida");
+            // Match PantallaMenu window size
+            configStage.setWidth(menuStage.getWidth());
+            configStage.setHeight(menuStage.getHeight());
+            configStage.setScene(new Scene(pantallaConfigRoot));
+            configStage.show();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error al obrir la configuració: " + e.getMessage());

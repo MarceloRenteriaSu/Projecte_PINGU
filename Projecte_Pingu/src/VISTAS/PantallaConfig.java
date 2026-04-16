@@ -8,10 +8,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
@@ -31,10 +35,24 @@ public class PantallaConfig {
     @FXML private Button btnComenzar;
 
     private ArrayList<TextField> campsNoms = new ArrayList<>();
+    private ArrayList<ColorPicker> campColors = new ArrayList<>();
     private String nombreUsuario = "Jugador";
+    private Stage menuStage;
+
+    // Default colors matching PantallaJuego.css (#P1–#P4)
+    private static final Color[] DEFAULT_COLORS = {
+        Color.web("#2f6fed"),
+        Color.web("#ef4444"),
+        Color.web("#22c55e"),
+        Color.web("#facc15")
+    };
 
     public void setNombreUsuario(String nom) {
         this.nombreUsuario = nom;
+    }
+
+    public void setMenuStage(Stage stage) {
+        this.menuStage = stage;
     }
 
     @FXML
@@ -65,18 +83,30 @@ public class PantallaConfig {
     private void regenerarCampsNoms() {
         nomsContainer.getChildren().clear();
         campsNoms.clear();
+        campColors.clear();
 
         int numJugadors = obtenerNumJugadors();
         for (int i = 0; i < numJugadors; i++) {
             TextField tf = new TextField();
             tf.setPromptText("Nom del Jugador " + (i + 1));
             tf.getStyleClass().add("field");
-            // Primer camp: posar el nom del login
             if (i == 0) {
                 tf.setText(nombreUsuario);
             }
+
+            ColorPicker cp = new ColorPicker(DEFAULT_COLORS[i % DEFAULT_COLORS.length]);
+            cp.setPrefWidth(90);
+            cp.setMinWidth(90);
+            cp.setMaxWidth(90);
+            cp.getStyleClass().add("button");
+
+            HBox fila = new HBox(8, tf, cp);
+            HBox.setHgrow(tf, Priority.ALWAYS);
+            fila.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
             campsNoms.add(tf);
-            nomsContainer.getChildren().add(tf);
+            campColors.add(cp);
+            nomsContainer.getChildren().add(fila);
         }
     }
 
@@ -131,19 +161,41 @@ public class PantallaConfig {
             }
         }
 
-        // Obrir PantallaJuego amb els paràmetres
+        // Recollir colors dels jugadors
+        ArrayList<String> colors = new ArrayList<>();
+        for (ColorPicker cp : campColors) {
+            Color c = cp.getValue();
+            colors.add(String.format("#%02X%02X%02X",
+                (int) Math.round(c.getRed()   * 255),
+                (int) Math.round(c.getGreen() * 255),
+                (int) Math.round(c.getBlue()  * 255)));
+        }
+
+        // Validar que no hi hagi colors repetits
+        for (int i = 0; i < colors.size(); i++) {
+            for (int j = i + 1; j < colors.size(); j++) {
+                if (colors.get(i).equalsIgnoreCase(colors.get(j))) {
+                    feedbackLabel.setText("⚠ Els jugadors " + (i + 1) + " i " + (j + 1) + " tenen el mateix color!");
+                    feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
+                    return;
+                }
+            }
+        }
+
+        // Obrir PantallaJuego en el Stage del menú i tancar la finestra de config
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaJuego.fxml"));
             Parent root = loader.load();
 
             PantallaJuego ctrl = loader.getController();
             ctrl.setNombreUsuario(nombreUsuario);
-            ctrl.iniciarJoc(numCasillas, noms, ambFoca);
+            ctrl.iniciarJoc(numCasillas, noms, colors, ambFoca);
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Stage configStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             String titleFoca = ambFoca ? " (amb Foca)" : " (sense Foca)";
-            stage.setTitle("Joc del Pingüí — " + numJugadors + " jugadors, " + numCasillas + " caselles" + titleFoca);
+            menuStage.setScene(new Scene(root));
+            menuStage.setTitle("Joc del Pingüí — " + numJugadors + " jugadors, " + numCasillas + " caselles" + titleFoca);
+            configStage.close();
         } catch (Exception e) {
             e.printStackTrace();
             feedbackLabel.setText("❌ Error: " + e.getMessage());
@@ -153,18 +205,7 @@ public class PantallaConfig {
 
     @FXML
     private void handleVolver(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaMenu.fxml"));
-            Parent root = loader.load();
-            PantallaMenu ctrl = loader.getController();
-            ctrl.setNombreUsuario(nombreUsuario);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Menú Principal");
-        } catch (Exception e) {
-            e.printStackTrace();
-            feedbackLabel.setText("❌ Error al tornar al menú.");
-            feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
-        }
+        Stage configStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        configStage.close();
     }
 }
