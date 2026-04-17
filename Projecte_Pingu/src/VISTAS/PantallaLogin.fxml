@@ -5,58 +5,81 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox
+<StackPane
     xmlns="http://javafx.com/javafx/21.0.10"
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaLogin"
     stylesheets="@PantallaMenu.css"
-    styleClass="root"
-    spacing="14"
-    alignment="CENTER"
-    prefWidth="480"
-    prefHeight="450">
+    styleClass="login-root"
+    prefWidth="1024"
+    prefHeight="576">
 
-    <padding>
-        <Insets top="24" right="28" bottom="24" left="28"/>
-    </padding>
+    <!-- Left side: game title + tagline -->
+    <VBox StackPane.alignment="CENTER_LEFT"
+          alignment="CENTER_LEFT"
+          spacing="18"
+          mouseTransparent="true">
+        <StackPane.margin>
+            <Insets left="90"/>
+        </StackPane.margin>
 
-    <VBox spacing="10" styleClass="card" maxWidth="420">
-        <padding>
-            <Insets top="18" right="18" bottom="18" left="18"/>
-        </padding>
+        <Label text="🐧" styleClass="login-penguin-icon"/>
+        <Label text="El Joc del Pingüí" styleClass="login-game-title" wrapText="true"/>
+        <Label text="Inicia sessió per continuar&#10;la teva aventura al gel"
+               styleClass="login-game-subtitle" wrapText="true"/>
 
-        <Label text="🐧 Inicia Sessió" styleClass="title" wrapText="true"/>
-
-        <Region prefHeight="6"/>
-
-        <!-- Username -->
-        <Label text="Nom d'usuari" styleClass="field-label"/>
-        <TextField fx:id="usernameField" promptText="Introdueix el teu nom d'usuari" styleClass="field"/>
-
-        <Region prefHeight="4"/>
-
-        <!-- Password -->
-        <Label text="Contrasenya" styleClass="field-label"/>
-        <PasswordField fx:id="passwordField" promptText="Introdueix la contrasenya" styleClass="field"/>
-
-        <Region prefHeight="8"/>
-
-        <!-- Feedback -->
-        <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
-
-        <!-- Buttons -->
-        <Button fx:id="btnLogin" text="🔑 Iniciar Sessió"
-                onAction="#handleLogin"
-                maxWidth="Infinity"
-                styleClass="primary"/>
-
-        <Button fx:id="btnRegistrar" text="📝 Registrar-se"
-                onAction="#handleRegistrar"
-                maxWidth="Infinity"
-                styleClass="secondary"/>
+        <!-- Decorative snowflakes -->
+        <Label text="❄   ❄   ❄" styleClass="login-snowflakes"/>
     </VBox>
-</VBox>
+
+    <!-- Right side: login card -->
+    <VBox StackPane.alignment="CENTER_RIGHT"
+          alignment="CENTER"
+          spacing="0">
+        <StackPane.margin>
+            <Insets right="80"/>
+        </StackPane.margin>
+
+        <VBox spacing="14" styleClass="login-card" prefWidth="370" maxWidth="370">
+            <padding>
+                <Insets top="36" right="30" bottom="36" left="30"/>
+            </padding>
+
+            <Label text="🔐 Inicia Sessió" styleClass="login-title"/>
+
+            <!-- Username -->
+            <VBox spacing="5">
+                <Label text="Nom d'usuari" styleClass="login-label"/>
+                <TextField fx:id="usernameField"
+                           promptText="El teu nom d'usuari"
+                           styleClass="login-field"/>
+            </VBox>
+
+            <!-- Password -->
+            <VBox spacing="5">
+                <Label text="Contrasenya" styleClass="login-label"/>
+                <PasswordField fx:id="passwordField"
+                               promptText="La teva contrasenya"
+                               styleClass="login-field"/>
+            </VBox>
+
+            <!-- Feedback -->
+            <Label fx:id="feedbackLabel" text="" styleClass="login-feedback" wrapText="true"/>
+
+            <!-- Buttons -->
+            <Button fx:id="btnLogin" text="🔑  Iniciar Sessió"
+                    onAction="#handleLogin"
+                    maxWidth="Infinity"
+                    styleClass="login-primary"/>
+
+            <Button fx:id="btnRegistrar" text="📝  Registrar-se"
+                    onAction="#handleRegistrar"
+                    maxWidth="Infinity"
+                    styleClass="login-secondary"/>
+        </VBox>
+    </VBox>
+
+</StackPane>
