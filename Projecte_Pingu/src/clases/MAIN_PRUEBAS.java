@@ -16,6 +16,7 @@ public class MAIN_PRUEBAS extends Application {
 	    Scene scene = new Scene(root);
 	    stage.setScene(scene);
 	    stage.setTitle("El Joc del Pingu — Login");
+	    stage.setMaximized(true);
 	    stage.show();
 	}
 
