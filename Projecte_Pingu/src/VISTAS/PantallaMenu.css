@@ -1,7 +1,81 @@
 /* ========================================
    PantallaMenu.css — Estilo Pingüino Helado
-   Botones con aspecto de hielo/escarcha
    ======================================== */
+
+
+/* ============================================================
+   HOLLOW-KNIGHT STYLE — title + plain text menu buttons
+   ============================================================ */
+
+/* Small italic line above the main title */
+.hk-subtitle {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-text-fill: rgba(215, 200, 165, 0.88);
+    -fx-effect:
+        dropshadow(gaussian, rgba(0,0,0,0.90), 8, 0.55, 0, 1);
+}
+
+/* Big all-caps game title */
+.hk-title {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 72px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect:
+        dropshadow(gaussian, rgba(255,255,255,0.22), 28, 0.18, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.95), 10, 0.65, 0, 3);
+}
+
+/* Decorative ornament between title and buttons */
+.hk-ornament {
+    -fx-font-size: 20px;
+    -fx-text-fill: rgba(200, 185, 130, 0.72);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.80), 5, 0.45, 0, 1);
+}
+
+/* Plain text menu button — no background, no border */
+.hk-btn {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 22px;
+    -fx-text-fill: rgba(218, 208, 188, 0.86);
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 7 40;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.80), 6, 0.50, 0, 1);
+}
+
+/* Hover: warm golden glow on the text */
+.hk-btn:hover {
+    -fx-text-fill: #fffde0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-effect:
+        dropshadow(gaussian, rgba(255,240,140,0.90), 22, 0.60, 0, 0),
+        dropshadow(gaussian, rgba(255,200,60,0.50), 10, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.85), 6, 0.50, 0, 1);
+}
+
+/* Press: deeper golden */
+.hk-btn:pressed {
+    -fx-text-fill: rgba(255, 220, 80, 0.95);
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-effect:
+        dropshadow(gaussian, rgba(255,180,40,0.65), 10, 0.45, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.85), 5, 0.50, 0, 1);
+}
+
+/* No focus ring */
+.hk-btn:focused {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
 
 /* ── Menu Button — Bloque de hielo ── */
 .menu-btn {

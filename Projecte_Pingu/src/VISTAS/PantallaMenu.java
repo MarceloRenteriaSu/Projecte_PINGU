@@ -2,20 +2,23 @@ package VISTAS;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -33,7 +36,6 @@ public class PantallaMenu {
     @FXML private Button btnCredits;
     @FXML private Button btnExit;
     @FXML private ImageView bgImageView;
-    @FXML private ImageView titleImageView;
     @FXML private Label usernameLabel;
 
     private Connection conexion = null;
@@ -50,34 +52,18 @@ public class PantallaMenu {
     private void initialize() {
         System.out.println("PantallaMenu initialized");
 
-        // Background image stretches to fill the window
+        ImageCursor icicleCursor = createIcicleCursor();
+
+        // Background image stretches to fill the window; also apply cursor to scene
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
+                newScene.setCursor(icicleCursor);
             }
-            
-        });
 
-        // Title image: remove black background pixels, then scale with window
-        if (titleImageView != null) {
-            try {
-                java.io.InputStream is = getClass().getResourceAsStream("title_pinguino.png");
-                if (is != null) {
-                    Image raw = new Image(is);
-                    titleImageView.setImage(removeBlackBackground(raw));
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading title: " + e.getMessage());
-            }
-            titleImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
-                if (newScene != null) {
-                    StackPane root = (StackPane) titleImageView.getScene().getRoot();
-                    titleImageView.fitWidthProperty().bind(root.widthProperty().multiply(0.48));
-                }
-            });
-        }
+        });
 
         try {
             conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
@@ -159,27 +145,44 @@ public class PantallaMenu {
         System.exit(0);
     }
 
-    private Image removeBlackBackground(Image original) {
-        int w = (int) original.getWidth();
-        int h = (int) original.getHeight();
-        WritableImage result = new WritableImage(w, h);
-        PixelReader reader = original.getPixelReader();
-        PixelWriter writer = result.getPixelWriter();
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                Color c = reader.getColor(x, y);
-                double brightness = c.getBrightness();
-                if (brightness < 0.12) {
-                    writer.setColor(x, y, Color.TRANSPARENT);
-                } else if (brightness < 0.30) {
-                    double alpha = (brightness - 0.12) / 0.18;
-                    writer.setColor(x, y, new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
-                } else {
-                    writer.setColor(x, y, c);
-                }
-            }
-        }
-        return result;
+    private ImageCursor createIcicleCursor() {
+        int w = 20, h = 44;
+        Canvas c = new Canvas(w, h);
+        GraphicsContext gc = c.getGraphicsContext2D();
+
+        // Main icicle body — wide at top, tapers to a sharp point at bottom
+        double[] xs = { 1, w - 1, w / 2.0 };
+        double[] ys = { 0,     0, h - 1   };
+
+        LinearGradient bodyFill = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+            new Stop(0.0, Color.web("#dff5ff", 0.95)),
+            new Stop(0.3, Color.web("#a8daf2", 0.92)),
+            new Stop(0.65, Color.web("#6ab8e8", 0.88)),
+            new Stop(1.0, Color.web("#4a9fd4", 0.85)));
+        gc.setFill(bodyFill);
+        gc.fillPolygon(xs, ys, 3);
+
+        // Inner highlight sheen (left facet)
+        gc.setFill(Color.web("#ffffff", 0.60));
+        gc.fillPolygon(new double[]{ 3, 8, w / 2.0 }, new double[]{ 1, 1, h - 2 }, 3);
+
+        // Subtle second facet for depth
+        gc.setFill(Color.web("#c8eeff", 0.35));
+        gc.fillPolygon(new double[]{ 3, 7, 5 }, new double[]{ 1, 1, 14 }, 3);
+
+        // Dark outline
+        gc.setStroke(Color.web("#2a78b0", 0.85));
+        gc.setLineWidth(1.0);
+        gc.strokePolygon(xs, ys, 3);
+
+        // Tip gleam
+        gc.setFill(Color.web("#ffffff", 0.80));
+        gc.fillOval(w / 2.0 - 1.5, h - 4, 3, 3);
+
+        WritableImage img = new WritableImage(w, h);
+        c.snapshot(null, img);
+        // Hotspot at the tip (bottom-centre) so the click point is the sharp end
+        return new ImageCursor(img, w / 2.0, h - 1);
     }
 
     private void abrirPantallaConfig(ActionEvent event, String username) {
