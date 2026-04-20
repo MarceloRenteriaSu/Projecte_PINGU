@@ -25,6 +25,11 @@ public class PantallaRegistro {
     @FXML private Button btnVolver;
 
     @FXML
+    private void initialize() {
+        CursorManager.applyWhenReady(usernameField);
+    }
+
+    @FXML
     private void handleRegistrar(ActionEvent event) {
         String username = usernameField.getText();
         String password = passwordField.getText();

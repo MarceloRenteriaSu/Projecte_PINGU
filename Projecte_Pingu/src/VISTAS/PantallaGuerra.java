@@ -37,6 +37,11 @@ public class PantallaGuerra {
     // Callback → PantallaJuego necessita saber el resultat per actualitzar la UI
     private GuerraCallback callback;
 
+    @FXML
+    private void initialize() {
+        CursorManager.applyWhenReady(btnDau);
+    }
+
     /**
      * Interfície de retorn cap a PantallaJuego.
      */

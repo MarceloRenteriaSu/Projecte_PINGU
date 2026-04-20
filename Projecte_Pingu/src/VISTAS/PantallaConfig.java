@@ -74,6 +74,7 @@ public class PantallaConfig {
 
         feedbackLabel.setText("");
         regenerarCampsNoms();
+        CursorManager.applyWhenReady(casillasField);
     }
 
     /**

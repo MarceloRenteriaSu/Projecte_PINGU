@@ -2,23 +2,15 @@ package VISTAS;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -52,17 +44,14 @@ public class PantallaMenu {
     private void initialize() {
         System.out.println("PantallaMenu initialized");
 
-        ImageCursor icicleCursor = createIcicleCursor();
-
-        // Background image stretches to fill the window; also apply cursor to scene
+        // Background stretches to fill window; apply cursor to scene
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
-                newScene.setCursor(icicleCursor);
+                CursorManager.apply(newScene);
             }
-
         });
 
         try {
@@ -145,45 +134,6 @@ public class PantallaMenu {
         System.exit(0);
     }
 
-    private ImageCursor createIcicleCursor() {
-        int w = 20, h = 44;
-        Canvas c = new Canvas(w, h);
-        GraphicsContext gc = c.getGraphicsContext2D();
-
-        // Main icicle body — wide at top, tapers to a sharp point at bottom
-        double[] xs = { 1, w - 1, w / 2.0 };
-        double[] ys = { 0,     0, h - 1   };
-
-        LinearGradient bodyFill = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
-            new Stop(0.0, Color.web("#dff5ff", 0.95)),
-            new Stop(0.3, Color.web("#a8daf2", 0.92)),
-            new Stop(0.65, Color.web("#6ab8e8", 0.88)),
-            new Stop(1.0, Color.web("#4a9fd4", 0.85)));
-        gc.setFill(bodyFill);
-        gc.fillPolygon(xs, ys, 3);
-
-        // Inner highlight sheen (left facet)
-        gc.setFill(Color.web("#ffffff", 0.60));
-        gc.fillPolygon(new double[]{ 3, 8, w / 2.0 }, new double[]{ 1, 1, h - 2 }, 3);
-
-        // Subtle second facet for depth
-        gc.setFill(Color.web("#c8eeff", 0.35));
-        gc.fillPolygon(new double[]{ 3, 7, 5 }, new double[]{ 1, 1, 14 }, 3);
-
-        // Dark outline
-        gc.setStroke(Color.web("#2a78b0", 0.85));
-        gc.setLineWidth(1.0);
-        gc.strokePolygon(xs, ys, 3);
-
-        // Tip gleam
-        gc.setFill(Color.web("#ffffff", 0.80));
-        gc.fillOval(w / 2.0 - 1.5, h - 4, 3, 3);
-
-        WritableImage img = new WritableImage(w, h);
-        c.snapshot(null, img);
-        // Hotspot at the tip (bottom-centre) so the click point is the sharp end
-        return new ImageCursor(img, w / 2.0, h - 1);
-    }
 
     private void abrirPantallaConfig(ActionEvent event, String username) {
         try {
