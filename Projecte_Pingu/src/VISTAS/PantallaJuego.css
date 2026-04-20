@@ -4,14 +4,31 @@
 
 .root {
     -fx-font-family: "System";
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #e8f0fe, #d0e4f7, #c7dff5, #b8d4f0);
+    -fx-background-color: #1e2d40;
 }
 
 /* MENU */
 .menu-bar {
-    -fx-background-color: derive(white, -5%);
-    -fx-border-color: #b4c8dc;
+    -fx-background-color: #243447;
+    -fx-border-color: #3a5068;
     -fx-border-width: 0 0 1 0;
+}
+
+.menu-bar .label {
+    -fx-text-fill: #c8daf0;
+}
+
+.context-menu {
+    -fx-background-color: #243447;
+    -fx-border-color: #3a5068;
+}
+
+.menu-item .label {
+    -fx-text-fill: #c8daf0;
+}
+
+.menu-item:focused {
+    -fx-background-color: #3a5068;
 }
 
 /* ============================== */
@@ -19,8 +36,8 @@
 /* ============================== */
 
 .snow-background {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #eaf3ff, #dce8f8);
-    -fx-background-radius: 18;
+    -fx-background-color: #1e2d40;
+    -fx-background-radius: 0;
 }
 
 /* ============================== */
@@ -28,18 +45,11 @@
 /* ============================== */
 
 .board {
-    /* Snow-field gradient */
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f0f6ff, #e2ecf9, #d6e4f5);
-    -fx-background-radius: 16;
-    -fx-padding: 14;
-
-    /* Icy border */
-    -fx-border-color: #a0c3e6;
-    -fx-border-radius: 16;
-    -fx-border-width: 1.5;
-
-    /* Snow depth shadow */
-    -fx-effect: dropshadow(gaussian, rgba(100,140,200,0.25), 20, 0.15, 0, 4);
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 10;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 /* ============================== */
@@ -47,16 +57,18 @@
 /* ============================== */
 
 .cell-title {
-    -fx-font-size: 22px;
-    -fx-fill: #2c3e5a;
-    -fx-opacity: 0.70;
+    -fx-font-family: "Georgia";
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.90), 3, 0.60, 0, 1);
 }
 
 .cell-type {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-fill: #34506e;
-    -fx-opacity: 0.85;
+    -fx-font-family: "Georgia";
+    -fx-font-size: 10px;
+    -fx-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.90), 3, 0.60, 0, 1);
 }
 
 /* ============================== */

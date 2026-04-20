@@ -11,10 +11,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -50,6 +56,7 @@ public class PantallaJuego {
 
 	// Game board and player pieces (up to 4 pingüinos + 1 foca)
 	@FXML private GridPane tablero;
+	@FXML private Canvas pathCanvas;
 	@FXML private Circle P1;
 	@FXML private Circle P2;
 	@FXML private Circle P3;
@@ -138,7 +145,61 @@ public class PantallaJuego {
 
 	@FXML
 	private void initialize() {
-		// L'FXML s'ha carregat. Esperem a iniciarJoc() per iniciar el joc.
+		CursorManager.applyWhenReady(dado);
+		pathCanvas.widthProperty().bind(tablero.widthProperty());
+		pathCanvas.heightProperty().bind(tablero.heightProperty());
+		pathCanvas.widthProperty().addListener((obs, ov, nv) -> drawPath());
+		pathCanvas.heightProperty().addListener((obs, ov, nv) -> drawPath());
+	}
+
+	private void drawPath() {
+		if (gestorPartida == null || gestorPartida.getPartida() == null) return;
+		double w = pathCanvas.getWidth();
+		double h = pathCanvas.getHeight();
+		if (w <= 0 || h <= 0) return;
+
+		javafx.geometry.Insets ins = tablero.getInsets();
+		double padL = ins.getLeft();
+		double padT = ins.getTop();
+		double boardW = w - padL - ins.getRight();
+		double boardH = h - padT - ins.getBottom();
+		if (boardW <= 0 || boardH <= 0) return;
+
+		double cellW = boardW / this.columnas;
+		double cellH = boardH / this.filas;
+		double margin  = Math.min(cellW, cellH) * 0.07;
+		double arc     = Math.min(cellW, cellH) * 0.22;
+		double connH   = cellH * 0.36;
+		double connV   = cellW * 0.36;
+
+		int total = gestorPartida.getPartida().getTablero().getTamanyo();
+
+		GraphicsContext gc = pathCanvas.getGraphicsContext2D();
+		gc.clearRect(0, 0, w, h);
+		gc.setFill(Color.WHITE);
+
+		// Connectors first (drawn behind tiles)
+		for (int i = 0; i < total - 1; i++) {
+			int[] a = obtenerFilaColumna(i);
+			int[] b = obtenerFilaColumna(i + 1);
+			double ax = padL + a[1] * cellW + cellW / 2;
+			double ay = padT + a[0] * cellH + cellH / 2;
+			double bx = padL + b[1] * cellW + cellW / 2;
+			double by = padT + b[0] * cellH + cellH / 2;
+			if (a[0] == b[0]) {
+				gc.fillRect(Math.min(ax, bx), ay - connH / 2, Math.abs(bx - ax), connH);
+			} else {
+				gc.fillRect(ax - connV / 2, Math.min(ay, by), connV, Math.abs(by - ay));
+			}
+		}
+
+		// Tiles on top of connectors
+		for (int i = 0; i < total; i++) {
+			int[] rc = obtenerFilaColumna(i);
+			double x  = padL + rc[1] * cellW + margin;
+			double y  = padT + rc[0] * cellH + margin;
+			gc.fillRoundRect(x, y, cellW - 2 * margin, cellH - 2 * margin, arc, arc);
+		}
 	}
 
 	/**
@@ -347,29 +408,57 @@ public class PantallaJuego {
 		for (int i = 0; i < totalCasillas; i++) {
 			Casilla casilla = t.getCasillas().get(i);
 			String tipo = casilla.getClass().getSimpleName();
-			String label;
-			if (i == 0) {
-				label = "0\nStart";
-			} else if (i == totalCasillas - 1) {
-				label = i + "\nFinish";
-			} else {
-				label = i + "\n" + tipo;
+
+			String imgName;
+			switch (tipo) {
+				case "Oso":             imgName = "casilla_oso.png";         break;
+				case "Agujero":         imgName = "casilla_agujero.png";     break;
+				case "Trineo":          imgName = "casilla_trineo.png";      break;
+				case "SueloQuebradizo": imgName = "casilla_quebradizo.png";  break;
+				case "Normal":          imgName = "casilla_normal.png";      break;
+				default:                imgName = "casilla_interrogante.png"; break;
 			}
-			Text texto = new Text(label);
-			texto.setUserData(TAG_CASILLA_TEXT);
-			texto.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-			if (i == 0 || i == totalCasillas - 1) {
-				texto.getStyleClass().add("cell-title");
-			} else {
-				texto.getStyleClass().add("cell-type");
+
+			ImageView iv = new ImageView();
+			try {
+				// Load at a capped resolution so it never overwhelms the grid cell
+				iv.setImage(new Image(
+					getClass().getResourceAsStream("/pngs_casillas/" + imgName),
+					56, 56, true, true));
+			} catch (Exception e) {
+				System.out.println("Could not load " + imgName);
 			}
+			iv.setPreserveRatio(true);
+
+			String numLabel = (i == 0) ? "S" : (i == totalCasillas - 1) ? "F" : String.valueOf(i);
+			Text txt = new Text(numLabel);
+			txt.setTextAlignment(javafx.scene.text.TextAlignment.LEFT);
+			txt.getStyleClass().add(i == 0 || i == totalCasillas - 1 ? "cell-title" : "cell-type");
+
+			StackPane cell = new StackPane();
+			cell.getChildren().addAll(iv, txt);
+			StackPane.setAlignment(iv, javafx.geometry.Pos.CENTER);
+			StackPane.setAlignment(txt, javafx.geometry.Pos.TOP_LEFT);
+			StackPane.setMargin(txt, new javafx.geometry.Insets(2, 0, 0, 3));
+			cell.setMaxWidth(Double.MAX_VALUE);
+			cell.setMaxHeight(Double.MAX_VALUE);
+			// Scale to 78 % of cell so there is always padding around the image
+			iv.fitWidthProperty().bind(cell.widthProperty().multiply(0.78));
+			iv.fitHeightProperty().bind(cell.heightProperty().multiply(0.78));
+
+			cell.setUserData(TAG_CASILLA_TEXT);
 			int[] pos = obtenerFilaColumna(i);
-			GridPane.setRowIndex(texto, pos[0]);
-			GridPane.setColumnIndex(texto, pos[1]);
-			GridPane.setHalignment(texto, javafx.geometry.HPos.CENTER);
-			GridPane.setValignment(texto, javafx.geometry.VPos.CENTER);
-			tablero.getChildren().add(texto);
+			GridPane.setRowIndex(cell, pos[0]);
+			GridPane.setColumnIndex(cell, pos[1]);
+			tablero.getChildren().add(cell);
 		}
+
+		// Bring player circles above the cell images
+		for (Circle c : new Circle[]{P1, P2, P3, P4, P5}) {
+			if (c != null && tablero.getChildren().contains(c)) c.toFront();
+		}
+
+		javafx.application.Platform.runLater(this::drawPath);
 	}
 
 	// -------------------------------------------------------
@@ -1324,6 +1413,8 @@ public class PantallaJuego {
 		marcarJugadorActual();
 		this.turnosPinguinosEnRonda = 0;
 		this.jocIniciat = true;
+
+		javafx.application.Platform.runLater(this::drawPath);
 
 		if (!focaActivada) {
 			peces.setDisable(true);

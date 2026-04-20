@@ -9,12 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,7 +28,6 @@ public class PantallaMenu {
     @FXML private Button btnCredits;
     @FXML private Button btnExit;
     @FXML private ImageView bgImageView;
-    @FXML private ImageView titleImageView;
     @FXML private Label usernameLabel;
 
     private Connection conexion = null;
@@ -50,34 +44,15 @@ public class PantallaMenu {
     private void initialize() {
         System.out.println("PantallaMenu initialized");
 
-        // Background image stretches to fill the window
+        // Background stretches to fill window; apply cursor to scene
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
+                CursorManager.apply(newScene);
             }
-            
         });
-
-        // Title image: remove black background pixels, then scale with window
-        if (titleImageView != null) {
-            try {
-                java.io.InputStream is = getClass().getResourceAsStream("title_pinguino.png");
-                if (is != null) {
-                    Image raw = new Image(is);
-                    titleImageView.setImage(removeBlackBackground(raw));
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading title: " + e.getMessage());
-            }
-            titleImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
-                if (newScene != null) {
-                    StackPane root = (StackPane) titleImageView.getScene().getRoot();
-                    titleImageView.fitWidthProperty().bind(root.widthProperty().multiply(0.48));
-                }
-            });
-        }
 
         try {
             conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
@@ -159,28 +134,6 @@ public class PantallaMenu {
         System.exit(0);
     }
 
-    private Image removeBlackBackground(Image original) {
-        int w = (int) original.getWidth();
-        int h = (int) original.getHeight();
-        WritableImage result = new WritableImage(w, h);
-        PixelReader reader = original.getPixelReader();
-        PixelWriter writer = result.getPixelWriter();
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                Color c = reader.getColor(x, y);
-                double brightness = c.getBrightness();
-                if (brightness < 0.12) {
-                    writer.setColor(x, y, Color.TRANSPARENT);
-                } else if (brightness < 0.30) {
-                    double alpha = (brightness - 0.12) / 0.18;
-                    writer.setColor(x, y, new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
-                } else {
-                    writer.setColor(x, y, c);
-                }
-            }
-        }
-        return result;
-    }
 
     private void abrirPantallaConfig(ActionEvent event, String username) {
         try {

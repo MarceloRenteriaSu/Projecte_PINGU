@@ -20,6 +20,11 @@ public class PantallaFin {
 
     private boolean volverAlMenu = false;
 
+    @FXML
+    private void initialize() {
+        CursorManager.applyWhenReady(btnMenu);
+    }
+
     /**
      * Inicialitza la pantalla amb les dades del resultat.
      */

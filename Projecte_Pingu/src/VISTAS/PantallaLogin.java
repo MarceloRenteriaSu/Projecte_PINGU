@@ -24,6 +24,11 @@ public class PantallaLogin {
     @FXML private Button btnRegistrar;
 
     @FXML
+    private void initialize() {
+        CursorManager.applyWhenReady(usernameField);
+    }
+
+    @FXML
     private void handleLogin(ActionEvent event) {
         String username = usernameField.getText();
         String password = passwordField.getText();
