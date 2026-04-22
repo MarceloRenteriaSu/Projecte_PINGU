@@ -90,6 +90,8 @@ public class GestorBBDD {
 				crearTaulaPartidas(con);
 				crearTaulaPinguinos(con);
 				crearTaulaInventaris(con);
+				crearSequenciaEvents(con);
+				crearTaulaEvents(con);
 				return con;
 			}
 		} catch (ClassNotFoundException e) {
@@ -303,6 +305,88 @@ public class GestorBBDD {
 		}
 	}
 
+	private static void crearSequenciaEvents(Connection con) {
+		try {
+			Statement st = con.createStatement();
+			st.executeUpdate("CREATE SEQUENCE PINGU_EVENTS_SEQ START WITH 1 INCREMENT BY 1 NOCACHE NOORDER");
+			System.out.println("Seqüència PINGU_EVENTS_SEQ creada.");
+			st.close();
+		} catch (SQLException e) {
+			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+				System.out.println("Info seqüència events: " + e.getMessage());
+			}
+		}
+	}
+
+	private static void crearTaulaEvents(Connection con) {
+		try {
+			Statement st = con.createStatement();
+			st.executeUpdate(
+				"CREATE TABLE PINGU_EVENTS (" +
+				"  ID NUMBER PRIMARY KEY," +
+				"  PARTIDA_ID NUMBER NOT NULL," +
+				"  ORDRE NUMBER NOT NULL," +
+				"  TEXT VARCHAR2(500) NOT NULL" +
+				")"
+			);
+			System.out.println("Taula PINGU_EVENTS creada.");
+			st.close();
+		} catch (SQLException e) {
+			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
+				System.out.println("Info taula events: " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Guarda els esdeveniments d'una partida a la taula PINGU_EVENTS.
+	 */
+	public static void guardarEvents(Connection con, int partidaId, ArrayList<String> events) {
+		if (con == null || events == null || events.isEmpty()) return;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"INSERT INTO PINGU_EVENTS (ID, PARTIDA_ID, ORDRE, TEXT) " +
+				"VALUES (PINGU_EVENTS_SEQ.NEXTVAL, ?, ?, ?)"
+			);
+			for (int i = 0; i < events.size(); i++) {
+				String text = events.get(i);
+				if (text == null || text.isEmpty()) continue;
+				ps.setInt(1, partidaId);
+				ps.setInt(2, i);
+				String truncated = text.length() > 498 ? text.substring(0, 498) : text;
+				ps.setString(3, truncated);
+				ps.addBatch();
+			}
+			ps.executeBatch();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error guardant events: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Carrega els esdeveniments d'una partida des de la taula PINGU_EVENTS.
+	 */
+	public static ArrayList<String> carregarEvents(Connection con, int partidaId) {
+		ArrayList<String> events = new ArrayList<>();
+		if (con == null) return events;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT TEXT FROM PINGU_EVENTS WHERE PARTIDA_ID = ? ORDER BY ORDRE"
+			);
+			ps.setInt(1, partidaId);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				events.add(rs.getString("TEXT"));
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error carregant events: " + e.getMessage());
+		}
+		return events;
+	}
+
 
 	/**
 	 * Comprova si un nom d'usuari ja existeix a la BBDD.
@@ -381,13 +465,13 @@ public class GestorBBDD {
 	 * @param posicionesPinguinos Posicions al tauler de cada pingüí
 	 * @param inventariosPinguinos [i][j] = "NomItem:quantitat" per al pingüí i, ítem j
 	 */
-	public static boolean guardarPartida(Connection con, String username, String nomPartida,
+	public static int guardarPartida(Connection con, String username, String nomPartida,
 			int numCasillas, String casillasTipos,
 			int focaActivada, int focaPos, int focaSoborno, int focaTurnosBloq,
 			int turnos, int jugadorActual,
 			String[] nombresPinguinos, int[] posicionesPinguinos,
 			String[][] inventariosPinguinos) {
-		if (con == null) return false;
+		if (con == null) return -1;
 		try {
 			con.setAutoCommit(false);
 
@@ -464,12 +548,12 @@ public class GestorBBDD {
 			con.commit();
 			con.setAutoCommit(true);
 			System.out.println("Partida '" + nomPartida + "' guardada per " + username + " (3 taules).");
-			return true;
+			return partidaId;
 		} catch (SQLException e) {
 			try { con.rollback(); con.setAutoCommit(true); } catch (SQLException ex) { /* ignored */ }
 			System.out.println("Error guardant partida: " + e.getMessage());
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
 	}
 
@@ -606,6 +690,14 @@ public class GestorBBDD {
 	public static boolean borrarPartidaPorId(Connection con, int id) {
 		if (con == null) return false;
 		try {
+			// Eliminar events d'aquesta partida
+			PreparedStatement ps0 = con.prepareStatement(
+				"DELETE FROM PINGU_EVENTS WHERE PARTIDA_ID = ?"
+			);
+			ps0.setInt(1, id);
+			ps0.executeUpdate();
+			ps0.close();
+
 			// Eliminar inventaris dels pingüins d'aquesta partida
 			PreparedStatement ps1 = con.prepareStatement(
 				"DELETE FROM PINGU_INVENTARIS WHERE PINGUINO_ID IN " +
@@ -646,6 +738,15 @@ public class GestorBBDD {
 	public static boolean borrarPartida(Connection con, String username) {
 		if (con == null) return false;
 		try {
+			// Eliminar events de totes les partides de l'usuari
+			PreparedStatement psE = con.prepareStatement(
+				"DELETE FROM PINGU_EVENTS WHERE PARTIDA_ID IN " +
+				"(SELECT ID FROM PINGU_PARTIDAS WHERE USERNAME = ?)"
+			);
+			psE.setString(1, username);
+			psE.executeUpdate();
+			psE.close();
+
 			// Eliminar inventaris dels pingüins de totes les partides de l'usuari
 			PreparedStatement ps1 = con.prepareStatement(
 				"DELETE FROM PINGU_INVENTARIS WHERE PINGUINO_ID IN " +
