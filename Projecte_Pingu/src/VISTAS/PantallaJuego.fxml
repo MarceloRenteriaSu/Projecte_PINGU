@@ -52,7 +52,26 @@
             </padding>
 
             <!-- LEFT: Board fills all available space -->
-            <StackPane HBox.hgrow="ALWAYS">
+            <StackPane HBox.hgrow="ALWAYS" styleClass="board-frame">
+
+                <!-- Snowflake corner decorations -->
+                <Label text="❄" mouseTransparent="true" styleClass="snow-corner"
+                       StackPane.alignment="TOP_LEFT">
+                    <StackPane.margin><Insets top="6" left="8"/></StackPane.margin>
+                </Label>
+                <Label text="❄" mouseTransparent="true" styleClass="snow-corner"
+                       StackPane.alignment="TOP_RIGHT">
+                    <StackPane.margin><Insets top="6" right="8"/></StackPane.margin>
+                </Label>
+                <Label text="❄" mouseTransparent="true" styleClass="snow-corner"
+                       StackPane.alignment="BOTTOM_LEFT">
+                    <StackPane.margin><Insets bottom="6" left="8"/></StackPane.margin>
+                </Label>
+                <Label text="❄" mouseTransparent="true" styleClass="snow-corner"
+                       StackPane.alignment="BOTTOM_RIGHT">
+                    <StackPane.margin><Insets bottom="6" right="8"/></StackPane.margin>
+                </Label>
+
                 <Canvas fx:id="pathCanvas" mouseTransparent="true" />
                 <GridPane fx:id="tablero" styleClass="board"
                           maxWidth="Infinity" maxHeight="Infinity">
@@ -88,17 +107,17 @@
             <!-- RIGHT: Sidebar with 3 stacked panels -->
             <VBox spacing="10" prefWidth="270" minWidth="220" maxWidth="320">
 
-                <!-- YELLOW: Dado / Turn -->
+                <!-- DADO / Turn card -->
                 <VBox spacing="8" styleClass="card">
-                    <Label text="Dado" styleClass="card-title" />
+                    <Label text="❄  Dado" styleClass="card-title" />
                     <Text fx:id="dadoResultText" text="Ha salido: -" styleClass="big-text" wrappingWidth="220" />
                     <Button fx:id="dado" text="Tirar dado" onAction="#handleDado"
                             maxWidth="Infinity" styleClass="primary" />
                 </VBox>
 
-                <!-- BLUE: Inventory -->
+                <!-- INVENTORY card -->
                 <VBox spacing="8" styleClass="card">
-                    <Label text="Objetos" styleClass="card-title" />
+                    <Label text="❄  Objetos" styleClass="card-title" />
 
                     <VBox spacing="8">
                         <padding>
@@ -126,9 +145,9 @@
                     </VBox>
                 </VBox>
 
-                <!-- GREEN: Events -->
+                <!-- EVENTS card -->
                 <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
-                    <Label text="Eventos" styleClass="card-title" />
+                    <Label text="❄  Eventos" styleClass="card-title" />
                     <ListView fx:id="eventosListView" styleClass="events-list" VBox.vgrow="ALWAYS" />
                 </VBox>
 
