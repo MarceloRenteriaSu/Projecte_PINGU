@@ -15,6 +15,7 @@ public class SueloQuebradizo extends Casilla {
 				pingu.setPos(0);
 			}else if(totalItems <= 5 && totalItems != 0) {
 				pingu.perderTurno();
+				
 			}
 		}
 		
