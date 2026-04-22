@@ -1,252 +1,230 @@
-/* ============================== */
-/*    SNOW FIELD THEME — PINGU    */
-/* ============================== */
+/* ==============================
+   JUEGO — CP Island Style
+   ============================== */
 
 .root {
-    -fx-font-family: "System";
-    -fx-background-color: #1e2d40;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
+        #05101f 0%, #0b1e3c 30%, #0d2a52 55%, #081a3a 80%, #040d1c 100%);
 }
 
-/* MENU */
+/* ── Menu bar: CP-island blue bar ── */
 .menu-bar {
-    -fx-background-color: #243447;
-    -fx-border-color: #3a5068;
-    -fx-border-width: 0 0 1 0;
+    -fx-background-color: linear-gradient(to bottom, #10a0e8, #056db5);
+    -fx-border-color: #55cbf5;
+    -fx-border-width: 0 0 2 0;
 }
-
 .menu-bar .label {
-    -fx-text-fill: #c8daf0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
 }
-
 .context-menu {
-    -fx-background-color: #243447;
-    -fx-border-color: #3a5068;
+    -fx-background-color: #0b2a55;
+    -fx-border-color: #55cbf5;
 }
-
 .menu-item .label {
-    -fx-text-fill: #c8daf0;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
 }
-
 .menu-item:focused {
-    -fx-background-color: #3a5068;
+    -fx-background-color: #1a5294;
 }
 
-/* ============================== */
-/*   SNOW-BACKGROUND WRAPPER     */
-/* ============================== */
-
+/* ── Board wrapper ── */
 .snow-background {
-    -fx-background-color: #1e2d40;
-    -fx-background-radius: 0;
+    -fx-background-color: transparent;
 }
 
-/* ============================== */
-/*        TABLERO (BOARD)         */
-/* ============================== */
-
+/* ── Board (transparent – Canvas draws the white path) ── */
 .board {
     -fx-background-color: transparent;
-    -fx-background-radius: 0;
     -fx-padding: 10;
     -fx-border-color: transparent;
     -fx-border-width: 0;
 }
 
-/* ============================== */
-/*      TEXTOS DEL TABLERO       */
-/* ============================== */
-
+/* ── Cell number labels ── */
 .cell-title {
-    -fx-font-family: "Georgia";
+    -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.90), 3, 0.60, 0, 1);
+    -fx-fill: #0d4680;
 }
-
 .cell-type {
-    -fx-font-family: "Georgia";
+    -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 10px;
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.90), 3, 0.60, 0, 1);
+    -fx-fill: #1a5090;
 }
 
-/* ============================== */
-/*       BARRA INFERIOR          */
-/* ============================== */
-
-.bottom-bar {
-    -fx-background-color: transparent;
-}
-
-/* ============================== */
-/*    TARJETAS (FROSTED GLASS)   */
-/* ============================== */
-
+/* ── Sidebar cards (cp-login-card style) ── */
 .card {
-    -fx-background-color: rgba(255,255,255,0.72);
-    -fx-background-radius: 14;
+    -fx-background-color: linear-gradient(to bottom, #daeffc, #aedef5);
+    -fx-background-radius: 15;
     -fx-padding: 14;
-    -fx-border-color: #b4d2f0;
-    -fx-border-radius: 14;
-    -fx-border-width: 1;
-
-    -fx-effect: dropshadow(gaussian, rgba(80,120,180,0.18), 14, 0.12, 0, 2);
+    -fx-border-color: white;
+    -fx-border-radius: 15;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 16, 0.25, 0, 5);
 }
 
 .card-title {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2c3e5a;
-    -fx-opacity: 0.80;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-text-fill: #0d4680;
 }
 
+/* ── Text nodes inside cards ── */
 .big-text {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-fill: #1e3352;
-}
-
-.stat {
     -fx-font-size: 15px;
-    -fx-fill: #34506e;
-    -fx-opacity: 0.88;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #0d4680;
 }
-
-.events-list {
-    -fx-background-color: rgba(0,0,0,0.06);
-    -fx-background-radius: 8;
-    -fx-border-color: #b4d2f0;
-    -fx-border-radius: 8;
-    -fx-border-width: 1;
-    -fx-padding: 0;
+.stat {
+    -fx-font-size: 13px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #1a5090;
 }
-
-.events-list .list-cell {
-    -fx-background-color: transparent;
-    -fx-text-fill: #1e3352;
+.events {
     -fx-font-size: 12px;
-    -fx-padding: 4 8;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #34689e;
+}
+
+/* ── Buttons ── */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #094b8e, #032b55);
+    -fx-background-radius: 20;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-padding: 8 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 5, 0.35, 0, 2);
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #04396b);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #032b55, #094b8e);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+.button:disabled {
+    -fx-opacity: 0.38;
+}
+.button:focused {
+    -fx-border-color: transparent;
     -fx-border-width: 0;
 }
 
-.events-list .list-cell:odd {
-    -fx-background-color: rgba(0,0,0,0.04);
-}
-
-.events-list .list-cell:selected {
-    -fx-background-color: rgba(74,138,244,0.18);
-}
-
-.events-list > .virtual-flow > .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 8;
-}
-
-.events-list > .virtual-flow > .scroll-bar:vertical .thumb {
-    -fx-background-color: #a0c3e6;
-    -fx-background-radius: 4;
-}
-
-.events-list > .virtual-flow > .scroll-bar:vertical .track {
-    -fx-background-color: transparent;
-}
-
-/* ============================== */
-/*           BOTONES              */
-/* ============================== */
-
-.button {
-    -fx-background-radius: 10;
-    -fx-padding: 8 14;
-    -fx-background-color: #dce8f8;
-    -fx-text-fill: #1e3352;
-    -fx-font-weight: bold;
-    -fx-border-color: #a0c3e6;
-    -fx-border-radius: 10;
-    -fx-border-width: 1;
-}
-
-.button:hover {
-    -fx-background-color: #c8dcf5;
-}
-
+/* Primary = green (dado/action button) */
 .button.primary {
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #4a8af4, #2f6fed);
-    -fx-text-fill: white;
-    -fx-border-color: #2f6fed;
+    -fx-background-color: linear-gradient(to bottom, #50cc04, #368a02);
+    -fx-background-radius: 20;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 4, 0.30, 0, 2);
 }
-
 .button.primary:hover {
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #3c7ae0, #2760d4);
+    -fx-background-color: linear-gradient(to bottom, #60e609, #40a103);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+.button.primary:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+.button.primary:disabled {
+    -fx-opacity: 0.38;
 }
 
-/* ============================== */
-/*           SCROLL               */
-/* ============================== */
-
+/* ── ScrollPane inside inventory card ── */
 .objects-scroll {
     -fx-background-color: transparent;
 }
-
 .objects-scroll > .viewport {
     -fx-background-color: transparent;
 }
 
-/* ============================== */
-/*          JUGADORES             */
-/* ============================== */
-
+/* ── Player pieces ── */
 .player {
     -fx-stroke: white;
     -fx-stroke-width: 2.5;
-
-    /* Snow glow around pieces — single effect only */
     -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.9), 8, 0.5, 0, 0);
-
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
-
-/* Colores por ID */
-#P1 { -fx-fill: #2f6fed; }  /* azul */
-#P2 { -fx-fill: #ef4444; }  /* rojo */
-#P3 { -fx-fill: #22c55e; }  /* verde */
-#P4 { -fx-fill: #facc15; }  /* amarillo */
-
-/* ============================== */
-/*        FOCA (CPU)              */
-/* ============================== */
-
-#P5 { -fx-fill: #374151; }  /* gris oscuro */
+#P1 { -fx-fill: #2f6fed; }
+#P2 { -fx-fill: #ef4444; }
+#P3 { -fx-fill: #22c55e; }
+#P4 { -fx-fill: #facc15; }
+#P5 { -fx-fill: #374151; }
 
 .foca {
     -fx-stroke: #1f2937;
     -fx-stroke-width: 2;
     -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.55), 8, 0.4, 0, 0);
 }
-
-/* Jugador activo — golden glow on snow */
 .current-player {
     -fx-effect: dropshadow(gaussian, gold, 14, 0.65, 0, 0);
 }
 
-/* ============================== */
-/*       PANTALLA FIN             */
-/* ============================== */
+/* ── Events ListView ── */
+.events-list {
+    -fx-background-color: rgba(255,255,255,0.35);
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(9,75,142,0.30);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+}
+.events-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1a5090;
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-padding: 4 8;
+    -fx-border-width: 0;
+}
+.events-list .list-cell:odd {
+    -fx-background-color: rgba(9,75,142,0.07);
+}
+.events-list .list-cell:selected {
+    -fx-background-color: rgba(9,75,142,0.18);
+}
+.events-list > .virtual-flow > .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+.events-list > .virtual-flow > .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(9,75,142,0.40);
+    -fx-background-radius: 4;
+}
+.events-list > .virtual-flow > .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
 
+/* ── End screen (PantallaFin uses PantallaJuego.css) ── */
 .fin-titulo {
-    -fx-font-size: 32px;
-    -fx-font-weight: 800;
-    -fx-fill: #1e3352;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #0d4680;
 }
-
 .fin-subtitulo {
-    -fx-font-size: 18px;
-    -fx-opacity: 0.75;
+    -fx-font-size: 16px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #1a5090;
 }
-
 .fin-info {
-    -fx-font-size: 15px;
-    -fx-opacity: 0.85;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #34689e;
 }

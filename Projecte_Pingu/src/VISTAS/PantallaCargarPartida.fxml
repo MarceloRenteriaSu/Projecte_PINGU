@@ -6,47 +6,49 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
 <VBox
     xmlns="http://javafx.com/javafx/21.0.10"
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaCargarPartida"
+    stylesheets="@PantallaMenu.css"
+    styleClass="login-root"
     spacing="16"
-    style="-fx-background-color: #1a1a2e; -fx-padding: 30;">
+    prefWidth="760"
+    prefHeight="480">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
 
     <!-- Title -->
-    <Label text="CARREGAR PARTIDA"
-           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Arial';" />
+    <Label text="CARREGAR PARTIDA" styleClass="screen-title-label"/>
 
-    <Label fx:id="lblUsername"
-           text="Jugador: "
-           style="-fx-font-size: 13px; -fx-text-fill: #aaaacc;" />
+    <Label fx:id="lblUsername" text="Jugador: " styleClass="screen-sub-label"/>
 
     <!-- Table of saved matches -->
-    <TableView fx:id="tablePartides" VBox.vgrow="ALWAYS"
-               style="-fx-background-color: #2a2a4e; -fx-control-inner-background: #2a2a4e; -fx-text-fill: white; -fx-border-color: #5555aa; -fx-border-width: 1;">
+    <TableView fx:id="tablePartides" VBox.vgrow="ALWAYS" styleClass="data-table">
         <columns>
             <TableColumn fx:id="colNom"      text="Nom de la partida"  prefWidth="220" />
-            <TableColumn fx:id="colJugadors" text="Jugadors"           prefWidth="220" />
+            <TableColumn fx:id="colJugadors" text="Jugadors"           prefWidth="200" />
             <TableColumn fx:id="colTorns"    text="Torns"              prefWidth="80"  />
-            <TableColumn fx:id="colData"     text="Data guardada"      prefWidth="170" />
+            <TableColumn fx:id="colData"     text="Data guardada"      prefWidth="180" />
         </columns>
         <placeholder>
-            <Label text="No tens cap partida guardada."
-                   style="-fx-text-fill: #aaaacc; -fx-font-size: 14px;" />
+            <Label text="No tens cap partida guardada." styleClass="screen-sub-label"/>
         </placeholder>
     </TableView>
 
     <!-- Action buttons -->
-    <HBox spacing="14">
+    <HBox spacing="14" alignment="CENTER_LEFT">
         <Button fx:id="btnCarregar" text="CARREGAR" onAction="#handleCarregar"
-                style="-fx-background-color: #4488ff; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 6; -fx-cursor: hand;" />
+                styleClass="cp-primary-button"/>
         <Button fx:id="btnEsborrar" text="ESBORRAR" onAction="#handleEsborrar"
-                style="-fx-background-color: #cc3333; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 6; -fx-cursor: hand;" />
-        <Region HBox.hgrow="ALWAYS" />
+                styleClass="cp-secondary-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="btnTornar"   text="TORNAR"   onAction="#handleTornar"
-                style="-fx-background-color: #555566; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 6; -fx-cursor: hand;" />
+                styleClass="cp-dock-button"/>
     </HBox>
 </VBox>

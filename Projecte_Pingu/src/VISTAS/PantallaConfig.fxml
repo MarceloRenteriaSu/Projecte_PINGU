@@ -15,61 +15,61 @@
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaConfig"
     stylesheets="@PantallaMenu.css"
-    styleClass="root"
+    styleClass="login-root"
     spacing="14"
     alignment="CENTER"
     prefWidth="480"
-    prefHeight="580">
+    prefHeight="600">
 
     <padding>
         <Insets top="24" right="28" bottom="24" left="28"/>
     </padding>
 
-    <VBox spacing="8" styleClass="card" maxWidth="420">
+    <VBox spacing="10" styleClass="cp-login-card" maxWidth="420">
         <padding>
-            <Insets top="18" right="18" bottom="18" left="18"/>
+            <Insets top="20" right="22" bottom="20" left="22"/>
         </padding>
 
-        <Label text="⚙ Configuració de la Partida" styleClass="title" wrapText="true"/>
+        <Label text="⚙ Configuració de la Partida" styleClass="login-title" wrapText="true"/>
 
-        <Region prefHeight="6"/>
+        <Region prefHeight="4"/>
 
         <!-- Caselles del taulell -->
-        <Label text="Caselles del taulell (50 - 150)" styleClass="field-label"/>
-        <TextField fx:id="casillasField" promptText="50" styleClass="field"/>
+        <Label text="Caselles del taulell (50 - 150)" styleClass="login-label"/>
+        <TextField fx:id="casillasField" promptText="50" styleClass="login-field"/>
 
-        <Region prefHeight="4"/>
+        <Region prefHeight="2"/>
 
         <!-- Número de jugadors -->
-        <Label text="Nombre de jugadors" styleClass="field-label"/>
-        <ComboBox fx:id="jugadorsCombo" maxWidth="Infinity" styleClass="field"/>
+        <Label text="Nombre de jugadors" styleClass="login-label"/>
+        <ComboBox fx:id="jugadorsCombo" maxWidth="Infinity" styleClass="cp-combo"/>
 
-        <Region prefHeight="4"/>
+        <Region prefHeight="2"/>
 
         <!-- Activar/desactivar Foca -->
         <CheckBox fx:id="focaCheckBox" text="🦭 Activar la Foca (CPU)" selected="true"
-                  style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+                  styleClass="cp-checkbox"/>
 
-        <Region prefHeight="4"/>
+        <Region prefHeight="2"/>
 
         <!-- Noms dels jugadors (dinàmic) -->
-        <Label text="Noms dels jugadors" styleClass="field-label"/>
+        <Label text="Noms dels jugadors" styleClass="login-label"/>
         <VBox fx:id="nomsContainer" spacing="6"/>
 
-        <Region prefHeight="8"/>
+        <Region prefHeight="6"/>
 
         <!-- Feedback -->
-        <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
+        <Label fx:id="feedbackLabel" text="" styleClass="login-feedback" wrapText="true"/>
 
         <!-- Botó comenzar -->
         <Button fx:id="btnComenzar" text="🎮 Començar Partida"
                 onAction="#handleComenzar"
                 maxWidth="Infinity"
-                styleClass="primary"/>
+                styleClass="cp-primary-button"/>
 
         <Button fx:id="btnVolver" text="⬅ Tornar al Menú"
                 onAction="#handleVolver"
                 maxWidth="Infinity"
-                styleClass="secondary"/>
+                styleClass="cp-secondary-button"/>
     </VBox>
 </VBox>
