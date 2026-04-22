@@ -113,10 +113,43 @@
     -fx-opacity: 0.88;
 }
 
-.events {
-    -fx-font-size: 14px;
-    -fx-fill: #34506e;
-    -fx-opacity: 0.88;
+.events-list {
+    -fx-background-color: rgba(0,0,0,0.06);
+    -fx-background-radius: 8;
+    -fx-border-color: #b4d2f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+}
+
+.events-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1e3352;
+    -fx-font-size: 12px;
+    -fx-padding: 4 8;
+    -fx-border-width: 0;
+}
+
+.events-list .list-cell:odd {
+    -fx-background-color: rgba(0,0,0,0.04);
+}
+
+.events-list .list-cell:selected {
+    -fx-background-color: rgba(74,138,244,0.18);
+}
+
+.events-list > .virtual-flow > .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+
+.events-list > .virtual-flow > .scroll-bar:vertical .thumb {
+    -fx-background-color: #a0c3e6;
+    -fx-background-radius: 4;
+}
+
+.events-list > .virtual-flow > .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
 }
 
 /* ============================== */
