@@ -19,4 +19,9 @@ public abstract class Casilla {
 		
 	}
 	
+	
+	
+	
+	
+
 }

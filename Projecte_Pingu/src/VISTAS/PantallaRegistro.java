@@ -9,9 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
@@ -20,8 +17,6 @@ import GESTORES.GestorBBDD;
 
 public class PantallaRegistro {
 
-    @FXML private ImageView bgImageView;
-    @FXML private ImageView logoImageView;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
@@ -31,61 +26,47 @@ public class PantallaRegistro {
 
     @FXML
     private void initialize() {
-        // Fondo
-        try {
-            java.io.InputStream isBg = getClass().getResourceAsStream("menu_background.png");
-            if (isBg != null) bgImageView.setImage(new Image(isBg));
-        } catch (Exception e) { e.printStackTrace(); }
-
-        bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                StackPane parent = (StackPane) bgImageView.getParent();
-                bgImageView.fitWidthProperty().bind(parent.widthProperty());
-                bgImageView.fitHeightProperty().bind(parent.heightProperty());
-            }
-        });
-
-        // Logo
-        try {
-            java.net.URL url = getClass().getResource("title_pinguino.png");
-            if (url != null) logoImageView.setImage(new Image(url.toExternalForm()));
-        } catch (Exception e) { e.printStackTrace(); }
+        CursorManager.applyWhenReady(usernameField);
     }
 
     @FXML
     private void handleRegistrar(ActionEvent event) {
         String username = usernameField.getText();
         String password = passwordField.getText();
-        String confirm  = confirmPasswordField.getText();
+        String confirm = confirmPasswordField.getText();
 
         if (username == null || username.trim().length() < 3 || username.contains(" ")) {
-            mostrarError("El usuario debe tener al menos 3 caracteres y sin espacios.");
-            return;
-        }
-        if (password == null || password.length() <= 3) {
-            mostrarError("La contraseña debe tener más de 3 caracteres.");
-            return;
-        }
-        if (!password.equals(confirm)) {
-            mostrarError("Las contraseñas no coinciden.");
+            mostrarError("L'usuari ha de tenir almenys 3 caràcters i no contenir espais.");
             return;
         }
 
+        if (password == null || password.length() <= 3) {
+            mostrarError("La contrasenya ha de tenir més de 3 caràcters.");
+            return;
+        }
+
+        if (!password.equals(confirm)) {
+            mostrarError("Les contrasenyes no coincideixen.");
+            return;
+        }
+
+        // Connexió a la BBDD
         Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
         if (con == null) {
-            mostrarError("Error al conectar con la base de datos.");
+            mostrarError("Error en connectar a la base de dades.");
             return;
         }
 
-        int resultado = GestorBBDD.registrarUsuario(con, username.trim(), password);
+        int resultat = GestorBBDD.registrarUsuario(con, username.trim(), password);
         GestorBBDD.cerrar(con);
 
-        if (resultado == 0) {
+        if (resultat == 0) {
+            System.out.println("Registre completat amb èxit.");
             irALogin(event);
-        } else if (resultado == 1) {
-            mostrarError("El nombre de usuario ya existe. Elige otro.");
+        } else if (resultat == 1) {
+            mostrarError("El nom d'usuari ja existeix. Tria un altre nom.");
         } else {
-            mostrarError("Error al registrar. Inténtalo de nuevo.");
+            mostrarError("Error al registrar. Torna-ho a provar.");
         }
     }
 
@@ -93,9 +74,10 @@ public class PantallaRegistro {
     private void handleVolver(ActionEvent event) {
         irALogin(event);
     }
-
+    
     private void mostrarError(String mensaje) {
         feedbackLabel.setText("⚠ " + mensaje);
+        feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
     }
 
     private void irALogin(ActionEvent event) {
@@ -104,10 +86,10 @@ public class PantallaRegistro {
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("El Juego del Pingüino — Login");
+            stage.setTitle("El Joc del Pingu — Login");
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarError("Error al cargar la pantalla de login.");
+            mostrarError("Error al carregar la pantalla de login.");
         }
     }
 }

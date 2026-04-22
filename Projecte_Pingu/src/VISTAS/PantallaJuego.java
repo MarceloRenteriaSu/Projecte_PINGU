@@ -633,10 +633,10 @@ public class PantallaJuego {
 				atacant.setPos(posModel);
 				moverFichaVisual(indiceFichaAtacant, posModel);
 			}
-			// Mostrar le evento 
+			// Mostrar l'event que ha passat si és una casella Evento
 			if (casilla instanceof Evento) {
 				Evento ev = (Evento) casilla;
-				String desc = ev.getNoti();
+				String desc = ev.getUltimoEventoDescripcion();
 				if (desc != null && !desc.isEmpty()) {
 					addEvent(atacant.getNom() + ": " + desc);
 				}

@@ -5,72 +5,64 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/21.0.10"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="VISTAS.PantallaRegistro"
-           stylesheets="@PantallaMenu.css"
-           styleClass="login-root"
-           prefWidth="1024" prefHeight="576">
+<VBox
+    xmlns="http://javafx.com/javafx/21.0.10"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="VISTAS.PantallaRegistro"
+    stylesheets="@PantallaMenu.css"
+    styleClass="root"
+    spacing="14"
+    alignment="CENTER"
+    prefWidth="480"
+    prefHeight="500">
 
-    <!-- Fondo ártico -->
-    <ImageView fx:id="bgImageView" preserveRatio="false" smooth="true" />
+    <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+    </padding>
 
-    <!-- Logo arriba centrado -->
-    <VBox alignment="TOP_CENTER" spacing="10" mouseTransparent="true">
-        <padding><Insets top="30" /></padding>
-        <ImageView fx:id="logoImageView" fitWidth="400" preserveRatio="true" />
+    <VBox spacing="10" styleClass="card" maxWidth="420">
+        <padding>
+            <Insets top="18" right="18" bottom="18" left="18"/>
+        </padding>
+
+        <Label text="🐧 Registre de Nou Usuari" styleClass="title" wrapText="true"/>
+
+        <Region prefHeight="6"/>
+
+        <!-- Username -->
+        <Label text="Nom d'usuari" styleClass="field-label"/>
+        <TextField fx:id="usernameField" promptText="Introdueix el teu nom d'usuari" styleClass="field"/>
+
+        <Region prefHeight="4"/>
+
+        <!-- Password -->
+        <Label text="Contrasenya" styleClass="field-label"/>
+        <PasswordField fx:id="passwordField" promptText="Introdueix la contrasenya" styleClass="field"/>
+
+        <Region prefHeight="4"/>
+
+        <!-- Confirm Password -->
+        <Label text="Confirmar contrasenya" styleClass="field-label"/>
+        <PasswordField fx:id="confirmPasswordField" promptText="Repeteix la contrasenya" styleClass="field"/>
+
+        <Region prefHeight="8"/>
+
+        <!-- Feedback -->
+        <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
+
+        <!-- Buttons -->
+        <Button fx:id="btnRegistrar" text="✅ Registrar-se i Jugar"
+                onAction="#handleRegistrar"
+                maxWidth="Infinity"
+                styleClass="primary"/>
+
+        <Button fx:id="btnVolver" text="⬅ Tornar al Login"
+                onAction="#handleVolver"
+                maxWidth="Infinity"
+                styleClass="secondary"/>
     </VBox>
-
-    <!-- Tarjeta de registro centrada (mismo estilo que el overlay del login) -->
-    <VBox alignment="CENTER" styleClass="cp-login-overlay">
-        <VBox spacing="12" styleClass="cp-login-card" prefWidth="370" maxWidth="370">
-            <padding><Insets top="26" right="28" bottom="26" left="28" /></padding>
-
-            <Label text="Crear Cuenta" styleClass="login-title" />
-
-            <!-- Usuario -->
-            <VBox spacing="4">
-                <Label text="Nombre de usuario" styleClass="login-label" />
-                <TextField fx:id="usernameField"
-                           promptText="Elige un nombre de usuario"
-                           styleClass="login-field" />
-            </VBox>
-
-            <!-- Contraseña -->
-            <VBox spacing="4">
-                <Label text="Contraseña" styleClass="login-label" />
-                <PasswordField fx:id="passwordField"
-                               promptText="Elige una contraseña"
-                               styleClass="login-field" />
-            </VBox>
-
-            <!-- Confirmar contraseña -->
-            <VBox spacing="4">
-                <Label text="Confirmar contraseña" styleClass="login-label" />
-                <PasswordField fx:id="confirmPasswordField"
-                               promptText="Repite la contraseña"
-                               styleClass="login-field" />
-            </VBox>
-
-            <!-- Feedback -->
-            <Label fx:id="feedbackLabel" text="" styleClass="login-feedback" wrapText="true" />
-
-            <!-- Botones -->
-            <HBox spacing="12" alignment="CENTER">
-                <Button fx:id="btnRegistrar" text="Crear Cuenta"
-                        onAction="#handleRegistrar"
-                        styleClass="cp-primary-button" />
-                <Button fx:id="btnVolver" text="Volver al Login"
-                        onAction="#handleVolver"
-                        styleClass="cp-secondary-button" />
-            </HBox>
-        </VBox>
-    </VBox>
-
-</StackPane>
+</VBox>
