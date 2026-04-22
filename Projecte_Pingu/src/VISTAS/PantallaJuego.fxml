@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -96,50 +97,39 @@
                 </VBox>
 
                 <!-- BLUE: Inventory -->
-                <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
+                <VBox spacing="8" styleClass="card">
                     <Label text="Objetos" styleClass="card-title" />
 
-                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-                                styleClass="objects-scroll" VBox.vgrow="ALWAYS">
-                        <content>
-                            <VBox spacing="10">
-                                <padding>
-                                    <Insets top="4" right="4" bottom="4" left="4"/>
-                                </padding>
+                    <VBox spacing="8">
+                        <padding>
+                            <Insets top="2" right="2" bottom="2" left="2"/>
+                        </padding>
 
-                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                    <Text fx:id="rapido_t" text="Dado Ràpid: x0" styleClass="stat" />
-                                    <Region HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="rapido" text="Usar" onAction="#handleRapido"/>
-                                </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Text fx:id="rapido_t" text="Dado Ràpid: x0" styleClass="stat" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button fx:id="rapido" text="Usar" onAction="#handleRapido"/>
+                        </HBox>
 
-                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                    <Text fx:id="lento_t" text="Dado Lent: x0" styleClass="stat" />
-                                    <Region HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="lento" text="Usar" onAction="#handleLento"/>
-                                </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Text fx:id="lento_t" text="Dado Lent: x0" styleClass="stat" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button fx:id="lento" text="Usar" onAction="#handleLento"/>
+                        </HBox>
 
-                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                    <Text fx:id="peces_t" text="Peix: x0" styleClass="stat" />
-                                    <Region HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="peces" text="Usar" onAction="#handlePeces"/>
-                                </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Text fx:id="peces_t" text="Peix: x0" styleClass="stat" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button fx:id="peces" text="Usar" onAction="#handlePeces"/>
+                        </HBox>
 
-                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                    <Text fx:id="nieve_t" text="Bola de Neu: x0" styleClass="stat" />
-                                    <Region HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="nieve" text="Usar" onAction="#handleNieve"/>
-                                </HBox>
-
-                            </VBox>
-                        </content>
-                    </ScrollPane>
+                    </VBox>
                 </VBox>
 
                 <!-- GREEN: Events -->
                 <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
                     <Label text="Eventos" styleClass="card-title" />
-                    <Text fx:id="eventos" text="Evento ocurrido" styleClass="events" wrappingWidth="220" />
+                    <ListView fx:id="eventosListView" styleClass="events-list" VBox.vgrow="ALWAYS" />
                 </VBox>
 
             </VBox>
