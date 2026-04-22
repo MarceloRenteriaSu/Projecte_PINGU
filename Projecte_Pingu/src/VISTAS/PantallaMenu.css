@@ -396,3 +396,212 @@
     -fx-scale-x: 0.97;
     -fx-scale-y: 0.97;
 }
+
+
+/* ============================================================
+   CONFIG SCREEN — Arctic / Ice theme
+   ============================================================ */
+
+.config-root {
+    -fx-background-color: #05101f;
+}
+
+/* Frosted ice glass card */
+.config-card {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            rgba(10, 35, 75, 0.88) 0%,
+            rgba(6, 22, 52, 0.92) 100%);
+    -fx-background-radius: 20;
+    -fx-border-color:
+        rgba(140, 210, 255, 0.45),
+        rgba(80, 160, 255, 0.20);
+    -fx-border-radius: 20, 18;
+    -fx-border-width: 1.5, 3;
+    -fx-border-insets: 0, 3;
+    -fx-effect:
+        dropshadow(gaussian, rgba(0, 60, 180, 0.60), 40, 0.15, 0, 6),
+        dropshadow(gaussian, rgba(100, 200, 255, 0.25), 20, 0.10, 0, 0);
+}
+
+/* Section title */
+.config-title {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #c8eeff;
+    -fx-text-alignment: center;
+    -fx-alignment: CENTER;
+    -fx-effect:
+        dropshadow(gaussian, rgba(80, 180, 255, 0.75), 14, 0.45, 0, 0),
+        dropshadow(gaussian, rgba(0, 0, 0, 0.80), 4, 0.40, 0, 1);
+}
+
+/* Field labels */
+.config-label {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(160, 220, 255, 0.85);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.70), 3, 0.40, 0, 1);
+}
+
+/* Text fields & ComboBox */
+.config-field {
+    -fx-background-color: rgba(8, 28, 64, 0.82);
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(100, 175, 255, 0.45);
+    -fx-border-radius: 8;
+    -fx-border-width: 1.5;
+    -fx-text-fill: #e0f4ff;
+    -fx-prompt-text-fill: rgba(120, 185, 255, 0.50);
+    -fx-font-family: "Courier New";
+    -fx-font-size: 14px;
+    -fx-padding: 8 12;
+}
+.config-field:focused {
+    -fx-border-color: rgba(140, 215, 255, 0.90);
+    -fx-background-color: rgba(12, 40, 85, 0.92);
+    -fx-effect: dropshadow(gaussian, rgba(80, 180, 255, 0.50), 10, 0.30, 0, 0);
+}
+
+/* Checkbox */
+.config-check {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(200, 235, 255, 0.90);
+}
+
+/* Feedback / error */
+.config-feedback {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #f87171;
+    -fx-effect: dropshadow(gaussian, rgba(220, 30, 30, 0.35), 4, 0.30, 0, 0);
+}
+
+/* Primary button — icy blue */
+.config-primary {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0a1e38;
+    -fx-background-color:
+        #0e2a50,
+        linear-gradient(to bottom, #4aaae0, #2e88c8, #1a70b0);
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 10, 8;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(50,150,255,0.65), 12, 0.35, 0, 3);
+}
+.config-primary:hover {
+    -fx-background-color:
+        #082040,
+        linear-gradient(to bottom, #60bef0, #48a8e8, #3090d8);
+    -fx-background-insets: 0, 2;
+    -fx-effect:
+        dropshadow(gaussian, rgba(100,210,255,0.85), 18, 0.45, 0, 0),
+        dropshadow(gaussian, rgba(10,60,150,0.60), 8, 0.25, 0, 3);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+.config-primary:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+    -fx-effect: innershadow(gaussian, rgba(0,20,60,0.80), 8, 0.50, 1, 3);
+}
+
+/* Secondary button — ghost outline */
+.config-secondary {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(180, 220, 255, 0.85);
+    -fx-background-color: rgba(15, 45, 90, 0.50);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(100, 175, 255, 0.40);
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 24;
+    -fx-cursor: hand;
+}
+.config-secondary:hover {
+    -fx-text-fill: #e8f6ff;
+    -fx-background-color: rgba(25, 65, 130, 0.70);
+    -fx-border-color: rgba(140, 210, 255, 0.70);
+    -fx-effect: dropshadow(gaussian, rgba(80,170,255,0.40), 10, 0.30, 0, 0);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+.config-secondary:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* Players panel — ice slab */
+.players-panel {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            rgba(30, 90, 160, 0.30) 0%,
+            rgba(10, 50, 110, 0.45) 100%);
+    -fx-background-radius: 12;
+    -fx-border-color:
+        rgba(150, 220, 255, 0.55),
+        rgba(80, 170, 255, 0.18);
+    -fx-border-radius: 12, 10;
+    -fx-border-width: 1.5, 3;
+    -fx-border-insets: 0, 3;
+    -fx-effect: dropshadow(gaussian, rgba(60, 160, 255, 0.30), 14, 0.20, 0, 2),
+                innershadow(gaussian, rgba(180, 230, 255, 0.12), 8, 0.30, 0, 1);
+}
+
+/* Player name text field */
+.player-field {
+    -fx-background-color:
+        rgba(6, 20, 50, 0.65),
+        linear-gradient(to bottom, rgba(30, 90, 160, 0.25), rgba(10, 50, 110, 0.15));
+    -fx-background-radius: 7;
+    -fx-background-insets: 0, 1;
+    -fx-border-color: rgba(120, 195, 255, 0.50);
+    -fx-border-radius: 7;
+    -fx-border-width: 1;
+    -fx-text-fill: #d8f0ff;
+    -fx-prompt-text-fill: rgba(100, 175, 255, 0.45);
+    -fx-font-family: "Courier New";
+    -fx-font-size: 13px;
+    -fx-padding: 7 10;
+}
+.player-field:focused {
+    -fx-border-color: rgba(160, 230, 255, 0.90);
+    -fx-background-color:
+        rgba(10, 35, 80, 0.85),
+        linear-gradient(to bottom, rgba(50, 130, 200, 0.20), rgba(20, 70, 140, 0.10));
+    -fx-effect: dropshadow(gaussian, rgba(100, 200, 255, 0.55), 8, 0.25, 0, 0);
+}
+
+/* Color picker inside player row */
+.player-color {
+    -fx-background-color:
+        rgba(6, 20, 50, 0.70),
+        linear-gradient(to bottom, rgba(50, 130, 210, 0.55), rgba(20, 80, 160, 0.55));
+    -fx-background-radius: 7;
+    -fx-background-insets: 0, 1;
+    -fx-border-color: rgba(120, 195, 255, 0.55);
+    -fx-border-radius: 7;
+    -fx-border-width: 1;
+    -fx-font-family: "Courier New";
+    -fx-font-size: 11px;
+    -fx-text-fill: #c0e8ff;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(60, 160, 255, 0.35), 6, 0.20, 0, 1);
+}
+.player-color:hover {
+    -fx-border-color: rgba(180, 235, 255, 0.80);
+    -fx-background-color:
+        rgba(8, 28, 70, 0.85),
+        linear-gradient(to bottom, rgba(70, 160, 240, 0.65), rgba(35, 105, 195, 0.65));
+    -fx-effect: dropshadow(gaussian, rgba(120, 210, 255, 0.60), 10, 0.30, 0, 0);
+}

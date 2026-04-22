@@ -12,8 +12,10 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -33,6 +35,7 @@ public class PantallaConfig {
     @FXML private VBox nomsContainer;
     @FXML private Label feedbackLabel;
     @FXML private Button btnComenzar;
+    @FXML private ImageView configBgView;
 
     private ArrayList<TextField> campsNoms = new ArrayList<>();
     private ArrayList<ColorPicker> campColors = new ArrayList<>();
@@ -66,6 +69,17 @@ public class PantallaConfig {
         ));
         jugadorsCombo.setValue("4 jugadors");
 
+        // Background stretches to fill window
+        if (configBgView != null) {
+            configBgView.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    StackPane root = (StackPane) configBgView.getParent();
+                    configBgView.fitWidthProperty().bind(root.widthProperty());
+                    configBgView.fitHeightProperty().bind(root.heightProperty());
+                }
+            });
+        }
+
         // Foca activada per defecte
         focaCheckBox.setSelected(true);
 
@@ -90,7 +104,7 @@ public class PantallaConfig {
         for (int i = 0; i < numJugadors; i++) {
             TextField tf = new TextField();
             tf.setPromptText("Nom del Jugador " + (i + 1));
-            tf.getStyleClass().add("field");
+            tf.getStyleClass().add("player-field");
             if (i == 0) {
                 tf.setText(nombreUsuario);
             }
@@ -99,7 +113,7 @@ public class PantallaConfig {
             cp.setPrefWidth(90);
             cp.setMinWidth(90);
             cp.setMaxWidth(90);
-            cp.getStyleClass().add("button");
+            cp.getStyleClass().add("player-color");
 
             HBox fila = new HBox(8, tf, cp);
             HBox.setHgrow(tf, Priority.ALWAYS);

@@ -6,70 +6,93 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox
+<StackPane
     xmlns="http://javafx.com/javafx/21.0.10"
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaConfig"
     stylesheets="@PantallaMenu.css"
-    styleClass="root"
-    spacing="14"
-    alignment="CENTER"
-    prefWidth="480"
-    prefHeight="580">
+    styleClass="config-root">
 
-    <padding>
-        <Insets top="24" right="28" bottom="24" left="28"/>
-    </padding>
+    <!-- Arctic background -->
+    <ImageView fx:id="configBgView" mouseTransparent="true" preserveRatio="false">
+        <image><Image url="@menu_background.png"/></image>
+    </ImageView>
 
-    <VBox spacing="8" styleClass="card" maxWidth="420">
+    <!-- Dark overlay for readability -->
+    <Region mouseTransparent="true"
+            style="-fx-background-color: rgba(0,8,25,0.58);"/>
+
+    <!-- Snowflake decorations (corners) -->
+    <Label text="❄" mouseTransparent="true" StackPane.alignment="TOP_LEFT"
+           style="-fx-font-size:42px; -fx-text-fill: rgba(180,230,255,0.25);">
+        <StackPane.margin><Insets top="10" left="14"/></StackPane.margin>
+    </Label>
+    <Label text="❄" mouseTransparent="true" StackPane.alignment="TOP_RIGHT"
+           style="-fx-font-size:30px; -fx-text-fill: rgba(180,230,255,0.20);">
+        <StackPane.margin><Insets top="50" right="30"/></StackPane.margin>
+    </Label>
+    <Label text="❄" mouseTransparent="true" StackPane.alignment="BOTTOM_RIGHT"
+           style="-fx-font-size:50px; -fx-text-fill: rgba(180,230,255,0.18);">
+        <StackPane.margin><Insets bottom="12" right="12"/></StackPane.margin>
+    </Label>
+
+    <!-- Central card -->
+    <VBox alignment="TOP_CENTER" spacing="10" styleClass="config-card"
+          maxWidth="460" StackPane.alignment="CENTER">
         <padding>
-            <Insets top="18" right="18" bottom="18" left="18"/>
+            <Insets top="26" right="34" bottom="26" left="34"/>
         </padding>
 
-        <Label text="⚙ Configuració de la Partida" styleClass="title" wrapText="true"/>
+        <!-- Title -->
+        <Label text="❄  CONFIGURACIÓ DE LA PARTIDA  ❄" styleClass="config-title" wrapText="true"/>
 
         <Region prefHeight="6"/>
 
-        <!-- Caselles del taulell -->
-        <Label text="Caselles del taulell (50 - 150)" styleClass="field-label"/>
-        <TextField fx:id="casillasField" promptText="50" styleClass="field"/>
+        <!-- Caselles -->
+        <Label text="Caselles del taulell  (50 – 150)" styleClass="config-label"/>
+        <TextField fx:id="casillasField" promptText="50" styleClass="config-field"/>
+
+        <Region prefHeight="2"/>
+
+        <!-- Jugadors -->
+        <Label text="Nombre de jugadors" styleClass="config-label"/>
+        <ComboBox fx:id="jugadorsCombo" maxWidth="Infinity" styleClass="config-field"/>
+
+        <Region prefHeight="2"/>
+
+        <!-- Foca -->
+        <CheckBox fx:id="focaCheckBox" text="🦭  Activar la Foca (CPU)" selected="true"
+                  styleClass="config-check"/>
+
+        <Region prefHeight="2"/>
+
+        <!-- Noms dels jugadors -->
+        <Label text="Noms dels jugadors" styleClass="config-label"/>
+        <VBox fx:id="nomsContainer" spacing="7" styleClass="players-panel">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+        </VBox>
 
         <Region prefHeight="4"/>
-
-        <!-- Número de jugadors -->
-        <Label text="Nombre de jugadors" styleClass="field-label"/>
-        <ComboBox fx:id="jugadorsCombo" maxWidth="Infinity" styleClass="field"/>
-
-        <Region prefHeight="4"/>
-
-        <!-- Activar/desactivar Foca -->
-        <CheckBox fx:id="focaCheckBox" text="🦭 Activar la Foca (CPU)" selected="true"
-                  style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
-
-        <Region prefHeight="4"/>
-
-        <!-- Noms dels jugadors (dinàmic) -->
-        <Label text="Noms dels jugadors" styleClass="field-label"/>
-        <VBox fx:id="nomsContainer" spacing="6"/>
-
-        <Region prefHeight="8"/>
 
         <!-- Feedback -->
-        <Label fx:id="feedbackLabel" text="" styleClass="feedback" wrapText="true"/>
+        <Label fx:id="feedbackLabel" text="" styleClass="config-feedback" wrapText="true"/>
 
-        <!-- Botó comenzar -->
-        <Button fx:id="btnComenzar" text="🎮 Començar Partida"
-                onAction="#handleComenzar"
-                maxWidth="Infinity"
-                styleClass="primary"/>
+        <!-- Buttons -->
+        <Button fx:id="btnComenzar" text="🎮  Començar Partida"
+                onAction="#handleComenzar" maxWidth="Infinity"
+                styleClass="config-primary"/>
 
-        <Button fx:id="btnVolver" text="⬅ Tornar al Menú"
-                onAction="#handleVolver"
-                maxWidth="Infinity"
-                styleClass="secondary"/>
+        <Button fx:id="btnVolver" text="⬅  Tornar al Menú"
+                onAction="#handleVolver" maxWidth="Infinity"
+                styleClass="config-secondary"/>
+
     </VBox>
-</VBox>
+
+</StackPane>
