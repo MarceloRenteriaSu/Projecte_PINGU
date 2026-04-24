@@ -191,40 +191,141 @@ public class PantallaJuego {
 		double boardH = h - padT - ins.getBottom();
 		if (boardW <= 0 || boardH <= 0) return;
 
-		double cellW = boardW / this.columnas;
-		double cellH = boardH / this.filas;
-		double margin  = Math.min(cellW, cellH) * 0.07;
-		double arc     = Math.min(cellW, cellH) * 0.22;
-		double connH   = cellH * 0.36;
-		double connV   = cellW * 0.36;
+		double cellW  = boardW / this.columnas;
+		double cellH  = boardH / this.filas;
+		double margin = Math.min(cellW, cellH) * 0.07;
+		double arc    = Math.min(cellW, cellH) * 0.24;
+		double connH  = cellH * 0.34;
+		double connV  = cellW * 0.34;
 
 		int total = gestorPartida.getPartida().getTablero().getTamanyo();
 
 		GraphicsContext gc = pathCanvas.getGraphicsContext2D();
 		gc.clearRect(0, 0, w, h);
-		gc.setFill(Color.WHITE);
 
-		// Connectors first (drawn behind tiles)
+		// --- CONNECTORS: shadow → deep ice base → mid highlight → thin shine ---
+
+		gc.setFill(Color.web("#010509", 0.50));
 		for (int i = 0; i < total - 1; i++) {
-			int[] a = obtenerFilaColumna(i);
-			int[] b = obtenerFilaColumna(i + 1);
-			double ax = padL + a[1] * cellW + cellW / 2;
-			double ay = padT + a[0] * cellH + cellH / 2;
-			double bx = padL + b[1] * cellW + cellW / 2;
-			double by = padT + b[0] * cellH + cellH / 2;
-			if (a[0] == b[0]) {
-				gc.fillRect(Math.min(ax, bx), ay - connH / 2, Math.abs(bx - ax), connH);
-			} else {
-				gc.fillRect(ax - connV / 2, Math.min(ay, by), connV, Math.abs(by - ay));
-			}
+			int[] a = obtenerFilaColumna(i), b = obtenerFilaColumna(i + 1);
+			double ax = padL + a[1]*cellW + cellW/2, ay = padT + a[0]*cellH + cellH/2;
+			double bx = padL + b[1]*cellW + cellW/2, by = padT + b[0]*cellH + cellH/2;
+			if (a[0] == b[0]) gc.fillRect(Math.min(ax,bx), ay - connH/2 + 2, Math.abs(bx-ax), connH);
+			else               gc.fillRect(ax - connV/2 + 2, Math.min(ay,by), connV, Math.abs(by-ay));
 		}
 
-		// Tiles on top of connectors
+		gc.setFill(Color.web("#1a4d6e"));
+		for (int i = 0; i < total - 1; i++) {
+			int[] a = obtenerFilaColumna(i), b = obtenerFilaColumna(i + 1);
+			double ax = padL + a[1]*cellW + cellW/2, ay = padT + a[0]*cellH + cellH/2;
+			double bx = padL + b[1]*cellW + cellW/2, by = padT + b[0]*cellH + cellH/2;
+			if (a[0] == b[0]) gc.fillRect(Math.min(ax,bx), ay - connH/2, Math.abs(bx-ax), connH);
+			else               gc.fillRect(ax - connV/2, Math.min(ay,by), connV, Math.abs(by-ay));
+		}
+
+		gc.setFill(Color.web("#6baecf", 0.65));
+		for (int i = 0; i < total - 1; i++) {
+			int[] a = obtenerFilaColumna(i), b = obtenerFilaColumna(i + 1);
+			double ax = padL + a[1]*cellW + cellW/2, ay = padT + a[0]*cellH + cellH/2;
+			double bx = padL + b[1]*cellW + cellW/2, by = padT + b[0]*cellH + cellH/2;
+			double s = connH * 0.50, sv = connV * 0.50;
+			if (a[0] == b[0]) gc.fillRect(Math.min(ax,bx), ay - s/2, Math.abs(bx-ax), s);
+			else               gc.fillRect(ax - sv/2, Math.min(ay,by), sv, Math.abs(by-ay));
+		}
+
+		gc.setFill(Color.web("#c8eaf8", 0.50));
+		for (int i = 0; i < total - 1; i++) {
+			int[] a = obtenerFilaColumna(i), b = obtenerFilaColumna(i + 1);
+			double ax = padL + a[1]*cellW + cellW/2, ay = padT + a[0]*cellH + cellH/2;
+			double bx = padL + b[1]*cellW + cellW/2, by = padT + b[0]*cellH + cellH/2;
+			double t = connH * 0.18, tv = connV * 0.18;
+			if (a[0] == b[0]) gc.fillRect(Math.min(ax,bx), ay - connH/2 + 1, Math.abs(bx-ax), t);
+			else               gc.fillRect(ax - connV/2 + 1, Math.min(ay,by), tv, Math.abs(by-ay));
+		}
+
+		// --- TILES: drop-shadow → dark underlay → ice fill → frost top → border → inner gleam ---
+
+		gc.setFill(Color.web("#010509", 0.55));
 		for (int i = 0; i < total; i++) {
 			int[] rc = obtenerFilaColumna(i);
-			double x  = padL + rc[1] * cellW + margin;
-			double y  = padT + rc[0] * cellH + margin;
-			gc.fillRoundRect(x, y, cellW - 2 * margin, cellH - 2 * margin, arc, arc);
+			double x = padL + rc[1]*cellW + margin, y = padT + rc[0]*cellH + margin;
+			gc.fillRoundRect(x + 2, y + 2, cellW - 2*margin, cellH - 2*margin, arc, arc);
+		}
+
+		gc.setFill(Color.web("#0d2a45"));
+		for (int i = 0; i < total; i++) {
+			int[] rc = obtenerFilaColumna(i);
+			double x = padL + rc[1]*cellW + margin, y = padT + rc[0]*cellH + margin;
+			gc.fillRoundRect(x, y, cellW - 2*margin, cellH - 2*margin, arc, arc);
+		}
+
+		gc.setFill(Color.web("#d8eef8"));
+		for (int i = 0; i < total; i++) {
+			int[] rc = obtenerFilaColumna(i);
+			double x = padL + rc[1]*cellW + margin, y = padT + rc[0]*cellH + margin;
+			double tw = cellW - 2*margin, th = cellH - 2*margin;
+			gc.fillRoundRect(x + 1.5, y + 1.5, tw - 3, th - 3, arc * 0.85, arc * 0.85);
+		}
+
+		// frost shimmer on top half
+		gc.setFill(Color.web("#f0f8ff", 0.30));
+		for (int i = 0; i < total; i++) {
+			int[] rc = obtenerFilaColumna(i);
+			double x = padL + rc[1]*cellW + margin + 3, y = padT + rc[0]*cellH + margin + 3;
+			double tw = cellW - 2*margin - 6, th = (cellH - 2*margin) / 2.2;
+			gc.fillRoundRect(x, y, tw, th, arc * 0.65, arc * 0.65);
+		}
+
+		gc.setStroke(Color.web("#4a90b8"));
+		gc.setLineWidth(1.5);
+		for (int i = 0; i < total; i++) {
+			int[] rc = obtenerFilaColumna(i);
+			double x = padL + rc[1]*cellW + margin, y = padT + rc[0]*cellH + margin;
+			gc.strokeRoundRect(x, y, cellW - 2*margin, cellH - 2*margin, arc, arc);
+		}
+
+		// inner frost gleam
+		gc.setStroke(Color.web("#a8d8f0", 0.45));
+		gc.setLineWidth(0.8);
+		for (int i = 0; i < total; i++) {
+			int[] rc = obtenerFilaColumna(i);
+			double x = padL + rc[1]*cellW + margin + 2, y = padT + rc[0]*cellH + margin + 2;
+			gc.strokeRoundRect(x, y, cellW - 2*margin - 4, cellH - 2*margin - 4, arc * 0.75, arc * 0.75);
+		}
+
+		// snow crystal dots at tile corners
+		gc.setFill(Color.web("#ffffff", 0.55));
+		double dotR = Math.min(cellW, cellH) * 0.045;
+		for (int i = 0; i < total; i++) {
+			int[] rc = obtenerFilaColumna(i);
+			double tx = padL + rc[1]*cellW + margin + 3, ty = padT + rc[0]*cellH + margin + 3;
+			double tw = cellW - 2*margin - 6;
+			gc.fillOval(tx, ty, dotR * 2, dotR * 2);
+			gc.fillOval(tx + tw - dotR * 2, ty, dotR * 2, dotR * 2);
+		}
+
+		// --- START tile (green glow) ---
+		{
+			int[] rc = obtenerFilaColumna(0);
+			double x = padL + rc[1]*cellW + margin, y = padT + rc[0]*cellH + margin;
+			double tw = cellW - 2*margin, th = cellH - 2*margin;
+			gc.setFill(Color.web("#28a855", 0.28));
+			gc.fillRoundRect(x + 1.5, y + 1.5, tw - 3, th - 3, arc * 0.85, arc * 0.85);
+			gc.setStroke(Color.web("#40d070", 0.92));
+			gc.setLineWidth(2.2);
+			gc.strokeRoundRect(x, y, tw, th, arc, arc);
+		}
+
+		// --- FINISH tile (gold glow) ---
+		{
+			int[] rc = obtenerFilaColumna(total - 1);
+			double x = padL + rc[1]*cellW + margin, y = padT + rc[0]*cellH + margin;
+			double tw = cellW - 2*margin, th = cellH - 2*margin;
+			gc.setFill(Color.web("#e0a000", 0.28));
+			gc.fillRoundRect(x + 1.5, y + 1.5, tw - 3, th - 3, arc * 0.85, arc * 0.85);
+			gc.setStroke(Color.web("#ffd000", 0.92));
+			gc.setLineWidth(2.2);
+			gc.strokeRoundRect(x, y, tw, th, arc, arc);
 		}
 	}
 
@@ -457,21 +558,50 @@ public class PantallaJuego {
 			}
 			iv.setPreserveRatio(true);
 
-			String numLabel = (i == 0) ? "S" : (i == totalCasillas - 1) ? "F" : String.valueOf(i);
+			// Uniform frosted-ice cell — canvas layer provides all visual depth
+			String cellBg = "rgba(200,230,250,0.00)";
+			String cellBorder = "rgba(140,200,240,0.00)";
+			String labelColor = "#b0d8f0";
+			int labelSize = 9;
+
+			String numLabel;
+			if (i == 0) {
+				numLabel = "S";
+				cellBg = "rgba(40,168,85,0.12)";
+				cellBorder = "rgba(64,208,112,0.55)";
+				labelColor = "#60ff80";
+				labelSize = 12;
+			} else if (i == totalCasillas - 1) {
+				numLabel = "F";
+				cellBg = "rgba(224,160,0,0.12)";
+				cellBorder = "rgba(255,208,0,0.55)";
+				labelColor = "#ffd700";
+				labelSize = 12;
+			} else {
+				numLabel = String.valueOf(i);
+			}
+
 			Text txt = new Text(numLabel);
 			txt.setTextAlignment(javafx.scene.text.TextAlignment.LEFT);
-			txt.getStyleClass().add(i == 0 || i == totalCasillas - 1 ? "cell-title" : "cell-type");
+			txt.setStyle(String.format(
+				"-fx-fill: %s; -fx-font-family: 'Courier New'; " +
+				"-fx-font-size: %dpx; -fx-font-weight: bold;",
+				labelColor, labelSize));
 
 			StackPane cell = new StackPane();
+			cell.setStyle(String.format(
+				"-fx-background-color: %s; -fx-background-radius: 10; " +
+				"-fx-border-color: %s; -fx-border-radius: 10; -fx-border-width: 1.5;",
+				cellBg, cellBorder));
 			cell.getChildren().addAll(iv, txt);
 			StackPane.setAlignment(iv, javafx.geometry.Pos.CENTER);
 			StackPane.setAlignment(txt, javafx.geometry.Pos.TOP_LEFT);
 			StackPane.setMargin(txt, new javafx.geometry.Insets(2, 0, 0, 3));
 			cell.setMaxWidth(Double.MAX_VALUE);
 			cell.setMaxHeight(Double.MAX_VALUE);
-			// Scale to 78 % of cell so there is always padding around the image
-			iv.fitWidthProperty().bind(cell.widthProperty().multiply(0.78));
-			iv.fitHeightProperty().bind(cell.heightProperty().multiply(0.78));
+			// Images fill 84% — canvas border provides the tile framing
+			iv.fitWidthProperty().bind(cell.widthProperty().multiply(0.84));
+			iv.fitHeightProperty().bind(cell.heightProperty().multiply(0.84));
 
 			cell.setUserData(TAG_CASILLA_TEXT);
 			int[] pos = obtenerFilaColumna(i);

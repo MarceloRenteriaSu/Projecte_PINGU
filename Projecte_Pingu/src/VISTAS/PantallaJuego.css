@@ -277,27 +277,47 @@
 /* ======================================== */
 
 .player {
-    -fx-stroke: rgba(255, 255, 255, 0.85);
-    -fx-stroke-width: 2.5;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.90), 8, 0.50, 0, 0);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
+    -fx-stroke: rgba(255, 255, 255, 0.92);
+    -fx-stroke-width: 2.8;
+    -fx-effect:
+        dropshadow(gaussian, rgba(255, 255, 255, 0.85), 10, 0.55, 0, 0),
+        dropshadow(gaussian, rgba(0, 0, 0, 0.65), 5, 0.40, 0, 1);
+    -fx-scale-x: 1.10;
+    -fx-scale-y: 1.10;
 }
 
-#P1 { -fx-fill: #2f6fed; }
-#P2 { -fx-fill: #ef4444; }
-#P3 { -fx-fill: #22c55e; }
-#P4 { -fx-fill: #facc15; }
-#P5 { -fx-fill: #374151; }
+#P1 {
+    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #6ea8ff, #2f6fed);
+}
+#P2 {
+    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #ff8888, #ef4444);
+}
+#P3 {
+    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #60e880, #22c55e);
+}
+#P4 {
+    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #ffe060, #facc15);
+}
+#P5 {
+    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #636f80, #374151);
+}
 
 .foca {
-    -fx-stroke: #1f2937;
-    -fx-stroke-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.60), 8, 0.42, 0, 0);
+    -fx-stroke: rgba(80, 90, 110, 0.90);
+    -fx-stroke-width: 2.2;
+    -fx-effect:
+        dropshadow(gaussian, rgba(220, 38, 38, 0.65), 10, 0.45, 0, 0),
+        dropshadow(gaussian, rgba(0, 0, 0, 0.65), 5, 0.40, 0, 1);
+    -fx-scale-x: 1.10;
+    -fx-scale-y: 1.10;
 }
 
 .current-player {
-    -fx-effect: dropshadow(gaussian, gold, 16, 0.70, 0, 0);
+    -fx-effect:
+        dropshadow(gaussian, gold, 20, 0.75, 0, 0),
+        dropshadow(gaussian, rgba(255, 200, 0, 0.50), 8, 0.40, 0, 0);
+    -fx-scale-x: 1.20;
+    -fx-scale-y: 1.20;
 }
 
 /* ======================================== */
