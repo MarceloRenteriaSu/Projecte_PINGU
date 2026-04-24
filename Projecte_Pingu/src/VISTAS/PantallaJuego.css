@@ -153,28 +153,9 @@
     -fx-background-color: transparent;
 }
 
-/* ── Player pieces ── */
-.player {
-    -fx-stroke: white;
-    -fx-stroke-width: 2.5;
-    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.9), 8, 0.5, 0, 0);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
-#P1 { -fx-fill: #2f6fed; }
-#P2 { -fx-fill: #ef4444; }
-#P3 { -fx-fill: #22c55e; }
-#P4 { -fx-fill: #facc15; }
-#P5 { -fx-fill: #374151; }
-
-.foca {
-    -fx-stroke: #1f2937;
-    -fx-stroke-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.55), 8, 0.4, 0, 0);
-}
-.current-player {
-    -fx-effect: dropshadow(gaussian, gold, 14, 0.65, 0, 0);
-}
+/* ── Player tokens (Canvas pixel-art penguins) ──
+   Los efectos de brillo/oro se aplican programáticamente en PantallaJuego.java
+   (marcarJugadorActual usa setEffect con DropShadow) ── */
 
 /* ── Events ListView ── */
 .events-list {

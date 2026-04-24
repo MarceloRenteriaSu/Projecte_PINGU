@@ -572,9 +572,11 @@
     -fx-border-radius: 6;
     -fx-border-width: 2;
     -fx-text-fill: #333333;
-    -fx-padding: 8 10;
-    -fx-font-size: 14px;
+    -fx-padding: 5 8;
+    -fx-font-size: 13px;
     -fx-font-family: "Arial", sans-serif;
+    -fx-pref-height: 30;
+    -fx-max-height: 30;
 }
 
 .cp-login-card .button {
@@ -656,6 +658,9 @@
     -fx-border-color: #0c5ea8;
 }
 .cp-checkbox .mark {
+    -fx-background-color: transparent;
+}
+.cp-checkbox:selected .mark {
     -fx-background-color: #0d4680;
 }
 

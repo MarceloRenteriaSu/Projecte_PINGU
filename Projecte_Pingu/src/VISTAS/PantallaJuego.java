@@ -25,7 +25,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -62,11 +62,11 @@ public class PantallaJuego {
 	// Game board and player pieces (up to 4 pingüinos + 1 foca)
 	@FXML private GridPane tablero;
 	@FXML private Canvas pathCanvas;
-	@FXML private Circle P1;
-	@FXML private Circle P2;
-	@FXML private Circle P3;
-	@FXML private Circle P4;
-	@FXML private Circle P5;
+	@FXML private Canvas P1;
+	@FXML private Canvas P2;
+	@FXML private Canvas P3;
+	@FXML private Canvas P4;
+	@FXML private Canvas P5;
 
 	private GestorPartida gestorPartida;
 	private int columnas;
@@ -96,6 +96,7 @@ public class PantallaJuego {
 	private int partidaGuardadaId = -1;
 
 	private boolean jocIniciat = false;
+
 
 	/**
 	 * Inicia el joc amb paràmetres per defecte (50 caselles, 4 jugadors, foca activada).
@@ -283,38 +284,38 @@ public class PantallaJuego {
 		gestorPartida.nuevaPartida(t, jugadors);
 
 		// Configurar les fitxes visuals segons el nombre de jugadors
-		Circle[] totesLesFitxes = {P1, P2, P3, P4};
-		// Amagar totes les fitxes de jugadors primer
-		for (Circle c : totesLesFitxes) {
-			c.setVisible(false);
-		}
+		Canvas[] totesLesFitxes = {P1, P2, P3, P4};
+		for (Canvas c : totesLesFitxes) c.setVisible(false);
 
 		if (focaActivada) {
-			// fichas[0..numPinguinos-1] = pingüinos, fichas[numPinguinos] = foca (P5)
 			fichas = new Node[numPinguinos + 1];
 			posiciones = new int[numPinguinos + 1];
 			for (int i = 0; i < numPinguinos; i++) {
 				fichas[i] = totesLesFitxes[i];
 				totesLesFitxes[i].setVisible(true);
 				posiciones[i] = 0;
-				if (hexColors != null && i < hexColors.size()) {
-					totesLesFitxes[i].setStyle("-fx-fill: " + hexColors.get(i) + ";");
-				}
+				Color hatColor = (hexColors != null && i < hexColors.size())
+					? Color.web(hexColors.get(i))
+					: PinguinoRenderer.DEFAULT_COLORS[i % PinguinoRenderer.DEFAULT_COLORS.length];
+				PinguinoRenderer.draw(totesLesFitxes[i].getGraphicsContext2D(),
+					PinguinoRenderer.GAME_PX, hatColor, false);
 			}
 			fichas[numPinguinos] = P5;
 			P5.setVisible(true);
 			posiciones[numPinguinos] = 0;
+			PinguinoRenderer.draw(P5.getGraphicsContext2D(), PinguinoRenderer.GAME_PX, null, true);
 		} else {
-			// Sense foca: només fitxes dels pingüinos
 			fichas = new Node[numPinguinos];
 			posiciones = new int[numPinguinos];
 			for (int i = 0; i < numPinguinos; i++) {
 				fichas[i] = totesLesFitxes[i];
 				totesLesFitxes[i].setVisible(true);
 				posiciones[i] = 0;
-				if (hexColors != null && i < hexColors.size()) {
-					totesLesFitxes[i].setStyle("-fx-fill: " + hexColors.get(i) + ";");
-				}
+				Color hatColor = (hexColors != null && i < hexColors.size())
+					? Color.web(hexColors.get(i))
+					: PinguinoRenderer.DEFAULT_COLORS[i % PinguinoRenderer.DEFAULT_COLORS.length];
+				PinguinoRenderer.draw(totesLesFitxes[i].getGraphicsContext2D(),
+					PinguinoRenderer.GAME_PX, hatColor, false);
 			}
 			P5.setVisible(false);
 		}
@@ -347,49 +348,43 @@ public class PantallaJuego {
 	// -------------------------------------------------------
 
 	private double[][] getOffsets() {
+		// TOKEN_W = PinguinoRenderer.COLS * GAME_PX = 12*2 = 24px
+		// Offset horizontal ±13 → spacing 26px > 24px → sin solapamiento horizontal
 		int n = fichas.length;
-		if (n == 2) { // 2 pinguinos sense foca
+		if (n == 2) {
 			return new double[][] {
-				{-8, 0},
-				{ 8, 0}
+				{-13,  0},
+				{ 13,  0}
 			};
 		} else if (n == 3) {
-			if (focaActivada) { // 2 pinguinos + foca
-				return new double[][] {
-					{-8, -6},
-					{ 8, -6},
-					{ 0,  6}
-				};
-			} else { // 3 pinguinos sense foca
-				return new double[][] {
-					{-8, -6},
-					{ 8, -6},
-					{ 0,  6}
-				};
-			}
-		} else if (n == 4) {
-			if (focaActivada) { // 3 pinguinos + foca
-				return new double[][] {
-					{-8, -6},
-					{ 8, -6},
-					{-8,  6},
-					{ 0,  0}
-				};
-			} else { // 4 pinguinos sense foca
-				return new double[][] {
-					{-8, -8},
-					{ 8, -8},
-					{-8,  8},
-					{ 8,  8}
-				};
-			}
-		} else { // 4 pinguinos + foca (5 fitxes)
 			return new double[][] {
-				{-8, -8},
-				{ 8, -8},
-				{-8,  8},
-				{ 8,  8},
-				{ 0,  0}
+				{-13, -9},
+				{ 13, -9},
+				{  0,  9}
+			};
+		} else if (n == 4) {
+			if (focaActivada) { // 3P + foca
+				return new double[][] {
+					{-13, -9},
+					{ 13, -9},
+					{-13,  9},
+					{  0,  0}
+				};
+			} else { // 4P sin foca
+				return new double[][] {
+					{-13, -9},
+					{ 13, -9},
+					{-13,  9},
+					{ 13,  9}
+				};
+			}
+		} else { // 5 (4P + foca)
+			return new double[][] {
+				{-13, -9},
+				{ 13, -9},
+				{-13,  9},
+				{ 13,  9},
+				{  0,  0}
 			};
 		}
 	}
@@ -480,8 +475,8 @@ public class PantallaJuego {
 			tablero.getChildren().add(cell);
 		}
 
-		// Bring player circles above the cell images
-		for (Circle c : new Circle[]{P1, P2, P3, P4, P5}) {
+		// Bring player tokens above the cell images
+		for (Canvas c : new Canvas[]{P1, P2, P3, P4, P5}) {
 			if (c != null && tablero.getChildren().contains(c)) c.toFront();
 		}
 
@@ -493,13 +488,15 @@ public class PantallaJuego {
 	// -------------------------------------------------------
 
 	private void marcarJugadorActual() {
-		for (Node ficha : fichas) {
-			ficha.getStyleClass().remove("current-player");
+		for (int i = 0; i < fichas.length; i++) {
+			boolean esFocaToken = focaActivada && i == indiceFoca;
+			fichas[i].setEffect(new DropShadow(8, 0, 0,
+				esFocaToken ? Color.web("#dc2626") : Color.rgb(255, 255, 255, 0.5)));
 		}
 		Partida partida = gestorPartida.getPartida();
 		int indice = partida.getJugadorActual();
 		if (indice < fichas.length && indice != indiceFoca) {
-			fichas[indice].getStyleClass().add("current-player");
+			fichas[indice].setEffect(new DropShadow(14, 0, 0, Color.GOLD));
 		}
 	}
 
@@ -1379,8 +1376,8 @@ public class PantallaJuego {
 		}
 
 		// 6) Configurar fitxes visuals
-		Circle[] totesLesFitxes = {P1, P2, P3, P4};
-		for (Circle c : totesLesFitxes) c.setVisible(false);
+		Canvas[] totesLesFitxes = {P1, P2, P3, P4};
+		for (Canvas c : totesLesFitxes) c.setVisible(false);
 
 		if (ambFoca) {
 			fichas = new Node[numJugadores + 1];
@@ -1389,10 +1386,15 @@ public class PantallaJuego {
 				fichas[i] = totesLesFitxes[i];
 				totesLesFitxes[i].setVisible(true);
 				posiciones[i] = jugadors.get(i).getPos();
+				PinguinoRenderer.draw(totesLesFitxes[i].getGraphicsContext2D(),
+					PinguinoRenderer.GAME_PX,
+					PinguinoRenderer.DEFAULT_COLORS[i % PinguinoRenderer.DEFAULT_COLORS.length],
+					false);
 			}
 			fichas[numJugadores] = P5;
 			P5.setVisible(true);
 			posiciones[numJugadores] = focaPosDB;
+			PinguinoRenderer.draw(P5.getGraphicsContext2D(), PinguinoRenderer.GAME_PX, null, true);
 		} else {
 			fichas = new Node[numJugadores];
 			posiciones = new int[numJugadores];
@@ -1400,6 +1402,10 @@ public class PantallaJuego {
 				fichas[i] = totesLesFitxes[i];
 				totesLesFitxes[i].setVisible(true);
 				posiciones[i] = jugadors.get(i).getPos();
+				PinguinoRenderer.draw(totesLesFitxes[i].getGraphicsContext2D(),
+					PinguinoRenderer.GAME_PX,
+					PinguinoRenderer.DEFAULT_COLORS[i % PinguinoRenderer.DEFAULT_COLORS.length],
+					false);
 			}
 			P5.setVisible(false);
 		}

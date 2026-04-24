@@ -18,14 +18,14 @@
     styleClass="login-root"
     spacing="14"
     alignment="CENTER"
-    prefWidth="480"
-    prefHeight="600">
+    prefWidth="560"
+    prefHeight="740">
 
     <padding>
         <Insets top="24" right="28" bottom="24" left="28"/>
     </padding>
 
-    <VBox spacing="10" styleClass="cp-login-card" maxWidth="420">
+    <VBox spacing="10" styleClass="cp-login-card" maxWidth="500">
         <padding>
             <Insets top="20" right="22" bottom="20" left="22"/>
         </padding>
