@@ -36,24 +36,26 @@ public final class PinguinoRenderer {
      *  5 = iris del ojo (negro profundo)
      *
      * Grid: 12 columnas × 16 filas — pixelSize escalable.
+     * Diseño centrado en la cuadrícula con ojos grandes (3 filas)
+     * y gorro redondeado tipo beanie con pompón.
      */
     private static final int[][] ART = {
-        {0,0,0,2,2,2,2,0,0,0,0,0},  //  0  pompón
-        {0,0,3,3,3,3,3,3,0,0,0,0},  //  1  gorro alto
-        {0,3,3,3,3,3,3,3,3,0,0,0},  //  2  gorro medio
-        {3,3,3,3,3,3,3,3,3,3,0,0},  //  3  ala del gorro
-        {1,1,1,1,1,1,1,1,1,1,0,0},  //  4  cabeza
-        {1,2,5,1,1,1,1,2,5,1,0,0},  //  5  ojos (blanco + iris)
-        {1,2,2,1,1,1,1,2,2,1,0,0},  //  6  ojos (segunda fila)
-        {1,1,4,4,4,4,1,1,1,1,0,0},  //  7  pico naranja
-        {1,1,1,1,1,1,1,1,1,1,0,0},  //  8  cuello
-        {1,1,2,2,2,2,2,2,1,1,0,0},  //  9  cuerpo arriba
-        {1,2,2,2,2,2,2,2,2,1,0,0},  // 10  cuerpo
-        {1,2,2,2,2,2,2,2,2,1,0,0},  // 11  cuerpo
-        {1,1,2,2,2,2,2,2,1,1,0,0},  // 12  cuerpo abajo
-        {1,1,1,1,1,1,1,1,1,1,0,0},  // 13  base
-        {0,4,4,4,0,0,4,4,4,0,0,0},  // 14  patas
-        {4,4,0,0,0,0,0,0,4,4,0,0},  // 15  punta de patas
+        {0,0,0,0,2,2,2,2,0,0,0,0},  //  0  pompón blanco
+        {0,0,0,3,3,3,3,3,3,0,0,0},  //  1  gorro alto
+        {0,0,3,3,3,3,3,3,3,3,0,0},  //  2  gorro medio
+        {0,3,3,3,3,3,3,3,3,3,3,0},  //  3  ala del gorro (ancha)
+        {0,1,1,1,1,1,1,1,1,1,1,0},  //  4  frente
+        {1,1,2,2,2,1,1,2,2,2,1,0},  //  5  ojos grandes (fila 1)
+        {1,1,2,5,2,1,1,2,5,2,1,0},  //  6  ojos con pupilas (centradas)
+        {1,1,2,2,2,1,1,2,2,2,1,0},  //  7  ojos grandes (fila 3)
+        {0,1,1,1,4,4,4,1,1,1,0,0},  //  8  pico naranja (pequeño)
+        {0,1,1,2,2,2,2,2,1,1,0,0},  //  9  cuerpo arriba
+        {0,1,2,2,2,2,2,2,2,1,0,0},  // 10  cuerpo
+        {0,1,2,2,2,2,2,2,2,1,0,0},  // 11  cuerpo
+        {0,1,1,2,2,2,2,2,1,1,0,0},  // 12  cuerpo abajo
+        {0,0,1,1,1,1,1,1,1,0,0,0},  // 13  base
+        {0,0,4,4,4,0,4,4,4,0,0,0},  // 14  patas
+        {0,4,4,0,0,0,0,0,4,4,0,0},  // 15  punta de patas
     };
 
     private PinguinoRenderer() {}
