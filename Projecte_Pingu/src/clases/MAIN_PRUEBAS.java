@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
+import VISTAS.MusicManager;
+
 public class MAIN_PRUEBAS extends Application {
 
 	@Override
@@ -18,6 +20,14 @@ public class MAIN_PRUEBAS extends Application {
 	    stage.setTitle("El Joc del Pingu — Login");
 	    stage.setMaximized(true);
 	    stage.show();
+
+	    // Start background music (loops indefinitely across all screens)
+	    try {
+	        MusicManager.getInstance().play();
+	    } catch (NoClassDefFoundError | Exception e) {
+	        System.out.println("⚠ No s'ha pogut iniciar la música: " + e.getMessage());
+	        System.out.println("  Afegeix javafx-media-XX.jar a la User Library 'JavaFX' d'Eclipse.");
+	    }
 	}
 
     public static void main(String[] args) {
