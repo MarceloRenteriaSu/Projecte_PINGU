@@ -602,6 +602,11 @@
 .cp-login-card .button:disabled {
     -fx-opacity: 0.40;
 }
+.cp-login-card .color-picker .color-picker-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+}
 
 
 /* ============================================================
