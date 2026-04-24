@@ -237,6 +237,13 @@ public class PantallaJuego {
 		addEvent("¡El juego ha comenzado!");
 		this.focaActivada = ambFoca;
 
+		// Incrementar el comptador de partides jugades a la BBDD
+		java.sql.Connection conStats = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+		if (conStats != null) {
+			GestorBBDD.incrementarPartidasJugadas(conStats, nombreUsuarioLogueado);
+			GestorBBDD.cerrar(conStats);
+		}
+
 		Tablero t = new Tablero(totalCasillas);
 
 		this.columnas = (int) Math.ceil(Math.sqrt(t.getTamanyo()));
@@ -348,43 +355,42 @@ public class PantallaJuego {
 	// -------------------------------------------------------
 
 	private double[][] getOffsets() {
-		// TOKEN_W = PinguinoRenderer.COLS * GAME_PX = 12*2 = 24px
-		// Offset horizontal ±13 → spacing 26px > 24px → sin solapamiento horizontal
+		// TOKEN_W = 64px → offset ±33 gives spacing 66px > 64px (no overlap)
 		int n = fichas.length;
 		if (n == 2) {
 			return new double[][] {
-				{-13,  0},
-				{ 13,  0}
+				{-33,  0},
+				{ 33,  0}
 			};
 		} else if (n == 3) {
 			return new double[][] {
-				{-13, -9},
-				{ 13, -9},
-				{  0,  9}
+				{-33, -24},
+				{ 33, -24},
+				{  0,  24}
 			};
 		} else if (n == 4) {
 			if (focaActivada) { // 3P + foca
 				return new double[][] {
-					{-13, -9},
-					{ 13, -9},
-					{-13,  9},
-					{  0,  0}
+					{-33, -24},
+					{ 33, -24},
+					{-33,  24},
+					{  0,   0}
 				};
 			} else { // 4P sin foca
 				return new double[][] {
-					{-13, -9},
-					{ 13, -9},
-					{-13,  9},
-					{ 13,  9}
+					{-33, -24},
+					{ 33, -24},
+					{-33,  24},
+					{ 33,  24}
 				};
 			}
 		} else { // 5 (4P + foca)
 			return new double[][] {
-				{-13, -9},
-				{ 13, -9},
-				{-13,  9},
-				{ 13,  9},
-				{  0,  0}
+				{-33, -24},
+				{ 33, -24},
+				{-33,  24},
+				{ 33,  24},
+				{  0,   0}
 			};
 		}
 	}
@@ -893,36 +899,56 @@ public class PantallaJuego {
 		foca.setPos(novaPosFoca);
 
 		int indiceFichaFoca = fichas.length - 1;
-		moverFichaVisual(indiceFichaFoca, novaPosFoca);
 
-		StringBuilder msg = new StringBuilder("🦭 La Foca es mou a casella " + novaPosFoca + ".");
+		// Desactivar botons durant l'animació de la foca
+		dado.setDisable(true);
+		rapido.setDisable(true);
+		lento.setDisable(true);
+		peces.setDisable(true);
 
-		for (int i = 0; i < partida.getJugadores().size(); i++) {
-			Jugador j = partida.getJugadores().get(i);
-			if (!(j instanceof Pinguino)) continue;
-			Pinguino pingu = (Pinguino) j;
-			int posPingu = pingu.getPos();
+		Node fichaFoca = fichas[indiceFichaFoca];
+		int oldPosFoca = posiciones[indiceFichaFoca];
+		posiciones[indiceFichaFoca] = novaPosFoca;
 
-			if (posPingu > posAntesFoca && posPingu < novaPosFoca) {
-				foca.golpearJugador(partida, pingu);
-				msg.append(" Ha passat per sobre " + pingu.getNom() + " i l'ha fet perdre la meitat dels items!");
-			} else if (posPingu == novaPosFoca) {
-				foca.aplastarJugador(partida, pingu);
-				int posNova = Math.max(0, pingu.getPos());
-				pingu.setPos(posNova);
-				moverFichaVisual(i, posNova);
-				if (foca.isSoborno()) {
-					msg.append(" " + pingu.getNom() + " ha subornat la Foca amb un peix!");
-				} else {
-					msg.append(" Ha atrapat " + pingu.getNom() + "! → casella " + posNova);
+		final int posAntesFocaFinal = posAntesFoca;
+		final int novaPosTemp = novaPosFoca;
+
+		// Animate cell-by-cell like penguins
+		animarMovimientoCasillaPorCasilla(fichaFoca, oldPosFoca, novaPosFoca, () -> {
+			redistribuirFichasEnPosicion(novaPosTemp);
+			redistribuirFichasEnPosicion(oldPosFoca);
+
+			javafx.application.Platform.runLater(() -> {
+				StringBuilder msg = new StringBuilder("🦭 La Foca es mou a casella " + novaPosTemp + ".");
+
+				for (int i = 0; i < partida.getJugadores().size(); i++) {
+					Jugador j = partida.getJugadores().get(i);
+					if (!(j instanceof Pinguino)) continue;
+					Pinguino pingu = (Pinguino) j;
+					int posPingu = pingu.getPos();
+
+					if (posPingu > posAntesFocaFinal && posPingu < novaPosTemp) {
+						foca.golpearJugador(partida, pingu);
+						msg.append(" Ha passat per sobre " + pingu.getNom() + " i l'ha fet perdre la meitat dels items!");
+					} else if (posPingu == novaPosTemp) {
+						foca.aplastarJugador(partida, pingu);
+						int posNova = Math.max(0, pingu.getPos());
+						pingu.setPos(posNova);
+						moverFichaVisual(i, posNova);
+						if (foca.isSoborno()) {
+							msg.append(" " + pingu.getNom() + " ha subornat la Foca amb un peix!");
+						} else {
+							msg.append(" Ha atrapat " + pingu.getNom() + "! → casella " + posNova);
+						}
+					}
 				}
-			}
-		}
-		addEvent(msg.toString());
-		actualizarInventarioUI();
+				addEvent(msg.toString());
+				actualizarInventarioUI();
 
-		// Comprovar si la foca ha guanyat
-		comprovarGuanyadorFoca(foca);
+				// Comprovar si la foca ha guanyat
+				comprovarGuanyadorFoca(foca);
+			});
+		});
 	}
 
 	// -------------------------------------------------------

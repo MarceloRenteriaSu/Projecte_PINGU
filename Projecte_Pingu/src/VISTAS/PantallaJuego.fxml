@@ -75,11 +75,11 @@
                         <RowConstraints percentHeight="10.0" />
                     </rowConstraints>
                     <children>
-                        <Canvas fx:id="P1" id="P1" width="24" height="32" />
-                        <Canvas fx:id="P2" id="P2" width="24" height="32" />
-                        <Canvas fx:id="P3" id="P3" width="24" height="32" />
-                        <Canvas fx:id="P4" id="P4" width="24" height="32" />
-                        <Canvas fx:id="P5" id="P5" width="24" height="32" />
+                        <Canvas fx:id="P1" id="P1" width="35" height="44" />
+                        <Canvas fx:id="P2" id="P2" width="35" height="44" />
+                        <Canvas fx:id="P3" id="P3" width="35" height="44" />
+                        <Canvas fx:id="P4" id="P4" width="35" height="44" />
+                        <Canvas fx:id="P5" id="P5" width="85" height="110" />
                     </children>
                 </GridPane>
             </StackPane>

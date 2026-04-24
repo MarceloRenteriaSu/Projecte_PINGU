@@ -1,24 +1,28 @@
 package VISTAS;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 /**
- * Dibuja el token-pingüino pixel art en cualquier GraphicsContext.
- * Compartido entre PantallaJuego (tokens pequeños) y PantallaConfig (preview grande).
+ * Draws the player token and seal token.
+ * Uses PINGU_YELLOW_IDLE.png (beanie tinted per player) and FOCA_1.png.
+ * Falls back to pixel-art if PNGs are missing.
  */
 public final class PinguinoRenderer {
 
     public static final int COLS = 12;
     public static final int ROWS = 16;
 
-    /** Tamaño de píxel para tokens en el tablero (canvas 24×32). */
+    /** Pixel size for game-board tokens (canvas 32×40). */
     public static final int GAME_PX = 2;
 
-    /** Tamaño de píxel para la vista previa en config (canvas 48×64). */
-    public static final int PREVIEW_PX = 4;
+    /** Pixel size for config preview canvas (canvas 72×96). */
+    public static final int PREVIEW_PX = 6;
 
-    /** Colores de gorro por defecto, uno por jugador. */
     public static final Color[] DEFAULT_COLORS = {
         Color.web("#2f6fed"),
         Color.web("#ef4444"),
@@ -26,57 +30,125 @@ public final class PinguinoRenderer {
         Color.web("#facc15")
     };
 
-    /*
-     * Leyenda de colores:
-     *  0 = transparente
-     *  1 = cuerpo negro  (#1a1a2e)
-     *  2 = barriga/pompón blanco (#f5f5f5)
-     *  3 = gorro (color del jugador)
-     *  4 = pico + patas naranja (#ff8c00)
-     *  5 = iris del ojo (negro profundo)
-     *
-     * Grid: 12 columnas × 16 filas — pixelSize escalable.
-     * Diseño centrado en la cuadrícula con ojos grandes (3 filas)
-     * y gorro redondeado tipo beanie con pompón.
-     */
-    private static final int[][] ART = {
-        {0,0,0,0,2,2,2,2,0,0,0,0},  //  0  pompón blanco
-        {0,0,0,3,3,3,3,3,3,0,0,0},  //  1  gorro alto
-        {0,0,3,3,3,3,3,3,3,3,0,0},  //  2  gorro medio
-        {0,3,3,3,3,3,3,3,3,3,3,0},  //  3  ala del gorro (ancha)
-        {0,1,1,1,1,1,1,1,1,1,1,0},  //  4  frente
-        {1,1,2,2,2,1,1,2,2,2,1,0},  //  5  ojos grandes (fila 1)
-        {1,1,2,5,2,1,1,2,5,2,1,0},  //  6  ojos con pupilas (centradas)
-        {1,1,2,2,2,1,1,2,2,2,1,0},  //  7  ojos grandes (fila 3)
-        {0,1,1,1,4,4,4,1,1,1,0,0},  //  8  pico naranja (pequeño)
-        {0,1,1,2,2,2,2,2,1,1,0,0},  //  9  cuerpo arriba
-        {0,1,2,2,2,2,2,2,2,1,0,0},  // 10  cuerpo
-        {0,1,2,2,2,2,2,2,2,1,0,0},  // 11  cuerpo
-        {0,1,1,2,2,2,2,2,1,1,0,0},  // 12  cuerpo abajo
-        {0,0,1,1,1,1,1,1,1,0,0,0},  // 13  base
-        {0,0,4,4,4,0,4,4,4,0,0,0},  // 14  patas
-        {0,4,4,0,0,0,0,0,4,4,0,0},  // 15  punta de patas
-    };
+    private static Image pinguBase;
+    private static Image focaBase;
 
     private PinguinoRenderer() {}
 
+    private static Image getPinguBase() {
+        if (pinguBase == null) {
+            try {
+                pinguBase = new Image(PinguinoRenderer.class
+                    .getResourceAsStream("/pngs_fichas/PINGU_YELLOW_IDLE.png"));
+            } catch (Exception ignored) {}
+        }
+        return pinguBase;
+    }
+
+    private static Image getFocaBase() {
+        if (focaBase == null) {
+            try {
+                focaBase = new Image(PinguinoRenderer.class
+                    .getResourceAsStream("/pngs_fichas/FOCA_1.png"));
+            } catch (Exception ignored) {}
+        }
+        return focaBase;
+    }
+
     /**
-     * Dibuja el pingüino en el GraphicsContext indicado.
+     * Draws the token into gc, scaling to fit the canvas size.
      *
-     * @param gc       contexto donde dibujar
-     * @param px       tamaño en pantalla de cada "píxel" del arte
-     * @param hatColor color del gorro; null → usa azul por defecto
-     * @param esFoca   true = esquema de colores de enemigo (gris + gorro rojo)
+     * @param gc       target GraphicsContext
+     * @param px       pixel size for fallback pixel-art
+     * @param hatColor player colour (tints the yellow beanie); null → default blue
+     * @param esFoca   true → draw seal sprite instead of penguin
      */
     public static void draw(GraphicsContext gc, int px, Color hatColor, boolean esFoca) {
+        double w = gc.getCanvas().getWidth();
+        double h = gc.getCanvas().getHeight();
+        if (w <= 0) w = COLS * px;
+        if (h <= 0) h = ROWS * px;
+        gc.clearRect(0, 0, w, h);
+
+        if (esFoca) {
+            Image img = getFocaBase();
+            if (img != null && !img.isError()) {
+                gc.drawImage(img, 0, 0, w, h);
+                return;
+            }
+            drawFallback(gc, px, null, true);
+        } else {
+            Image base = getPinguBase();
+            if (base != null && !base.isError()) {
+                Color hat = hatColor != null ? hatColor : DEFAULT_COLORS[0];
+                gc.drawImage(tintYellow(base, hat), 0, 0, w, h);
+                return;
+            }
+            drawFallback(gc, px, hatColor, false);
+        }
+    }
+
+    /** Replaces red pixels (hat + scarf) across the whole image with target colour. */
+    private static WritableImage tintYellow(Image source, Color target) {
+        int sw = (int) source.getWidth();
+        int sh = (int) source.getHeight();
+        WritableImage out = new WritableImage(sw, sh);
+        PixelReader reader = source.getPixelReader();
+        PixelWriter writer = out.getPixelWriter();
+        double tgtB = target.getBrightness();
+
+        for (int y = 0; y < sh; y++) {
+            for (int x = 0; x < sw; x++) {
+                Color c = reader.getColor(x, y);
+                if (c.getOpacity() >= 0.05 && isHatColor(c)) {
+                    double scale = tgtB > 0.01
+                        ? Math.min(c.getBrightness() / tgtB, 2.5)
+                        : c.getBrightness();
+                    writer.setColor(x, y, target.deriveColor(0, 1.0, scale, c.getOpacity()));
+                } else {
+                    writer.setColor(x, y, c);
+                }
+            }
+        }
+        return out;
+    }
+
+    /** Returns true if the pixel matches the red hat colour. */
+    private static boolean isHatColor(Color c) {
+        double h = c.getHue();
+        // Red wraps around 0°: covers 0–20° and 340–360°
+        boolean isRed = (h <= 20 || h >= 340);
+        return isRed && c.getSaturation() > 0.45 && c.getBrightness() > 0.30;
+    }
+
+    // ── Fallback pixel-art (used when PNG files are not found) ────────────
+
+    private static final int[][] ART = {
+        {0,0,0,2,2,2,2,0,0,0,0,0},
+        {0,0,3,3,3,3,3,3,0,0,0,0},
+        {0,3,3,3,3,3,3,3,3,0,0,0},
+        {3,3,3,3,3,3,3,3,3,3,0,0},
+        {1,1,1,1,1,1,1,1,1,1,0,0},
+        {1,2,5,1,1,1,1,2,5,1,0,0},
+        {1,2,2,1,1,1,1,2,2,1,0,0},
+        {1,1,4,4,4,4,1,1,1,1,0,0},
+        {1,1,1,1,1,1,1,1,1,1,0,0},
+        {1,1,2,2,2,2,2,2,1,1,0,0},
+        {1,2,2,2,2,2,2,2,2,1,0,0},
+        {1,2,2,2,2,2,2,2,2,1,0,0},
+        {1,1,2,2,2,2,2,2,1,1,0,0},
+        {1,1,1,1,1,1,1,1,1,1,0,0},
+        {0,4,4,4,0,0,4,4,4,0,0,0},
+        {4,4,0,0,0,0,0,0,4,4,0,0},
+    };
+
+    private static void drawFallback(GraphicsContext gc, int px, Color hatColor, boolean esFoca) {
         Color bodyC  = esFoca ? Color.web("#263238") : Color.web("#1a1a2e");
         Color bellyC = esFoca ? Color.web("#cfd8dc") : Color.web("#f5f5f5");
         Color irisC  = Color.web("#0a0a14");
         Color beakC  = Color.web("#ff8c00");
         Color hatC   = esFoca ? Color.web("#c62828")
                               : (hatColor != null ? hatColor : DEFAULT_COLORS[0]);
-
-        gc.clearRect(0, 0, COLS * px, ROWS * px);
 
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
