@@ -85,6 +85,7 @@ public class GestorBBDD {
 			if (con.isValid(5)) {
 				System.out.println("Connexió BBDD establerta (" + entorno + ").");
 				crearTaulaUsuaris(con);
+				migrarTaulaUsuaris(con);
 				migrarTaulaPartidas(con);
 				crearSequenciaPartidas(con);
 				crearTaulaPartidas(con);
@@ -113,6 +114,7 @@ public class GestorBBDD {
 				"  USERNAME VARCHAR2(50) PRIMARY KEY," +
 				"  PASSWORD VARCHAR2(100) NOT NULL," +
 				"  PARTIDAS_GANADAS NUMBER DEFAULT 0," +
+				"  PARTIDAS_JUGADAS NUMBER DEFAULT 0," +
 				"  FECHA_REGISTRO TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
 				")"
 			);
@@ -122,6 +124,31 @@ public class GestorBBDD {
 			if (!e.getMessage().contains("ORA-00955") && !e.getMessage().contains("already")) {
 				System.out.println("Info taula usuaris: " + e.getMessage());
 			}
+		}
+	}
+
+	/**
+	 * Afegeix la columna PARTIDAS_JUGADAS a PINGU_USERS si no existeix (migració).
+	 */
+	private static void migrarTaulaUsuaris(Connection con) {
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT COUNT(*) FROM USER_TAB_COLUMNS " +
+				"WHERE TABLE_NAME = 'PINGU_USERS' AND COLUMN_NAME = 'PARTIDAS_JUGADAS'"
+			);
+			ResultSet rs = ps.executeQuery();
+			boolean exists = rs.next() && rs.getInt(1) > 0;
+			rs.close();
+			ps.close();
+
+			if (!exists) {
+				Statement st = con.createStatement();
+				st.executeUpdate("ALTER TABLE PINGU_USERS ADD PARTIDAS_JUGADAS NUMBER DEFAULT 0");
+				st.close();
+				System.out.println("Columna PARTIDAS_JUGADAS afegida a PINGU_USERS.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Info migració PINGU_USERS: " + e.getMessage());
 		}
 	}
 
@@ -452,6 +479,23 @@ public class GestorBBDD {
 		} catch (SQLException e) {
 			System.out.println("Error en registre: " + e.getMessage());
 			return -1;
+		}
+	}
+
+	/**
+	 * Incrementa el comptador de partides jugades d'un usuari.
+	 */
+	public static void incrementarPartidasJugadas(Connection con, String username) {
+		if (con == null || username == null) return;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"UPDATE PINGU_USERS SET PARTIDAS_JUGADAS = PARTIDAS_JUGADAS + 1 WHERE USERNAME = ?"
+			);
+			ps.setString(1, username);
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error incrementant partides jugades: " + e.getMessage());
 		}
 	}
 
