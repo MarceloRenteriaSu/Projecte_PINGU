@@ -693,7 +693,8 @@
     -fx-background-color: rgba(9,75,142,0.22);
 }
 .data-table .table-cell {
-    -fx-text-fill: #0d4680;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 13px;
     -fx-border-color: transparent;
@@ -701,7 +702,7 @@
     -fx-padding: 8 10;
 }
 .data-table .placeholder .label {
-    -fx-text-fill: #5590c0;
+    -fx-text-fill: white;
     -fx-font-family: "Arial", sans-serif;
 }
 .data-table > .virtual-flow > .scroll-bar:vertical .thumb {
