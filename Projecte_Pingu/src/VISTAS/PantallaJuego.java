@@ -794,17 +794,86 @@ public class PantallaJuego {
 		lento.setDisable(true);
 		peces.setDisable(true);
 
-		// Si la partida va ser carregada des de la BBDD, eliminar-la ara que ha acabat
-		if (partidaGuardadaId != -1) {
-			java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
-			if (con != null) {
-				GestorBBDD.borrarPartidaPorId(con, partidaGuardadaId);
+		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+		if (con != null) {
+			try {
+				if (partidaGuardadaId != -1) {
+					// Loaded game: mark as finished instead of deleting it
+					GestorBBDD.marcarPartidaAcabada(con, partidaGuardadaId);
+					partidaGuardadaId = -1;
+				} else {
+					// New game: save it as a finished record
+					int savedId = guardarPartidaFinalitzada(con, partida);
+					if (savedId > 0) GestorBBDD.marcarPartidaAcabada(con, savedId);
+				}
+				// Increment winner's win count
+				GestorBBDD.incrementarPartidasGanadas(con, nomGuanyador);
+			} finally {
 				GestorBBDD.cerrar(con);
 			}
-			partidaGuardadaId = -1;
 		}
 
 		obrirPantallaFin(nomGuanyador, partida);
+	}
+
+	/** Saves the current game state to the DB and returns the new ID (-1 on error). */
+	private int guardarPartidaFinalitzada(java.sql.Connection con, Partida partida) {
+		try {
+			Tablero t = partida.getTablero();
+			int numCasillas = t.getTamanyo();
+
+			StringBuilder sbCasillas = new StringBuilder();
+			for (int i = 0; i < numCasillas; i++) {
+				if (i > 0) sbCasillas.append(",");
+				sbCasillas.append(t.getCasilla(i).getClass().getSimpleName());
+			}
+
+			int numJugadores = 0;
+			for (Jugador j : partida.getJugadores()) {
+				if (j instanceof Pinguino) numJugadores++;
+			}
+
+			String[] nombresPings    = new String[numJugadores];
+			int[]    posicionesPings  = new int[numJugadores];
+			String[][] inventariosPings = new String[numJugadores][];
+
+			int idx = 0;
+			for (Jugador j : partida.getJugadores()) {
+				if (j instanceof Pinguino) {
+					Pinguino p = (Pinguino) j;
+					nombresPings[idx]    = p.getNom();
+					posicionesPings[idx] = p.getPos();
+					Inventario inv = p.getInv();
+					java.util.List<Item> items = inv.getInv();
+					String[] itemStrs = new String[items.size()];
+					for (int k = 0; k < items.size(); k++) {
+						Item item = items.get(k);
+						itemStrs[k] = item.getNom() + ":" + item.getCantidad();
+					}
+					inventariosPings[idx] = itemStrs;
+					idx++;
+				}
+			}
+
+			int focaAct = focaActivada ? 1 : 0;
+			int fPos = 0, fSoborno = 0, fTurnosBloq = 0;
+			if (focaActivada && indiceFoca >= 0) {
+				Foca foca = (Foca) partida.getJugadores().get(indiceFoca);
+				fPos         = foca.getPos();
+				fSoborno     = foca.isSoborno() ? 1 : 0;
+				fTurnosBloq  = foca.getTurnosBloquejada();
+			}
+
+			String nomPartida = "Partida de " + nombreUsuarioLogueado;
+			return GestorBBDD.guardarPartida(con, nombreUsuarioLogueado, nomPartida,
+				numCasillas, sbCasillas.toString(),
+				focaAct, fPos, fSoborno, fTurnosBloq,
+				partida.getTurnos(), partida.getJugadorActual(),
+				nombresPings, posicionesPings, inventariosPings);
+		} catch (Exception e) {
+			System.out.println("Error guardant partida finalitzada: " + e.getMessage());
+			return -1;
+		}
 	}
 
 	// -------------------------------------------------------

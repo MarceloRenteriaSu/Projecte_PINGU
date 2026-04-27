@@ -89,6 +89,7 @@ public class GestorBBDD {
 				migrarTaulaPartidas(con);
 				crearSequenciaPartidas(con);
 				crearTaulaPartidas(con);
+				migrarColumnaAcabada(con);
 				crearTaulaPinguinos(con);
 				crearTaulaInventaris(con);
 				crearSequenciaEvents(con);
@@ -208,6 +209,31 @@ public class GestorBBDD {
 			}
 		} catch (SQLException e) {
 			System.out.println("Error durant migració de PINGU_PARTIDAS: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Afegeix la columna ACABADA a PINGU_PARTIDAS si no existeix.
+	 * 0 = partida en curs, 1 = partida finalitzada.
+	 */
+	private static void migrarColumnaAcabada(Connection con) {
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT COUNT(*) FROM USER_TAB_COLUMNS " +
+				"WHERE TABLE_NAME = 'PINGU_PARTIDAS' AND COLUMN_NAME = 'ACABADA'"
+			);
+			ResultSet rs = ps.executeQuery();
+			boolean exists = rs.next() && rs.getInt(1) > 0;
+			rs.close();
+			ps.close();
+			if (!exists) {
+				Statement st = con.createStatement();
+				st.executeUpdate("ALTER TABLE PINGU_PARTIDAS ADD ACABADA NUMBER(1) DEFAULT 0");
+				st.close();
+				System.out.println("Columna ACABADA afegida a PINGU_PARTIDAS.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Info migració ACABADA: " + e.getMessage());
 		}
 	}
 
@@ -500,6 +526,41 @@ public class GestorBBDD {
 	}
 
 	/**
+	 * Incrementa el comptador de partides guanyades d'un usuari.
+	 */
+	public static void incrementarPartidasGanadas(Connection con, String username) {
+		if (con == null || username == null) return;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"UPDATE PINGU_USERS SET PARTIDAS_GANADAS = PARTIDAS_GANADAS + 1 WHERE USERNAME = ?"
+			);
+			ps.setString(1, username);
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error incrementant partides guanyades: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Marca una partida com a finalitzada (ACABADA = 1) sense esborrar-la.
+	 */
+	public static void marcarPartidaAcabada(Connection con, int id) {
+		if (con == null) return;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"UPDATE PINGU_PARTIDAS SET ACABADA = 1 WHERE ID = ?"
+			);
+			ps.setInt(1, id);
+			ps.executeUpdate();
+			ps.close();
+			System.out.println("Partida ID=" + id + " marcada com acabada.");
+		} catch (SQLException e) {
+			System.out.println("Error marcant partida com acabada: " + e.getMessage());
+		}
+	}
+
+	/**
 	 * Guarda una nova partida repartida en tres taules:
 	 *   PINGU_PARTIDAS  — dades generals de la partida
 	 *   PINGU_PINGUINOS — un registre per cada pingüí
@@ -617,7 +678,7 @@ public class GestorBBDD {
 				"   FROM PINGU_PINGUINOS pj WHERE pj.PARTIDA_ID = p.ID) AS NOMBRES_JUGADORS, " +
 				"  p.TURNOS, p.FECHA_GUARDADO " +
 				"FROM PINGU_PARTIDAS p " +
-				"WHERE p.USERNAME = ? " +
+				"WHERE p.USERNAME = ? AND (p.ACABADA = 0 OR p.ACABADA IS NULL) " +
 				"ORDER BY p.FECHA_GUARDADO DESC"
 			);
 			ps.setString(1, username);
