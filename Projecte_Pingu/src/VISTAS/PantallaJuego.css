@@ -68,7 +68,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 16, 0.25, 0, 5);
 }
 
-/* Card title with cyan glow */
 .card-title {
     -fx-font-size: 16px;
     -fx-font-weight: bold;

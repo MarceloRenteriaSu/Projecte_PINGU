@@ -6,14 +6,11 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane
+<VBox
     xmlns="http://javafx.com/javafx/21.0.10"
     xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="VISTAS.PantallaConfig"
@@ -24,10 +21,9 @@
     prefWidth="560"
     prefHeight="740">
 
-    <!-- Arctic background -->
-    <ImageView fx:id="configBgView" mouseTransparent="true" preserveRatio="false">
-        <image><Image url="@menu_background.png"/></image>
-    </ImageView>
+    <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+    </padding>
 
     <VBox spacing="10" styleClass="cp-login-card" maxWidth="500">
         <padding>
@@ -76,5 +72,4 @@
                 maxWidth="Infinity"
                 styleClass="cp-secondary-button"/>
     </VBox>
-
-</StackPane>
+</VBox>
