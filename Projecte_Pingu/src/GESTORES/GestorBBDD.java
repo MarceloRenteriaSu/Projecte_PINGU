@@ -827,6 +827,62 @@ public class GestorBBDD {
 	}
 
 	/**
+	 * Retorna la llista de noms d'usuari registrats, excloent l'usuari indicat.
+	 */
+	public static ArrayList<String> getUsuarios(Connection con, String exclude) {
+		ArrayList<String> lista = new ArrayList<>();
+		if (con == null) return lista;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT USERNAME FROM PINGU_USERS " +
+				"WHERE UPPER(USERNAME) != UPPER(?) ORDER BY USERNAME"
+			);
+			ps.setString(1, exclude == null ? "" : exclude);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) lista.add(rs.getString("USERNAME"));
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error obtenint usuaris: " + e.getMessage());
+		}
+		return lista;
+	}
+
+	/**
+	 * Retorna el rànquing global d'usuaris ordenat per partides guanyades.
+	 * Cada fila conté USERNAME, PARTIDAS_GANADAS, PARTIDAS_JUGADAS i RATIO (%).
+	 */
+	public static ArrayList<LinkedHashMap<String, String>> getRanking(Connection con) {
+		ArrayList<LinkedHashMap<String, String>> lista = new ArrayList<>();
+		if (con == null) return lista;
+		try {
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery(
+				"SELECT USERNAME, PARTIDAS_GANADAS, PARTIDAS_JUGADAS, " +
+				"  CASE WHEN PARTIDAS_JUGADAS > 0 " +
+				"       THEN ROUND(PARTIDAS_GANADAS * 100.0 / PARTIDAS_JUGADAS, 1) " +
+				"       ELSE 0 END AS RATIO " +
+				"FROM PINGU_USERS " +
+				"ORDER BY PARTIDAS_GANADAS DESC, RATIO DESC " +
+				"FETCH FIRST 20 ROWS ONLY"
+			);
+			while (rs.next()) {
+				LinkedHashMap<String, String> fila = new LinkedHashMap<>();
+				fila.put("USERNAME",         rs.getString("USERNAME"));
+				fila.put("PARTIDAS_GANADAS", rs.getString("PARTIDAS_GANADAS"));
+				fila.put("PARTIDAS_JUGADAS", rs.getString("PARTIDAS_JUGADAS"));
+				fila.put("RATIO",            rs.getString("RATIO"));
+				lista.add(fila);
+			}
+			rs.close();
+			st.close();
+		} catch (SQLException e) {
+			System.out.println("Error obtenint ranking: " + e.getMessage());
+		}
+		return lista;
+	}
+
+	/**
 	 * Cierra la conexión con la BBDD.
 	 */
 	public static void cerrar(Connection con) {
