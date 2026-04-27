@@ -50,14 +50,6 @@
 
     </VBox>
 
-    <!-- Version — bottom centre -->
-    <Label styleClass="version-label" text="V1.0.3"
-           StackPane.alignment="BOTTOM_CENTER">
-        <StackPane.margin>
-            <Insets bottom="8"/>
-        </StackPane.margin>
-    </Label>
-
     <!-- Logged-in user — top right -->
     <Label fx:id="usernameLabel" styleClass="username-label" text="Jugador: "
            StackPane.alignment="TOP_RIGHT">

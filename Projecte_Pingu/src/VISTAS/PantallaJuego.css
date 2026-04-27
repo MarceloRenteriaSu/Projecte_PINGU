@@ -1,270 +1,152 @@
-/* ======================================== */
-/*   ARCTIC / ANTARCTIC THEME — PINGU       */
-/* ======================================== */
+/* ==============================
+   JUEGO — CP Island Style
+   ============================== */
 
 .root {
-    -fx-font-family: "Courier New";
-    -fx-background-color: #050d1c;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
+        #05101f 0%, #0b1e3c 30%, #0d2a52 55%, #081a3a 80%, #040d1c 100%);
 }
 
-/* MENU BAR */
+/* ── Menu bar: CP-island blue bar ── */
 .menu-bar {
-    -fx-background-color: linear-gradient(to right, #07122a, #0c1e3d, #07122a);
-    -fx-border-color: rgba(100, 180, 255, 0.30);
-    -fx-border-width: 0 0 1 0;
+    -fx-background-color: linear-gradient(to bottom, #10a0e8, #056db5);
+    -fx-border-color: #55cbf5;
+    -fx-border-width: 0 0 2 0;
 }
 .menu-bar .label {
-    -fx-text-fill: #a8d8ff;
-    -fx-font-family: "Courier New";
-    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
 }
 .context-menu {
-    -fx-background-color: #0a1e3d;
-    -fx-border-color: rgba(100, 180, 255, 0.35);
+    -fx-background-color: #0b2a55;
+    -fx-border-color: #55cbf5;
 }
 .menu-item .label {
-    -fx-text-fill: #b8dcff;
-    -fx-font-family: "Courier New";
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
 }
 .menu-item:focused {
-    -fx-background-color: rgba(60, 140, 255, 0.25);
+    -fx-background-color: #1a5294;
 }
 
-/* ======================================== */
-/*   OUTER BACKGROUND (snow-background)     */
-/* ======================================== */
-
+/* ── Board wrapper ── */
 .snow-background {
-    -fx-background-color:
-        linear-gradient(to bottom right,
-            #050d1c 0%,
-            #0a1a34 40%,
-            #06122a 100%);
+    -fx-background-color: transparent;
 }
 
-/* ======================================== */
-/*   BOARD FRAME (icy border + glow)        */
-/* ======================================== */
-
-.board-frame {
-    -fx-background-color:
-        linear-gradient(to bottom,
-            rgba(22, 70, 145, 0.28) 0%,
-            rgba(8, 30, 70, 0.40) 100%);
-    -fx-background-radius: 18;
-    -fx-border-color:
-        rgba(170, 235, 255, 0.65),
-        rgba(80, 170, 255, 0.20);
-    -fx-border-radius: 18, 15;
-    -fx-border-width: 2, 5;
-    -fx-border-insets: 0, 5;
-    -fx-effect:
-        dropshadow(gaussian, rgba(80, 190, 255, 0.55), 35, 0.18, 0, 0),
-        dropshadow(gaussian, rgba(0,  0,  0,   0.80), 18, 0.35, 0, 4);
-    -fx-padding: 6;
-}
-
-/* Snowflake corner labels */
-.snow-corner {
-    -fx-font-size: 28px;
-    -fx-text-fill: rgba(160, 225, 255, 0.50);
-    -fx-effect: dropshadow(gaussian, rgba(100, 200, 255, 0.60), 8, 0.40, 0, 0);
-}
-
-/* ======================================== */
-/*   BOARD (GridPane inside frame)          */
-/* ======================================== */
-
+/* ── Board (transparent – Canvas draws the white path) ── */
 .board {
     -fx-background-color: transparent;
-    -fx-padding: 4;
+    -fx-padding: 10;
     -fx-border-color: transparent;
     -fx-border-width: 0;
 }
 
-/* ======================================== */
-/*   CELL TEXT                              */
-/* ======================================== */
-
+/* ── Cell number labels ── */
 .cell-title {
-    -fx-font-family: "Courier New";
+    -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.90), 3, 0.60, 0, 1);
+    -fx-fill: #0d4680;
 }
 .cell-type {
-    -fx-font-family: "Courier New";
+    -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 10px;
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.90), 3, 0.60, 0, 1);
+    -fx-fill: #1a5090;
 }
 
-/* ======================================== */
-/*   RIGHT SIDEBAR — Arctic panel cards     */
-/* ======================================== */
-
+/* ── Sidebar cards (cp-login-card style) ── */
 .card {
-    -fx-background-color:
-        linear-gradient(to bottom,
-            rgba(12, 38, 90, 0.94) 0%,
-            rgba(5, 18, 50, 0.97) 100%);
-    -fx-background-radius: 16;
-    -fx-border-color:
-        rgba(150, 220, 255, 0.55),
-        rgba(70, 150, 255, 0.18);
-    -fx-border-radius: 16, 13;
-    -fx-border-width: 1.5, 4;
-    -fx-border-insets: 0, 4;
+    -fx-background-color: linear-gradient(to bottom, #daeffc, #aedef5);
+    -fx-background-radius: 15;
     -fx-padding: 14;
-    -fx-effect:
-        dropshadow(gaussian, rgba(50, 150, 255, 0.40), 22, 0.14, 0, 3),
-        dropshadow(gaussian, rgba(0,   0,   0,  0.70), 10, 0.30, 0, 2),
-        innershadow(gaussian, rgba(170, 230, 255, 0.08), 10, 0.30, 0, 1);
+    -fx-border-color: white;
+    -fx-border-radius: 15;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 16, 0.25, 0, 5);
 }
 
 /* Card title with cyan glow */
 .card-title {
-    -fx-font-family: "Courier New";
-    -fx-font-size: 15px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #9ae0ff;
-    -fx-effect:
-        dropshadow(gaussian, rgba(80, 200, 255, 0.80), 12, 0.45, 0, 0),
-        dropshadow(gaussian, rgba(0, 0, 0, 0.80), 4, 0.40, 0, 1);
-}
-
-/* Dice result text */
-.big-text {
-    -fx-font-family: "Courier New";
-    -fx-font-size: 19px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-fill: #d2f0ff;
-    -fx-effect: dropshadow(gaussian, rgba(60, 170, 255, 0.55), 8, 0.30, 0, 1);
+    -fx-font-family: "Arial", sans-serif;
+    -fx-text-fill: #0d4680;
 }
 
-/* Inventory stats */
+/* ── Text nodes inside cards ── */
+.big-text {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #0d4680;
+}
 .stat {
-    -fx-font-family: "Courier New";
     -fx-font-size: 13px;
-    -fx-fill: rgba(175, 225, 255, 0.88);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.60), 3, 0.35, 0, 1);
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #1a5090;
+}
+.events {
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #34689e;
 }
 
-/* ======================================== */
-/*   EVENTS LIST                            */
-/* ======================================== */
-
-.events-list {
-    -fx-background-color: rgba(3, 12, 35, 0.72);
-    -fx-background-radius: 10;
-    -fx-border-color: rgba(100, 185, 255, 0.32);
-    -fx-border-radius: 10;
-    -fx-border-width: 1;
-    -fx-padding: 0;
-}
-.events-list .list-cell {
-    -fx-background-color: transparent;
-    -fx-text-fill: rgba(190, 230, 255, 0.90);
-    -fx-font-family: "Courier New";
-    -fx-font-size: 11px;
-    -fx-padding: 4 8;
+/* ── Buttons ── */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #094b8e, #032b55);
+    -fx-background-radius: 20;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-padding: 8 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 5, 0.35, 0, 2);
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
     -fx-border-width: 0;
 }
-.events-list .list-cell:odd {
-    -fx-background-color: rgba(25, 70, 140, 0.22);
-}
-.events-list .list-cell:selected {
-    -fx-background-color: rgba(60, 155, 255, 0.28);
-    -fx-text-fill: #d8f2ff;
-}
-.events-list > .virtual-flow > .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 8;
-}
-.events-list > .virtual-flow > .scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(120, 200, 255, 0.55);
-    -fx-background-radius: 4;
-}
-.events-list > .virtual-flow > .scroll-bar:vertical .track {
-    -fx-background-color: transparent;
-}
-
-/* ======================================== */
-/*   BUTTONS                                */
-/* ======================================== */
-
-.button {
-    -fx-font-family: "Courier New";
-    -fx-font-size: 12px;
-    -fx-font-weight: 700;
-    -fx-background-color:
-        rgba(6, 22, 58, 0.80),
-        linear-gradient(to bottom,
-            rgba(48, 125, 205, 0.70),
-            rgba(18, 75, 160, 0.70));
-    -fx-background-radius: 9;
-    -fx-background-insets: 0, 1;
-    -fx-border-color: rgba(110, 190, 255, 0.55);
-    -fx-border-radius: 9;
-    -fx-border-width: 1;
-    -fx-text-fill: #c4e8ff;
-    -fx-padding: 6 14;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(50, 145, 255, 0.35), 6, 0.20, 0, 2);
-}
 .button:hover {
-    -fx-border-color: rgba(170, 225, 255, 0.82);
-    -fx-background-color:
-        rgba(8, 32, 80, 0.92),
-        linear-gradient(to bottom,
-            rgba(68, 158, 240, 0.82),
-            rgba(32, 100, 200, 0.82));
-    -fx-background-insets: 0, 1;
-    -fx-effect: dropshadow(gaussian, rgba(100, 205, 255, 0.65), 10, 0.30, 0, 0);
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #04396b);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
 }
 .button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #032b55, #094b8e);
     -fx-scale-x: 0.97;
     -fx-scale-y: 0.97;
-    -fx-effect: innershadow(gaussian, rgba(0, 20, 60, 0.80), 6, 0.45, 1, 2);
+}
+.button:disabled {
+    -fx-opacity: 0.38;
+}
+.button:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
-/* Primary (Tirar dado) */
+/* Primary = green (dado/action button) */
 .button.primary {
-    -fx-background-color:
-        rgba(6, 22, 58, 0.92),
-        linear-gradient(to bottom, #4aaae0, #2e88c8, #1a70b0);
-    -fx-background-insets: 0, 1;
-    -fx-text-fill: #e8f8ff;
+    -fx-background-color: linear-gradient(to bottom, #50cc04, #368a02);
+    -fx-background-radius: 20;
     -fx-font-size: 14px;
-    -fx-border-color: rgba(150, 220, 255, 0.75);
-    -fx-effect:
-        dropshadow(gaussian, rgba(50, 165, 255, 0.75), 14, 0.38, 0, 3),
-        dropshadow(gaussian, rgba(0, 0, 0, 0.60), 6, 0.30, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 4, 0.30, 0, 2);
 }
 .button.primary:hover {
-    -fx-background-color:
-        rgba(6, 22, 58, 0.98),
-        linear-gradient(to bottom, #60bef0, #48a8e8, #3090d8);
-    -fx-background-insets: 0, 1;
-    -fx-effect:
-        dropshadow(gaussian, rgba(110, 215, 255, 0.90), 20, 0.48, 0, 0),
-        dropshadow(gaussian, rgba(10,  60, 150, 0.65),   8, 0.28, 0, 3);
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
+    -fx-background-color: linear-gradient(to bottom, #60e609, #40a103);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
 }
 .button.primary:pressed {
     -fx-scale-x: 0.97;
     -fx-scale-y: 0.97;
-    -fx-effect: innershadow(gaussian, rgba(0, 20, 60, 0.85), 8, 0.55, 1, 3);
+}
+.button.primary:disabled {
+    -fx-opacity: 0.38;
 }
 
-/* ======================================== */
-/*   SCROLL (objects panel)                 */
-/* ======================================== */
-
+/* ── ScrollPane inside inventory card ── */
 .objects-scroll {
     -fx-background-color: transparent;
 }
@@ -272,77 +154,59 @@
     -fx-background-color: transparent;
 }
 
-/* ======================================== */
-/*   PLAYER TOKENS                          */
-/* ======================================== */
+/* ── Player tokens (Canvas pixel-art penguins) ──
+   Los efectos de brillo/oro se aplican programáticamente en PantallaJuego.java
+   (marcarJugadorActual usa setEffect con DropShadow) ── */
 
-.player {
-    -fx-stroke: rgba(255, 255, 255, 0.92);
-    -fx-stroke-width: 2.8;
-    -fx-effect:
-        dropshadow(gaussian, rgba(255, 255, 255, 0.85), 10, 0.55, 0, 0),
-        dropshadow(gaussian, rgba(0, 0, 0, 0.65), 5, 0.40, 0, 1);
-    -fx-scale-x: 1.10;
-    -fx-scale-y: 1.10;
+/* ── Events ListView ── */
+.events-list {
+    -fx-background-color: rgba(255,255,255,0.35);
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(9,75,142,0.30);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 0;
 }
-
-#P1 {
-    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #6ea8ff, #2f6fed);
+.events-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1a5090;
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-padding: 4 8;
+    -fx-border-width: 0;
 }
-#P2 {
-    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #ff8888, #ef4444);
+.events-list .list-cell:odd {
+    -fx-background-color: rgba(9,75,142,0.07);
 }
-#P3 {
-    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #60e880, #22c55e);
+.events-list .list-cell:selected {
+    -fx-background-color: rgba(9,75,142,0.18);
 }
-#P4 {
-    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #ffe060, #facc15);
+.events-list > .virtual-flow > .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
 }
-#P5 {
-    -fx-fill: radial-gradient(center 38% 35%, radius 60%, #636f80, #374151);
+.events-list > .virtual-flow > .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(9,75,142,0.40);
+    -fx-background-radius: 4;
 }
-
-.foca {
-    -fx-stroke: rgba(80, 90, 110, 0.90);
-    -fx-stroke-width: 2.2;
-    -fx-effect:
-        dropshadow(gaussian, rgba(220, 38, 38, 0.65), 10, 0.45, 0, 0),
-        dropshadow(gaussian, rgba(0, 0, 0, 0.65), 5, 0.40, 0, 1);
-    -fx-scale-x: 1.10;
-    -fx-scale-y: 1.10;
-}
-
-.current-player {
-    -fx-effect:
-        dropshadow(gaussian, gold, 20, 0.75, 0, 0),
-        dropshadow(gaussian, rgba(255, 200, 0, 0.50), 8, 0.40, 0, 0);
-    -fx-scale-x: 1.20;
-    -fx-scale-y: 1.20;
+.events-list > .virtual-flow > .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
 }
 
-/* ======================================== */
-/*   END SCREEN                             */
-/* ======================================== */
-
+/* ── End screen (PantallaFin uses PantallaJuego.css) ── */
 .fin-titulo {
-    -fx-font-family: "Courier New";
-    -fx-font-size: 32px;
-    -fx-font-weight: 800;
-    -fx-fill: #c8eeff;
-    -fx-effect: dropshadow(gaussian, rgba(80, 200, 255, 0.75), 16, 0.45, 0, 0);
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #0d4680;
 }
 .fin-subtitulo {
-    -fx-font-family: "Courier New";
-    -fx-font-size: 18px;
-    -fx-fill: rgba(180, 225, 255, 0.80);
+    -fx-font-size: 16px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #1a5090;
 }
 .fin-info {
-    -fx-font-family: "Courier New";
-    -fx-font-size: 15px;
-    -fx-fill: rgba(160, 215, 255, 0.85);
-}
-
-/* Bottom bar */
-.bottom-bar {
-    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #34689e;
 }

@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -103,19 +104,30 @@ public class PantallaConfig {
         int numJugadors = obtenerNumJugadors();
         for (int i = 0; i < numJugadors; i++) {
             TextField tf = new TextField();
-            tf.setPromptText("Nom del Jugador " + (i + 1));
-            tf.getStyleClass().add("player-field");
-            if (i == 0) {
-                tf.setText(nombreUsuario);
-            }
+            tf.setPromptText("Jugador " + (i + 1));
+            tf.getStyleClass().add("field");
+            if (i == 0) tf.setText(nombreUsuario);
 
-            ColorPicker cp = new ColorPicker(DEFAULT_COLORS[i % DEFAULT_COLORS.length]);
-            cp.setPrefWidth(90);
-            cp.setMinWidth(90);
-            cp.setMaxWidth(90);
-            cp.getStyleClass().add("player-color");
+            Color defaultColor = DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+            ColorPicker cp = new ColorPicker(defaultColor);
+            cp.setPrefWidth(140);
+            cp.setMinWidth(140);
+            cp.setMaxWidth(140);
+            cp.getStyleClass().add("button");
 
-            HBox fila = new HBox(8, tf, cp);
+            // Vista previa del pingüino con el color del gorro seleccionado
+            int pw = PinguinoRenderer.COLS * PinguinoRenderer.PREVIEW_PX;
+            int ph = PinguinoRenderer.ROWS * PinguinoRenderer.PREVIEW_PX;
+            Canvas preview = new Canvas(pw, ph);
+            PinguinoRenderer.draw(preview.getGraphicsContext2D(),
+                PinguinoRenderer.PREVIEW_PX, defaultColor, false);
+
+            // Actualizar preview cuando cambia el color
+            cp.setOnAction(e -> PinguinoRenderer.draw(
+                preview.getGraphicsContext2D(),
+                PinguinoRenderer.PREVIEW_PX, cp.getValue(), false));
+
+            HBox fila = new HBox(8, tf, cp, preview);
             HBox.setHgrow(tf, Priority.ALWAYS);
             fila.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
