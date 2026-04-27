@@ -20,7 +20,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
+import java.sql.Connection;
 import java.util.ArrayList;
+
+import GESTORES.GestorBBDD;
 
 /**
  * Pantalla de configuració: nombre de caselles, nombre de jugadors, noms i foca.
@@ -35,12 +38,17 @@ public class PantallaConfig {
     @FXML private Label feedbackLabel;
     @FXML private Button btnComenzar;
 
-    private ArrayList<TextField> campsNoms = new ArrayList<>();
     private ArrayList<ColorPicker> campColors = new ArrayList<>();
+    // Player 1 name field (locked to logged-in user)
+    private TextField campNom1 = null;
+    // Players 2-4: ComboBox with registered users
+    private ArrayList<ComboBox<String>> campsJugadors = new ArrayList<>();
+
     private String nombreUsuario = "Jugador";
     private Stage menuStage;
+    private Connection conexion = null;
+    private ArrayList<String> usuarisDisponibles = new ArrayList<>();
 
-    // Default colors matching PantallaJuego.css (#P1–#P4)
     private static final Color[] DEFAULT_COLORS = {
         Color.web("#2f6fed"),
         Color.web("#ef4444"),
@@ -54,6 +62,12 @@ public class PantallaConfig {
 
     public void setMenuStage(Stage stage) {
         this.menuStage = stage;
+    }
+
+    public void setConexion(Connection con) {
+        this.conexion = con;
+        usuarisDisponibles = GestorBBDD.getUsuarios(con, nombreUsuario);
+        regenerarCampsNoms();
     }
 
     @FXML
@@ -79,46 +93,62 @@ public class PantallaConfig {
     }
 
     /**
-     * Regenera els camps de text per als noms dels jugadors
-     * segons el nombre seleccionat al ComboBox.
+     * Regenera els camps de noms segons el nombre de jugadors seleccionat.
+     * El jugador 1 és sempre l'usuari logejat (camp bloquejat).
+     * Els jugadors 2-4 escullen entre els usuaris registrats via ComboBox.
      */
     private void regenerarCampsNoms() {
+        if (nomsContainer == null) return;
         nomsContainer.getChildren().clear();
-        campsNoms.clear();
         campColors.clear();
+        campsJugadors.clear();
+        campNom1 = null;
 
         int numJugadors = obtenerNumJugadors();
         for (int i = 0; i < numJugadors; i++) {
-            TextField tf = new TextField();
-            tf.setPromptText("Jugador " + (i + 1));
-            tf.getStyleClass().add("field");
-            if (i == 0) tf.setText(nombreUsuario);
-
             Color defaultColor = DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+
             ColorPicker cp = new ColorPicker(defaultColor);
             cp.setPrefWidth(140);
             cp.setMinWidth(140);
             cp.setMaxWidth(140);
             cp.getStyleClass().add("button");
 
-            // Vista previa del pingüino con el color del gorro seleccionado
             int pw = PinguinoRenderer.COLS * PinguinoRenderer.PREVIEW_PX;
             int ph = PinguinoRenderer.ROWS * PinguinoRenderer.PREVIEW_PX;
             Canvas preview = new Canvas(pw, ph);
             PinguinoRenderer.draw(preview.getGraphicsContext2D(),
                 PinguinoRenderer.PREVIEW_PX, defaultColor, false);
-
-            // Actualizar preview cuando cambia el color
             cp.setOnAction(e -> PinguinoRenderer.draw(
                 preview.getGraphicsContext2D(),
                 PinguinoRenderer.PREVIEW_PX, cp.getValue(), false));
 
-            HBox fila = new HBox(8, tf, cp, preview);
-            HBox.setHgrow(tf, Priority.ALWAYS);
-            fila.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-
-            campsNoms.add(tf);
             campColors.add(cp);
+
+            HBox fila;
+            if (i == 0) {
+                // Player 1: locked to the logged-in user
+                TextField tf = new TextField(nombreUsuario);
+                tf.setEditable(false);
+                tf.setDisable(true);
+                tf.getStyleClass().add("field");
+                campNom1 = tf;
+                fila = new HBox(8, tf, cp, preview);
+                HBox.setHgrow(tf, Priority.ALWAYS);
+            } else {
+                // Players 2+: ComboBox with registered users (excluding logged-in user)
+                ComboBox<String> combo = new ComboBox<>(
+                    FXCollections.observableArrayList(usuarisDisponibles));
+                combo.setPromptText("Selecciona jugador " + (i + 1));
+                combo.setMaxWidth(Double.MAX_VALUE);
+                combo.getStyleClass().add("cp-combo");
+                if (!usuarisDisponibles.isEmpty()) combo.getSelectionModel().selectFirst();
+                campsJugadors.add(combo);
+                fila = new HBox(8, combo, cp, preview);
+                HBox.setHgrow(combo, Priority.ALWAYS);
+            }
+
+            fila.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
             nomsContainer.getChildren().add(fila);
         }
     }
@@ -146,24 +176,29 @@ public class PantallaConfig {
         int numCasillas = obtenerNumCasillas();
         boolean ambFoca = focaCheckBox.isSelected();
 
-        // Validar rang de caselles (50 a 150)
         if (numCasillas < 50 || numCasillas > 150) {
             feedbackLabel.setText("⚠ El nombre de caselles ha de ser entre 50 i 150!");
             feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
             return;
         }
 
-        // Recollir noms
-        ArrayList<String> noms = new ArrayList<>();
-        for (int i = 0; i < campsNoms.size(); i++) {
-            String nom = campsNoms.get(i).getText().trim();
-            if (nom.isEmpty()) {
-                nom = "Jugador" + (i + 1);
+        // Validate all ComboBoxes have a selection
+        for (int i = 0; i < campsJugadors.size(); i++) {
+            if (campsJugadors.get(i).getValue() == null) {
+                feedbackLabel.setText("⚠ Selecciona un usuari per al jugador " + (i + 2) + ".");
+                feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
+                return;
             }
-            noms.add(nom);
         }
 
-        // Validar que no hi hagi noms repetits
+        // Collect names: player 1 = logged-in user, rest from ComboBoxes
+        ArrayList<String> noms = new ArrayList<>();
+        noms.add(nombreUsuario);
+        for (ComboBox<String> combo : campsJugadors) {
+            noms.add(combo.getValue());
+        }
+
+        // Validate no duplicates
         for (int i = 0; i < noms.size(); i++) {
             for (int j = i + 1; j < noms.size(); j++) {
                 if (noms.get(i).equalsIgnoreCase(noms.get(j))) {

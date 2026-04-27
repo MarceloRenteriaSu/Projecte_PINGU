@@ -1,7 +1,12 @@
 package VISTAS;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,13 +14,17 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import GESTORES.GestorBBDD;
@@ -24,6 +33,7 @@ public class PantallaMenu {
 
     @FXML private Button btnNewMatch;
     @FXML private Button btnLoadMatch;
+    @FXML private Button btnRanking;
     @FXML private Button btnAjustes;
     @FXML private Button btnCredits;
     @FXML private Button btnExit;
@@ -108,6 +118,70 @@ public class PantallaMenu {
     }
 
     @FXML
+    private void handleRanking(ActionEvent event) {
+        if (conexion == null) {
+            mostrarAlerta("Error", "No hi ha connexió a la base de dades.");
+            return;
+        }
+
+        ArrayList<LinkedHashMap<String, String>> data = GestorBBDD.getRanking(conexion);
+        ObservableList<LinkedHashMap<String, String>> items = FXCollections.observableArrayList(data);
+
+        TableView<LinkedHashMap<String, String>> table = new TableView<>(items);
+        table.getStyleClass().add("data-table");
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setPlaceholder(new Label("No hi ha dades de rànquing."));
+
+        TableColumn<LinkedHashMap<String, String>, String> colPos = new TableColumn<>("#");
+        colPos.setCellValueFactory(cd ->
+            new SimpleStringProperty(String.valueOf(items.indexOf(cd.getValue()) + 1)));
+        colPos.setMaxWidth(40);
+        colPos.setMinWidth(40);
+
+        TableColumn<LinkedHashMap<String, String>, String> colUser = new TableColumn<>("Jugador");
+        colUser.setCellValueFactory(cd ->
+            new SimpleStringProperty(cd.getValue().getOrDefault("USERNAME", "")));
+
+        TableColumn<LinkedHashMap<String, String>, String> colWins = new TableColumn<>("Guanyades");
+        colWins.setCellValueFactory(cd ->
+            new SimpleStringProperty(cd.getValue().getOrDefault("PARTIDAS_GANADAS", "0")));
+
+        TableColumn<LinkedHashMap<String, String>, String> colPlayed = new TableColumn<>("Jugades");
+        colPlayed.setCellValueFactory(cd ->
+            new SimpleStringProperty(cd.getValue().getOrDefault("PARTIDAS_JUGADAS", "0")));
+
+        TableColumn<LinkedHashMap<String, String>, String> colRatio = new TableColumn<>("% Victòries");
+        colRatio.setCellValueFactory(cd ->
+            new SimpleStringProperty(cd.getValue().getOrDefault("RATIO", "0") + "%"));
+
+        table.getColumns().addAll(colPos, colUser, colWins, colPlayed, colRatio);
+
+        Label title = new Label("Rànquing Mundial");
+        title.getStyleClass().add("screen-title-label");
+
+        Button btnClose = new Button("Tancar");
+        btnClose.getStyleClass().add("hk-btn");
+
+        VBox root = new VBox(16, title, table, btnClose);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(28));
+        root.setStyle(
+            "-fx-background-color: linear-gradient(" +
+            "from 0% 0% to 100% 100%, #05101f 0%, #0b1e3c 30%, #0d2a52 55%, #081a3a 80%, #040d1c 100%);");
+
+        Scene scene = new Scene(root, 580, 420);
+        scene.getStylesheets().add(getClass().getResource("PantallaMenu.css").toExternalForm());
+
+        Stage rankStage = new Stage();
+        rankStage.initModality(Modality.APPLICATION_MODAL);
+        rankStage.setTitle("Rànquing");
+        rankStage.setResizable(false);
+        rankStage.setScene(scene);
+        btnClose.setOnAction(e -> rankStage.close());
+        rankStage.showAndWait();
+    }
+
+    @FXML
     private void handleAjustes(ActionEvent event) {
         System.out.println("Ajustes clicked");
         mostrarAlerta("Ajustes", "Pantalla de ajustes en desarrollo.");
@@ -142,6 +216,7 @@ public class PantallaMenu {
 
             PantallaConfig ctrl = loader.getController();
             ctrl.setNombreUsuario(username);
+            ctrl.setConexion(conexion);
 
             Stage menuStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             ctrl.setMenuStage(menuStage);
