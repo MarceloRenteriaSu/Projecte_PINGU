@@ -67,7 +67,7 @@ public class PantallaMenu {
         try {
             conexion = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
         } catch (Exception e) {
-            System.out.println("No s'ha pogut connectar a la BBDD: " + e.getMessage());
+            System.out.println("No se ha podido conectar a la BBDD: " + e.getMessage());
         }
     }
 
@@ -81,7 +81,7 @@ public class PantallaMenu {
     private void handleLoadMatch(ActionEvent event) {
         System.out.println("Cargar Partida clicked");
         if (conexion == null) {
-            mostrarAlerta("Error", "No hi ha connexió a la base de dades.");
+            mostrarAlerta("Error", "No hay conexión a la base de datos.");
             return;
         }
 
@@ -93,7 +93,7 @@ public class PantallaMenu {
             ctrl.inicialitzar(conexion, nombreUsuarioLogueado);
 
             Stage selStage = new Stage();
-            selStage.setTitle("Carregar Partida");
+            selStage.setTitle("Cargar Partida");
             selStage.initModality(Modality.APPLICATION_MODAL);
             selStage.setScene(new Scene(root, 720, 460));
             selStage.setResizable(true);
@@ -109,18 +109,18 @@ public class PantallaMenu {
                 juegoCtrl.restaurarPartida(datos);
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(juegoRoot));
-                stage.setTitle("El Joc del Pingu — Partida Carregada");
+                stage.setTitle("El Juego del Pingüino — Partida Cargada");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarAlerta("Error", "Error al obrir la pantalla de càrrega: " + e.getMessage());
+            mostrarAlerta("Error", "Error al abrir la pantalla de carga: " + e.getMessage());
         }
     }
 
     @FXML
     private void handleRanking(ActionEvent event) {
         if (conexion == null) {
-            mostrarAlerta("Error", "No hi ha connexió a la base de dades.");
+            mostrarAlerta("Error", "No hay conexión a la base de datos.");
             return;
         }
 
@@ -130,7 +130,7 @@ public class PantallaMenu {
         TableView<LinkedHashMap<String, String>> table = new TableView<>(items);
         table.getStyleClass().add("data-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        table.setPlaceholder(new Label("No hi ha dades de rànquing."));
+        table.setPlaceholder(new Label("No hay datos de ranking."));
 
         TableColumn<LinkedHashMap<String, String>, String> colPos = new TableColumn<>("#");
         colPos.setCellValueFactory(cd ->
@@ -142,25 +142,25 @@ public class PantallaMenu {
         colUser.setCellValueFactory(cd ->
             new SimpleStringProperty(cd.getValue().getOrDefault("USERNAME", "")));
 
-        TableColumn<LinkedHashMap<String, String>, String> colWins = new TableColumn<>("Guanyades");
+        TableColumn<LinkedHashMap<String, String>, String> colWins = new TableColumn<>("Ganadas");
         colWins.setCellValueFactory(cd ->
             new SimpleStringProperty(cd.getValue().getOrDefault("PARTIDAS_GANADAS", "0")));
 
-        TableColumn<LinkedHashMap<String, String>, String> colPlayed = new TableColumn<>("Jugades");
+        TableColumn<LinkedHashMap<String, String>, String> colPlayed = new TableColumn<>("Jugadas");
         colPlayed.setCellValueFactory(cd ->
             new SimpleStringProperty(cd.getValue().getOrDefault("PARTIDAS_JUGADAS", "0")));
 
-        TableColumn<LinkedHashMap<String, String>, String> colRatio = new TableColumn<>("% Victòries");
+        TableColumn<LinkedHashMap<String, String>, String> colRatio = new TableColumn<>("% Victorias");
         colRatio.setCellValueFactory(cd ->
             new SimpleStringProperty(cd.getValue().getOrDefault("RATIO", "0") + "%"));
 
         table.getColumns().addAll(colPos, colUser, colWins, colPlayed, colRatio);
 
-        Label title = new Label("Rànquing Mundial");
+        Label title = new Label("Ranking Mundial");
         title.getStyleClass().add("screen-title-label");
 
-        Button btnClose = new Button("Tancar");
-        btnClose.getStyleClass().add("hk-btn");
+        Button btnClose = new Button("Cerrar");
+        btnClose.getStyleClass().add("cp-dock-button");
 
         VBox root = new VBox(16, title, table, btnClose);
         root.setAlignment(Pos.CENTER);
@@ -174,7 +174,7 @@ public class PantallaMenu {
 
         Stage rankStage = new Stage();
         rankStage.initModality(Modality.APPLICATION_MODAL);
-        rankStage.setTitle("Rànquing");
+        rankStage.setTitle("Ranking");
         rankStage.setResizable(false);
         rankStage.setScene(scene);
         btnClose.setOnAction(e -> rankStage.close());
@@ -183,13 +183,24 @@ public class PantallaMenu {
 
     @FXML
     private void handleAjustes(ActionEvent event) {
-        System.out.println("Ajustes clicked");
-        mostrarAlerta("Ajustes", "Pantalla de ajustes en desarrollo.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaAjustes.fxml"));
+            Parent root = loader.load();
+            Stage ajStage = new Stage();
+            ajStage.initModality(Modality.APPLICATION_MODAL);
+            ajStage.setTitle("Opciones");
+            ajStage.setResizable(false);
+            ajStage.setScene(new Scene(root));
+            ajStage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "No se pudo abrir la pantalla de opciones.");
+        }
     }
 
     @FXML
     private void handleCredits(ActionEvent event) {
-        mostrarAlerta("Creditos", "Creadors del joc:\n- CARLOS OROS BENDEZÚ\n- MARCELO RENTERIA SU\n- DENIS TINEO DIAS");
+        mostrarAlerta("Créditos", "Creadores del juego:\n- CARLOS OROS BENDEZÚ\n- MARCELO RENTERIA SU\n- DENIS TINEO DIAS");
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {
@@ -224,7 +235,7 @@ public class PantallaMenu {
             Stage configStage = new Stage();
             configStage.initOwner(menuStage);
             configStage.initModality(Modality.WINDOW_MODAL);
-            configStage.setTitle("Configuració de la Partida");
+            configStage.setTitle("Configuración de la Partida");
             // Match PantallaMenu window size
             configStage.setWidth(menuStage.getWidth());
             configStage.setHeight(menuStage.getHeight());
@@ -232,7 +243,7 @@ public class PantallaMenu {
             configStage.show();
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Error al obrir la configuració: " + e.getMessage());
+            System.out.println("Error al abrir la configuración: " + e.getMessage());
         }
     }
 }

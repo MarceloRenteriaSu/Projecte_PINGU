@@ -118,7 +118,7 @@ public class PantallaCargarPartida {
     private void handleCarregar(ActionEvent event) {
         PartidaItem sel = tablePartides.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            mostrarAlerta("Avís", "Selecciona una partida per carregar.");
+            mostrarAlerta("Aviso", "Selecciona una partida para cargar.");
             return;
         }
         LinkedHashMap<String, String> datos = GestorBBDD.cargarPartidaPorId(conexion, sel.getId());
@@ -127,7 +127,7 @@ public class PantallaCargarPartida {
             loaded = true;
             tancarStage(event);
         } else {
-            mostrarAlerta("Error", "No s'ha pogut carregar la partida de la base de dades.");
+            mostrarAlerta("Error", "No se ha podido cargar la partida de la base de datos.");
         }
     }
 
@@ -135,13 +135,13 @@ public class PantallaCargarPartida {
     private void handleEsborrar(ActionEvent event) {
         PartidaItem sel = tablePartides.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            mostrarAlerta("Avís", "Selecciona una partida per esborrar.");
+            mostrarAlerta("Aviso", "Selecciona una partida para borrar.");
             return;
         }
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-            "Segur que vols esborrar la partida '" + sel.getNomPartida() + "'?\nAquesta acció no es pot desfer.",
+            "¿Seguro que quieres borrar la partida '" + sel.getNomPartida() + "'?\nEsta acción no se puede deshacer.",
             ButtonType.YES, ButtonType.NO);
-        confirm.setTitle("Confirmar esborrat");
+        confirm.setTitle("Confirmar borrado");
         confirm.setHeaderText(null);
         confirm.showAndWait().ifPresent(bt -> {
             if (bt == ButtonType.YES) {
@@ -149,7 +149,7 @@ public class PantallaCargarPartida {
                 if (ok) {
                     carregarLlista(); // Refresh the table
                 } else {
-                    mostrarAlerta("Error", "No s'ha pogut esborrar la partida.");
+                    mostrarAlerta("Error", "No se ha podido borrar la partida.");
                 }
             }
         });
