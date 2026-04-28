@@ -30,18 +30,18 @@
             <Insets top="20" right="22" bottom="20" left="22"/>
         </padding>
 
-        <Label text="⚙ Configuració de la Partida" styleClass="login-title" wrapText="true"/>
+        <Label text="⚙ Configuración de la Partida" styleClass="login-title" wrapText="true"/>
 
         <Region prefHeight="4"/>
 
         <!-- Caselles del taulell -->
-        <Label text="Caselles del taulell (50 - 150)" styleClass="login-label"/>
+        <Label text="Casillas del tablero (50 - 150)" styleClass="login-label"/>
         <TextField fx:id="casillasField" promptText="50" styleClass="login-field"/>
 
         <Region prefHeight="2"/>
 
         <!-- Número de jugadors -->
-        <Label text="Nombre de jugadors" styleClass="login-label"/>
+        <Label text="Número de jugadores" styleClass="login-label"/>
         <ComboBox fx:id="jugadorsCombo" maxWidth="Infinity" styleClass="cp-combo"/>
 
         <Region prefHeight="2"/>
@@ -53,7 +53,7 @@
         <Region prefHeight="2"/>
 
         <!-- Noms dels jugadors (dinàmic) -->
-        <Label text="Noms dels jugadors" styleClass="login-label"/>
+        <Label text="Nombres de los jugadores" styleClass="login-label"/>
         <VBox fx:id="nomsContainer" spacing="6"/>
 
         <Region prefHeight="6"/>
@@ -62,12 +62,12 @@
         <Label fx:id="feedbackLabel" text="" styleClass="login-feedback" wrapText="true"/>
 
         <!-- Botó comenzar -->
-        <Button fx:id="btnComenzar" text="🎮 Començar Partida"
+        <Button fx:id="btnComenzar" text="🎮 Empezar Partida"
                 onAction="#handleComenzar"
                 maxWidth="Infinity"
                 styleClass="cp-primary-button"/>
 
-        <Button fx:id="btnVolver" text="⬅ Tornar al Menú"
+        <Button fx:id="btnVolver" text="⬅ Volver al Menú"
                 onAction="#handleVolver"
                 maxWidth="Infinity"
                 styleClass="cp-secondary-button"/>

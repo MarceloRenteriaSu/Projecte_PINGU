@@ -73,9 +73,9 @@ public class PantallaGuerra {
         int bolesD = defensor.getInv().contarItem(new Bola(0));
         int bolesA = atacant.getInv().contarItem(new Bola(0));
 
-        infoDefensor.setText("🐧 " + defensor.getNom() + " (defensor) — ❄ " + bolesD + " boles de neu");
-        infoAtacant.setText("🐧 " + atacant.getNom()   + " (atacant)  — ❄ " + bolesA + " boles de neu");
-        pregunta.setText(defensor.getNom() + ", tries la sort o entres en guerra?");
+        infoDefensor.setText("🐧 " + defensor.getNom() + " (defensor) — ❄ " + bolesD + " bolas de nieve");
+        infoAtacant.setText("🐧 " + atacant.getNom()   + " (atacante) — ❄ " + bolesA + " bolas de nieve");
+        pregunta.setText(defensor.getNom() + ", ¿pruebas la suerte o entras en guerra?");
 
         // Si el defensor no té boles, no pot batallar
         btnBatalla.setDisable(bolesD == 0 && bolesA == 0);
@@ -94,8 +94,8 @@ public class PantallaGuerra {
         Dado d = new Dado("Normal", 1);
         int tirada = d.tirar();
 
-        resultat.setText(defensor.getNom() + " tira el dau → " + tirada
-                + " caselles! Escapa de la batalla.");
+        resultat.setText(defensor.getNom() + " tira el dado → " + tirada
+                + " casillas! Escapa de la batalla.");
         mostrarResultatFinal();
 
         // Avisar PantallaJuego: el defensor escapa, cap retrocés per ningú
@@ -127,15 +127,15 @@ public class PantallaGuerra {
         if (bolesD > bolesA) {
             int diff = bolesD - bolesA;
             atacantRetrocedeix = diff;
-            msg = "❄ " + defensor.getNom() + " guanya! "
-                + atacant.getNom() + " retrocedeix " + diff + " caselles.";
+            msg = "❄ " + defensor.getNom() + " ¡gana! "
+                + atacant.getNom() + " retrocede " + diff + " casillas.";
         } else if (bolesA > bolesD) {
             int diff = bolesA - bolesD;
             defensorRetrocedeix = diff;
-            msg = "❄ " + atacant.getNom() + " guanya! "
-                + defensor.getNom() + " retrocedeix " + diff + " caselles.";
+            msg = "❄ " + atacant.getNom() + " ¡gana! "
+                + defensor.getNom() + " retrocede " + diff + " casillas.";
         } else {
-            msg = "❄ Empat! Ningú retrocedeix. Tots dos perden les boles.";
+            msg = "❄ ¡Empate! Nadie retrocede. Ambos pierden las bolas.";
         }
 
         resultat.setText(msg);

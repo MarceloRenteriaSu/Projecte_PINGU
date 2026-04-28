@@ -24,31 +24,31 @@
     </padding>
 
     <!-- Title -->
-    <Label text="CARREGAR PARTIDA" styleClass="screen-title-label"/>
+    <Label text="CARGAR PARTIDA" styleClass="screen-title-label"/>
 
     <Label fx:id="lblUsername" text="Jugador: " styleClass="screen-sub-label"/>
 
     <!-- Table of saved matches -->
     <TableView fx:id="tablePartides" VBox.vgrow="ALWAYS" styleClass="data-table">
         <columns>
-            <TableColumn fx:id="colNom"      text="Nom de la partida"  prefWidth="220" />
-            <TableColumn fx:id="colJugadors" text="Jugadors"           prefWidth="200" />
-            <TableColumn fx:id="colTorns"    text="Torns"              prefWidth="80"  />
-            <TableColumn fx:id="colData"     text="Data guardada"      prefWidth="180" />
+            <TableColumn fx:id="colNom"      text="Nombre de la partida" prefWidth="220" />
+            <TableColumn fx:id="colJugadors" text="Jugadores"          prefWidth="200" />
+            <TableColumn fx:id="colTorns"    text="Turnos"             prefWidth="80"  />
+            <TableColumn fx:id="colData"     text="Fecha guardada"     prefWidth="180" />
         </columns>
         <placeholder>
-            <Label text="No tens cap partida guardada." styleClass="screen-sub-label"/>
+            <Label text="No tienes ninguna partida guardada." styleClass="screen-sub-label"/>
         </placeholder>
     </TableView>
 
     <!-- Action buttons -->
     <HBox spacing="14" alignment="CENTER_LEFT">
-        <Button fx:id="btnCarregar" text="CARREGAR" onAction="#handleCarregar"
+        <Button fx:id="btnCarregar" text="CARGAR"  onAction="#handleCarregar"
                 styleClass="cp-primary-button"/>
-        <Button fx:id="btnEsborrar" text="ESBORRAR" onAction="#handleEsborrar"
+        <Button fx:id="btnEsborrar" text="BORRAR"  onAction="#handleEsborrar"
                 styleClass="cp-secondary-button"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btnTornar"   text="TORNAR"   onAction="#handleTornar"
+        <Button fx:id="btnTornar"   text="VOLVER"  onAction="#handleTornar"
                 styleClass="cp-dock-button"/>
     </HBox>
 </VBox>
