@@ -79,7 +79,7 @@
                         <Canvas fx:id="P2" id="P2" width="35" height="44" />
                         <Canvas fx:id="P3" id="P3" width="35" height="44" />
                         <Canvas fx:id="P4" id="P4" width="35" height="44" />
-                        <Canvas fx:id="P5" id="P5" width="85" height="110" />
+                        <Canvas fx:id="P5" id="P5" width="35" height="44" />
                     </children>
                 </GridPane>
             </StackPane>
