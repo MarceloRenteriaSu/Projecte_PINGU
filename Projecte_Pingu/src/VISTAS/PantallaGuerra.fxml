@@ -27,7 +27,7 @@
         </padding>
 
         <!-- Título -->
-        <Text fx:id="titulo" styleClass="card-big-text" text="⚔ BATALLA DE NEU!" />
+        <Text fx:id="titulo" styleClass="card-big-text" text="⚔ ¡BATALLA DE NIEVE!" />
 
         <!-- Info del jugador que decideix -->
         <Text fx:id="infoDefensor" styleClass="card-stat" text="" />
@@ -37,15 +37,15 @@
 
         <!-- Pregunta -->
         <Text fx:id="pregunta" styleClass="card-info"
-              text="Tries la sort o entres en guerra?" />
+              text="¿Pruebas la suerte o entras en guerra?" />
 
         <!-- Botons d'acció -->
         <HBox spacing="16" alignment="CENTER">
-            <Button fx:id="btnDau" text="🎲 Tirar dau i escapar"
+            <Button fx:id="btnDau" text="🎲 Tirar dado y escapar"
                     styleClass="cp-dock-button"
                     onAction="#handleTirarDau"
                     prefWidth="180"/>
-            <Button fx:id="btnBatalla" text="❄ Batalla de neu!"
+            <Button fx:id="btnBatalla" text="❄ ¡Batalla de nieve!"
                     styleClass="cp-primary-button"
                     onAction="#handleBatalla"
                     prefWidth="180"/>

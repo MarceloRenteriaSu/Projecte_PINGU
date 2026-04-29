@@ -28,7 +28,7 @@
 
         <!-- Icona i Títol -->
         <Text fx:id="icona" styleClass="card-big-text" text="🏆" />
-        <Text fx:id="titulo" styleClass="card-big-text" text="Fi de la Partida!" />
+        <Text fx:id="titulo" styleClass="card-big-text" text="¡Fin de la Partida!" />
 
         <Region prefHeight="4"/>
 
@@ -42,11 +42,11 @@
 
         <!-- Botons -->
         <HBox spacing="16" alignment="CENTER">
-            <Button fx:id="btnMenu" text="🏠 Tornar al Menú"
+            <Button fx:id="btnMenu" text="🏠 Volver al Menú"
                     styleClass="cp-primary-button"
                     onAction="#handleVolverMenu"
                     prefWidth="190"/>
-            <Button fx:id="btnTancar" text="❌ Tancar"
+            <Button fx:id="btnTancar" text="❌ Cerrar"
                     styleClass="cp-secondary-button"
                     onAction="#handleTancar"
                     prefWidth="190"/>

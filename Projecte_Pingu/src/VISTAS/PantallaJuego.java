@@ -520,7 +520,7 @@ public class PantallaJuego {
 			rapido.setDisable(true);
 			lento.setDisable(true);
 			peces.setDisable(true);
-			dadoResultText.setText("Torn de la Foca (CPU)");
+			dadoResultText.setText("Turno de la Foca (CPU)");
 			return;
 		}
 
@@ -539,11 +539,11 @@ public class PantallaJuego {
 		lento.setDisable(nLento <= 0);
 		peces.setDisable(!focaActivada || nPeces <= 0);
 
-		rapido_t.setText("Dado Ràpid: x" + nRapido);
-		lento_t.setText("Dado Lent: x"  + nLento);
-		peces_t.setText("Peix: x"  + nPeces);
+		rapido_t.setText("Dado Rápido: x" + nRapido);
+		lento_t.setText("Dado Lento: x"  + nLento);
+		peces_t.setText("Pez: x"  + nPeces);
 
-		dadoResultText.setText("Torn de: " + pingu.getNom());
+		dadoResultText.setText("Turno de: " + pingu.getNom());
 	}
 
 	// -------------------------------------------------------
@@ -645,24 +645,24 @@ public class PantallaJuego {
 				}
 			} else {
 				if (casilla instanceof Agujero) {
-					addEvent(atacant.getNom() + " ⚫ Ha caigut en un Forat! Retrocedeix!");
+					addEvent(atacant.getNom() + " ⚫ ¡Ha caído en un Agujero! ¡Retrocede!");
 				} else if (casilla instanceof Oso) {
 					if (atacant.getPos() == posBefore) {
-						addEvent(atacant.getNom() + " 🐻 Ós Polar! Ha usat un Peix per escapar!");
+						addEvent(atacant.getNom() + " 🐻 ¡Oso Polar! ¡Usó un Pez para escapar!");
 					} else {
-						addEvent(atacant.getNom() + " 🐻 Ós Polar! Torna a l'inici!");
+						addEvent(atacant.getNom() + " 🐻 ¡Oso Polar! ¡Vuelve al inicio!");
 					}
 				} else if (casilla instanceof SueloQuebradizo) {
 					int totalItems = atacant.getInv().totalItems();
 					if (totalItems > 5) {
-						addEvent(atacant.getNom() + " 🧊 Sòl trencat! Massa pes, torna a l'inici!");
+						addEvent(atacant.getNom() + " 🧊 ¡Suelo agrietado! Demasiado peso, ¡vuelve al inicio!");
 					} else if (totalItems > 0) {
-						addEvent(atacant.getNom() + " 🧊 Sòl trencat! Perd el pròxim torn!");
+						addEvent(atacant.getNom() + " 🧊 ¡Suelo agrietado! ¡Pierde el próximo turno!");
 					} else {
-						addEvent(atacant.getNom() + " 🧊 Sòl trencat! Inventari buit, res passa.");
+						addEvent(atacant.getNom() + " 🧊 ¡Suelo agrietado! Inventario vacío, nada pasa.");
 					}
 				} else if (casilla instanceof Trineo) {
-					addEvent(atacant.getNom() + " 🛷 Trineo! Avança ràpidament!");
+					addEvent(atacant.getNom() + " 🛷 ¡Trineo! ¡Avanza rápidamente!");
 				} else if (!(casilla instanceof Normal)) {
 					String tipusCasella = casilla.getClass().getSimpleName();
 					addEvent(atacant.getNom() + " activa casella: " + tipusCasella);
@@ -697,9 +697,9 @@ public class PantallaJuego {
 					atacant.setPos(posModel);
 					moverFichaVisual(indiceFichaAtacant, posModel);
 					if (foca.isSoborno()) {
-						addEvent("🦭 " + atacant.getNom() + " ha subornat la Foca amb un peix!");
+						addEvent("🦭 " + atacant.getNom() + " ¡ha sobornado a la Foca con un pez!");
 					} else {
-						addEvent("🦭 La Foca ha atrapat " + atacant.getNom() + "! → casella " + posModel);
+						addEvent("🦭 ¡La Foca ha atrapado a " + atacant.getNom() + "! → casilla " + posModel);
 					}
 					actualizarInventarioUI();
 				}
@@ -732,7 +732,7 @@ public class PantallaJuego {
 						partida.getTablero().getTamanyo() - 1));
 					defensor.setPos(novaPosD);
 					moverFichaVisual(indiceDefensor, novaPosD);
-					addEvent(defensor.getNom() + " escapa llançant el dau → " + passosDau + " caselles!");
+					addEvent(defensor.getNom() + " escapa lanzando el dado → " + passosDau + " casillas!");
 				} else {
 					if (defRet > 0) {
 						int novaPosD = Math.max(0, defensor.getPos() - defRet);
@@ -755,7 +755,7 @@ public class PantallaJuego {
 			});
 
 			Stage guerraStage = new Stage();
-			guerraStage.setTitle("⚔ Batalla de Neu");
+			guerraStage.setTitle("⚔ ¡Batalla de Nieve!");
 			guerraStage.initModality(Modality.APPLICATION_MODAL);
 			guerraStage.setScene(new Scene(root));
 			guerraStage.setResizable(false);
@@ -788,7 +788,7 @@ public class PantallaJuego {
 	/** Finalitza la partida amb un guanyador. */
 	private void finalizarPartida(String nomGuanyador, Partida partida) {
 		partida.setFinalizada(true);
-		addEvent("🏆 " + nomGuanyador + " ha guanyat la partida!");
+		addEvent("🏆 " + nomGuanyador + " ¡ha ganado la partida!");
 		dado.setDisable(true);
 		rapido.setDisable(true);
 		lento.setDisable(true);
@@ -871,7 +871,7 @@ public class PantallaJuego {
 				partida.getTurnos(), partida.getJugadorActual(),
 				nombresPings, posicionesPings, inventariosPings);
 		} catch (Exception e) {
-			System.out.println("Error guardant partida finalitzada: " + e.getMessage());
+			System.out.println("Error guardando partida finalizada: " + e.getMessage());
 			return -1;
 		}
 	}
@@ -891,7 +891,7 @@ public class PantallaJuego {
 				ctrl.inicialitzar(nomGuanyador, partida.getTurnos());
 
 				Stage finStage = new Stage();
-				finStage.setTitle("🏆 Fi de la Partida");
+				finStage.setTitle("🏆 ¡Fin de la Partida!");
 				finStage.initModality(Modality.APPLICATION_MODAL);
 				finStage.setScene(new Scene(root));
 				finStage.setResizable(false);
@@ -931,7 +931,7 @@ public class PantallaJuego {
 			int posDespreFoca = foca.getPos();
 			int indiceFichaFoca = fichas.length - 1;
 			moverFichaVisual(indiceFichaFoca, posDespreFoca);
-			addEvent("🦭 La Foca està bloquejada " + foca.getTurnosBloquejada() + " torn(s) més.");
+			addEvent("🦭 La Foca está bloqueada " + foca.getTurnosBloquejada() + " turno(s) más.");
 			return;
 		}
 
@@ -988,7 +988,7 @@ public class PantallaJuego {
 			redistribuirFichasEnPosicion(oldPosFoca);
 
 			javafx.application.Platform.runLater(() -> {
-				StringBuilder msg = new StringBuilder("🦭 La Foca es mou a casella " + novaPosTemp + ".");
+				StringBuilder msg = new StringBuilder("🦭 La Foca se mueve a casilla " + novaPosTemp + ".");
 
 				for (int i = 0; i < partida.getJugadores().size(); i++) {
 					Jugador j = partida.getJugadores().get(i);
@@ -998,16 +998,16 @@ public class PantallaJuego {
 
 					if (posPingu > posAntesFocaFinal && posPingu < novaPosTemp) {
 						foca.golpearJugador(partida, pingu);
-						msg.append(" Ha passat per sobre " + pingu.getNom() + " i l'ha fet perdre la meitat dels items!");
+						msg.append(" ¡Ha pasado por encima de " + pingu.getNom() + " y le ha hecho perder la mitad de los ítems!");
 					} else if (posPingu == novaPosTemp) {
 						foca.aplastarJugador(partida, pingu);
 						int posNova = Math.max(0, pingu.getPos());
 						pingu.setPos(posNova);
 						moverFichaVisual(i, posNova);
 						if (foca.isSoborno()) {
-							msg.append(" " + pingu.getNom() + " ha subornat la Foca amb un peix!");
+							msg.append(" " + pingu.getNom() + " ¡ha sobornado a la Foca con un pez!");
 						} else {
-							msg.append(" Ha atrapat " + pingu.getNom() + "! → casella " + posNova);
+							msg.append(" ¡Ha atrapado a " + pingu.getNom() + "! → casilla " + posNova);
 						}
 					}
 				}
@@ -1054,7 +1054,7 @@ public class PantallaJuego {
 		if (seg instanceof Pinguino) {
 			Pinguino segP = (Pinguino) seg;
 			if (!segP.isJuega()) {
-				addEvent(segP.getNom() + " perd el torn.");
+				addEvent(segP.getNom() + " pierde el turno.");
 				segP.setJuega(true);
 				saltarTurnoPerdut();
 				return;
@@ -1085,7 +1085,7 @@ public class PantallaJuego {
 		if (seg instanceof Pinguino) {
 			Pinguino segP = (Pinguino) seg;
 			if (!segP.isJuega()) {
-				addEvent(segP.getNom() + " perd el torn.");
+				addEvent(segP.getNom() + " pierde el turno.");
 				segP.setJuega(true);
 				saltarTurnoPerdut();
 				return;
@@ -1112,7 +1112,7 @@ public class PantallaJuego {
 		Pinguino pingu = (Pinguino) j;
 
 		int resultado = d.tirar();
-		dadoResultText.setText("Ha sortit: " + resultado);
+		dadoResultText.setText("Ha salido: " + resultado);
 		addEvent(pingu.getNom() + " tira " + d.getNom() + " → " + resultado);
 
 		int novaPos = Math.max(0, Math.min(pingu.getPos() + resultado, partida.getTablero().getTamanyo() - 1));
@@ -1177,7 +1177,7 @@ public class PantallaJuego {
 	@FXML
 	private void handlePeces() {
 		if (!focaActivada) {
-			addEvent("La Foca no està activada en aquesta partida.");
+			addEvent("La Foca no está activada en esta partida.");
 			return;
 		}
 
@@ -1186,12 +1186,12 @@ public class PantallaJuego {
 		Pinguino pingu = (Pinguino) partida.getJugadores().get(indice);
 
 		if (pingu.getInv().contarItem(new Pez(0)) <= 0) {
-			addEvent("No tens peixos!");
+			addEvent("¡No tienes peces!");
 			return;
 		}
 
 		if (indiceFoca < 0) {
-			addEvent("No hi ha Foca en aquesta partida.");
+			addEvent("No hay Foca en esta partida.");
 			return;
 		}
 
@@ -1199,7 +1199,7 @@ public class PantallaJuego {
 		pingu.usarItem(new Pez(0));
 		pingu.quitarItem(new Pez(0));
 		foca.esSobornado(partida, pingu);
-		addEvent(pingu.getNom() + " ha subornat la Foca amb un peix! Bloquejada 2 torns.");
+		addEvent(pingu.getNom() + " ¡ha sobornado a la Foca con un pez! Bloqueada 2 turnos.");
 		actualizarInventarioUI();
 	}
 
@@ -1224,11 +1224,11 @@ public class PantallaJuego {
 	@FXML private void handleSaveGame() {
 		Partida partida = gestorPartida.getPartida();
 		if (partida == null) {
-			addEvent("⚠ No hi ha partida per guardar.");
+			addEvent("⚠ No hay partida para guardar.");
 			return;
 		}
 		if (partida.isFinalizada()) {
-			addEvent("⚠ La partida ja ha finalitzat, no es pot guardar.");
+			addEvent("⚠ La partida ya ha finalizado, no se puede guardar.");
 			return;
 		}
 
@@ -1236,7 +1236,7 @@ public class PantallaJuego {
 		TextInputDialog dialog = new TextInputDialog("Partida de " + nombreUsuarioLogueado);
 		dialog.setTitle("Guardar Partida");
 		dialog.setHeaderText(null);
-		dialog.setContentText("Nom de la partida:");
+		dialog.setContentText("Nombre de la partida:");
 		java.util.Optional<String> result = dialog.showAndWait();
 		if (!result.isPresent()) return; // User cancelled
 		String nomPartida = result.get().trim();
@@ -1244,7 +1244,7 @@ public class PantallaJuego {
 
 		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
 		if (con == null) {
-			addEvent("❌ Error connectant a la base de dades.");
+			addEvent("❌ Error conectando a la base de datos.");
 			return;
 		}
 		try {
@@ -1308,7 +1308,7 @@ public class PantallaJuego {
 			if (newId > 0) {
 				this.partidaGuardadaId = newId;
 				GestorBBDD.guardarEvents(con, newId, new ArrayList<>(eventosData));
-				addEvent("💾 Partida '" + nomPartida + "' guardada correctament!");
+				addEvent("💾 ¡Partida '" + nomPartida + "' guardada correctamente!");
 			} else {
 				addEvent("❌ Error al guardar la partida.");
 			}
@@ -1323,7 +1323,7 @@ public class PantallaJuego {
 	@FXML private void handleLoadGame() {
 		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
 		if (con == null) {
-			addEvent("❌ Error connectant a la base de dades.");
+			addEvent("❌ Error conectando a la base de datos.");
 			return;
 		}
 		try {
@@ -1333,7 +1333,7 @@ public class PantallaJuego {
 			ctrl.inicialitzar(con, nombreUsuarioLogueado);
 
 			Stage selStage = new Stage();
-			selStage.setTitle("Carregar Partida");
+			selStage.setTitle("Cargar Partida");
 			selStage.initModality(Modality.APPLICATION_MODAL);
 			selStage.setScene(new Scene(root, 720, 460));
 			selStage.setResizable(true);
@@ -1345,7 +1345,7 @@ public class PantallaJuego {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			addEvent("❌ Error al carregar: " + e.getMessage());
+			addEvent("❌ Error al cargar: " + e.getMessage());
 		} finally {
 			GestorBBDD.cerrar(con);
 		}
@@ -1542,7 +1542,7 @@ public class PantallaJuego {
 				if (!evts.isEmpty()) eventosListView.scrollTo(evts.size() - 1);
 			}
 		}
-		addEvent("📂 Partida carregada correctament!");
+		addEvent("📂 ¡Partida cargada correctamente!");
 
 		javafx.application.Platform.runLater(this::drawPath);
 

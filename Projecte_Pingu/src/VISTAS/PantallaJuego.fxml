@@ -105,19 +105,19 @@
                         </padding>
 
                         <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Text fx:id="rapido_t" text="Dado Ràpid: x0" styleClass="stat" />
+                            <Text fx:id="rapido_t" text="Dado Rápido: x0" styleClass="stat" />
                             <Region HBox.hgrow="ALWAYS" />
                             <Button fx:id="rapido" text="Usar" onAction="#handleRapido"/>
                         </HBox>
 
                         <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Text fx:id="lento_t" text="Dado Lent: x0" styleClass="stat" />
+                            <Text fx:id="lento_t" text="Dado Lento: x0" styleClass="stat" />
                             <Region HBox.hgrow="ALWAYS" />
                             <Button fx:id="lento" text="Usar" onAction="#handleLento"/>
                         </HBox>
 
                         <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Text fx:id="peces_t" text="Peix: x0" styleClass="stat" />
+                            <Text fx:id="peces_t" text="Pez: x0" styleClass="stat" />
                             <Region HBox.hgrow="ALWAYS" />
                             <Button fx:id="peces" text="Usar" onAction="#handlePeces"/>
                         </HBox>

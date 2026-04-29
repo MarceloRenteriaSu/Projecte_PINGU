@@ -13,6 +13,7 @@ public final class MusicManager {
 
     private static MusicManager instance;
     private MediaPlayer mediaPlayer;
+    private double currentVolume = 0.5;
 
     private MusicManager() {}
 
@@ -64,8 +65,14 @@ public final class MusicManager {
      * Sets the volume (0.0 – 1.0).
      */
     public void setVolume(double volume) {
+        currentVolume = Math.max(0.0, Math.min(1.0, volume));
         if (mediaPlayer != null) {
-            mediaPlayer.setVolume(Math.max(0.0, Math.min(1.0, volume)));
+            mediaPlayer.setVolume(currentVolume);
         }
+    }
+
+    /** Returns the current volume (0.0 – 1.0). */
+    public double getVolume() {
+        return currentVolume;
     }
 }

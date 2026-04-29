@@ -30,9 +30,9 @@ public class PantallaFin {
      */
     public void inicialitzar(String nomGuanyador, int turnos) {
         icona.setText("🏆");
-        titulo.setText("Fi del Joc!");
-        guanyador.setText("Guanyador: " + nomGuanyador);
-        statsText.setText("Torns jugats: " + turnos);
+        titulo.setText("¡Fin del Juego!");
+        guanyador.setText("Ganador: " + nomGuanyador);
+        statsText.setText("Turnos jugados: " + turnos);
     }
 
     /**

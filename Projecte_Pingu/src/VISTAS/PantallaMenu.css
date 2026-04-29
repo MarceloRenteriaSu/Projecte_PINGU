@@ -158,6 +158,66 @@
     -fx-border-width: 0;
 }
 
+/* ── Menu nav button — bigger version of cp-dock-button ── */
+.menu-nav-button {
+    -fx-background-color: linear-gradient(to bottom, #094b8e, #032b55);
+    -fx-background-radius: 30;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+    -fx-padding: 16 60;
+    -fx-min-width: 300;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0.4, 0, 3);
+    -fx-cursor: hand;
+}
+.menu-nav-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #04396b);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+.menu-nav-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #032b55, #094b8e);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+.menu-nav-button:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Settings Slider ── */
+.settings-slider {
+    -fx-pref-height: 24;
+}
+.settings-slider .track {
+    -fx-background-color: rgba(9, 75, 142, 0.35);
+    -fx-background-radius: 4;
+    -fx-pref-height: 8;
+    -fx-border-color: rgba(120, 185, 240, 0.40);
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+}
+.settings-slider .thumb {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #094b8e);
+    -fx-background-radius: 12;
+    -fx-pref-width: 22;
+    -fx-pref-height: 22;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 4, 0.3, 0, 2);
+    -fx-cursor: hand;
+}
+.settings-slider .thumb:hover {
+    -fx-background-color: linear-gradient(to bottom, #1068b8, #0c5ea8);
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+}
+.settings-slider:disabled .thumb {
+    -fx-opacity: 0.35;
+}
+.settings-slider:disabled .track {
+    -fx-opacity: 0.35;
+}
+
 /* ── Image Button (graphic-only, no background) ── */
 .img-btn {
     -fx-background-color: transparent;

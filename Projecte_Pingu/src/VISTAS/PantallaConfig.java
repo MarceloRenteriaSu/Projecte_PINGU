@@ -77,9 +77,9 @@ public class PantallaConfig {
 
         // Opcions de jugadors
         jugadorsCombo.setItems(FXCollections.observableArrayList(
-            "2 jugadors", "3 jugadors", "4 jugadors"
+            "2 jugadores", "3 jugadores", "4 jugadores"
         ));
-        jugadorsCombo.setValue("4 jugadors");
+        jugadorsCombo.setValue("4 jugadores");
 
         // Foca activada per defecte
         focaCheckBox.setSelected(true);
@@ -177,7 +177,7 @@ public class PantallaConfig {
         boolean ambFoca = focaCheckBox.isSelected();
 
         if (numCasillas < 50 || numCasillas > 150) {
-            feedbackLabel.setText("⚠ El nombre de caselles ha de ser entre 50 i 150!");
+            feedbackLabel.setText("⚠ El número de casillas debe ser entre 50 y 150!");
             feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
             return;
         }
@@ -185,7 +185,7 @@ public class PantallaConfig {
         // Validate all ComboBoxes have a selection
         for (int i = 0; i < campsJugadors.size(); i++) {
             if (campsJugadors.get(i).getValue() == null) {
-                feedbackLabel.setText("⚠ Selecciona un usuari per al jugador " + (i + 2) + ".");
+                feedbackLabel.setText("⚠ Selecciona un usuario para el jugador " + (i + 2) + ".");
                 feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
                 return;
             }
@@ -202,7 +202,7 @@ public class PantallaConfig {
         for (int i = 0; i < noms.size(); i++) {
             for (int j = i + 1; j < noms.size(); j++) {
                 if (noms.get(i).equalsIgnoreCase(noms.get(j))) {
-                    feedbackLabel.setText("⚠ No pot haver-hi noms repetits!");
+                    feedbackLabel.setText("⚠ ¡No puede haber nombres repetidos!");
                     feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
                     return;
                 }
@@ -223,7 +223,7 @@ public class PantallaConfig {
         for (int i = 0; i < colors.size(); i++) {
             for (int j = i + 1; j < colors.size(); j++) {
                 if (colors.get(i).equalsIgnoreCase(colors.get(j))) {
-                    feedbackLabel.setText("⚠ Els jugadors " + (i + 1) + " i " + (j + 1) + " tenen el mateix color!");
+                    feedbackLabel.setText("⚠ Los jugadores " + (i + 1) + " y " + (j + 1) + " tienen el mismo color!");
                     feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
                     return;
                 }
@@ -240,9 +240,9 @@ public class PantallaConfig {
             ctrl.iniciarJoc(numCasillas, noms, colors, ambFoca);
 
             Stage configStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            String titleFoca = ambFoca ? " (amb Foca)" : " (sense Foca)";
+            String titleFoca = ambFoca ? " (con Foca)" : " (sin Foca)";
             menuStage.setScene(new Scene(root));
-            menuStage.setTitle("Joc del Pingüí — " + numJugadors + " jugadors, " + numCasillas + " caselles" + titleFoca);
+            menuStage.setTitle("Juego del Pingüino — " + numJugadors + " jugadores, " + numCasillas + " casillas" + titleFoca);
             configStage.close();
         } catch (Exception e) {
             e.printStackTrace();

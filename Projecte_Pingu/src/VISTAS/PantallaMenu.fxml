@@ -39,14 +39,14 @@
 
         <Region prefHeight="12"/>
 
-        <!-- Menu buttons — plain text, vertically stacked, natural width -->
-        <VBox alignment="CENTER" spacing="2">
-            <Button fx:id="btnNewMatch"  text="Nova Partida"      onAction="#handleNewMatch"  styleClass="hk-btn"/>
-            <Button fx:id="btnLoadMatch" text="Carregar Partida"  onAction="#handleLoadMatch" styleClass="hk-btn"/>
-            <Button fx:id="btnRanking"   text="Rànquing"          onAction="#handleRanking"   styleClass="hk-btn"/>
-            <Button fx:id="btnAjustes"   text="Opcions"           onAction="#handleAjustes"   styleClass="hk-btn"/>
-            <Button fx:id="btnCredits"   text="Crèdits"           onAction="#handleCredits"   styleClass="hk-btn"/>
-            <Button fx:id="btnExit"      text="Sortir"            onAction="#handleExit"      styleClass="hk-btn"/>
+        <!-- Menu buttons — vertically stacked -->
+        <VBox alignment="CENTER" spacing="10">
+            <Button fx:id="btnNewMatch"  text="Nueva Partida"   onAction="#handleNewMatch"  styleClass="menu-nav-button"/>
+            <Button fx:id="btnLoadMatch" text="Cargar Partida"  onAction="#handleLoadMatch" styleClass="menu-nav-button"/>
+            <Button fx:id="btnRanking"   text="Ranking"         onAction="#handleRanking"   styleClass="menu-nav-button"/>
+            <Button fx:id="btnAjustes"   text="Opciones"        onAction="#handleAjustes"   styleClass="menu-nav-button"/>
+            <Button fx:id="btnCredits"   text="Créditos"        onAction="#handleCredits"   styleClass="menu-nav-button"/>
+            <Button fx:id="btnExit"      text="Salir"           onAction="#handleExit"      styleClass="menu-nav-button"/>
         </VBox>
 
     </VBox>
