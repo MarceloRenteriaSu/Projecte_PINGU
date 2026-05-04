@@ -153,6 +153,33 @@
     -fx-background-color: transparent;
 }
 
+/* ── Item slots (inventory icons) ── */
+.item-slot {
+    -fx-background-color: rgba(255,255,255,0.22);
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.item-emoji {
+    -fx-font-size: 26px;
+}
+.item-qty {
+    -fx-background-color: #8a9bb0;
+    -fx-background-radius: 4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 1 5;
+    -fx-alignment: center;
+    -fx-font-family: "Arial", sans-serif;
+}
+.usar-area {
+    -fx-border-color: #0d2a52;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-color: rgba(5,16,31,0.25);
+    -fx-background-radius: 6;
+}
+
 /* ── Player tokens (Canvas pixel-art penguins) ──
    Los efectos de brillo/oro se aplican programáticamente en PantallaJuego.java
    (marcarJugadorActual usa setEffect con DropShadow) ── */
