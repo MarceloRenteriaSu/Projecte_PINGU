@@ -16,6 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -24,6 +25,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.text.Text;
@@ -45,15 +47,23 @@ public class PantallaJuego {
 
 	// Buttons
 	@FXML private Button dado;
-	@FXML private Button rapido;
-	@FXML private Button lento;
-	@FXML private Button peces;
+
+	// Inventory slots
+	@FXML private StackPane slotRapido;
+	@FXML private StackPane slotLento;
+	@FXML private StackPane slotPeces;
+	@FXML private StackPane slotBola;
+	@FXML private Label qtyRapido;
+	@FXML private Label qtyLento;
+	@FXML private Label qtyPeces;
+	@FXML private Label qtyBola;
+	@FXML private VBox usarBox;
+	@FXML private Button usarBtn;
+	@FXML private ImageView iconRapido;
+	private String selectedItem = null;
 
 	// Texts
 	@FXML private Text dadoResultText;
-	@FXML private Text rapido_t;
-	@FXML private Text lento_t;
-	@FXML private Text peces_t;
 
 	// Events list
 	@FXML private ListView<String> eventosListView;
@@ -152,6 +162,7 @@ public class PantallaJuego {
 	@FXML
 	private void initialize() {
 		CursorManager.applyWhenReady(dado);
+		setupItemSlots();
 		pathCanvas.widthProperty().bind(tablero.widthProperty());
 		pathCanvas.heightProperty().bind(tablero.heightProperty());
 		pathCanvas.widthProperty().addListener((obs, ov, nv) -> drawPath());
@@ -172,6 +183,47 @@ public class PantallaJuego {
 				else { text.setText(item); setGraphic(text); }
 			}
 		});
+	}
+
+	private void setupItemSlots() {
+		// Load dado_rapido icon
+		try {
+			java.net.URL iconUrl = getClass().getResource("/pngs_iconos/dado_rapido.png");
+			if (iconUrl != null) iconRapido.setImage(new Image(iconUrl.toExternalForm()));
+		} catch (Exception e) { /* icon missing, slot still works */ }
+
+		// Colored borders per slot
+		slotRapido.setStyle("-fx-border-color:#e74c3c;-fx-border-width:3;-fx-border-radius:8;-fx-background-color:rgba(255,255,255,0.22);-fx-background-radius:8;");
+		slotLento .setStyle("-fx-border-color:#2980b9;-fx-border-width:3;-fx-border-radius:8;-fx-background-color:rgba(255,255,255,0.22);-fx-background-radius:8;");
+		slotPeces .setStyle("-fx-border-color:#27ae60;-fx-border-width:3;-fx-border-radius:8;-fx-background-color:rgba(255,255,255,0.22);-fx-background-radius:8;");
+		slotBola  .setStyle("-fx-border-color:#e91e8c;-fx-border-width:3;-fx-border-radius:8;-fx-background-color:rgba(255,255,255,0.22);-fx-background-radius:8;");
+
+		// Passive slots: always non-clickable
+		slotPeces.setMouseTransparent(true);
+		slotBola .setMouseTransparent(true);
+
+		// Bind managed to visible so Usar area takes no space when hidden
+		usarBox.managedProperty().bind(usarBox.visibleProperty());
+	}
+
+	// -------------------------------------------------------
+	// ITEM SLOT SELECTION HELPERS
+	// -------------------------------------------------------
+
+	private void setSlotEnabled(StackPane slot, boolean enabled) {
+		slot.setOpacity(enabled ? 1.0 : 0.35);
+		slot.setMouseTransparent(!enabled);
+	}
+
+	private void setSlotSelected(StackPane slot, boolean selected) {
+		slot.setEffect(selected ? new DropShadow(14, javafx.scene.paint.Color.WHITE) : null);
+	}
+
+	private void clearSelection() {
+		selectedItem = null;
+		setSlotSelected(slotRapido, false);
+		setSlotSelected(slotLento,  false);
+		usarBox.setVisible(false);
 	}
 
 	private void addEvent(String text) {
@@ -344,9 +396,9 @@ public class PantallaJuego {
 
 		turnosPinguinosEnRonda = 0;
 
-		// Si la foca no está activada, desactivar el botó de peixos
+		// Si la foca no está activada, deshabilitar slot de peces
 		if (!focaActivada) {
-			peces.setDisable(true);
+			setSlotEnabled(slotPeces, false);
 		}
 	}
 
@@ -514,12 +566,12 @@ public class PantallaJuego {
 		Partida partida = gestorPartida.getPartida();
 		int indice = partida.getJugadorActual();
 
-		// Evitar que la foca intenti mostrar inventari
 		if (focaActivada && indice == indiceFoca) {
 			dado.setDisable(true);
-			rapido.setDisable(true);
-			lento.setDisable(true);
-			peces.setDisable(true);
+			setSlotEnabled(slotRapido, false);
+			setSlotEnabled(slotLento,  false);
+			setSlotEnabled(slotPeces,  false);
+			setSlotEnabled(slotBola,   false);
 			dadoResultText.setText("Turno de la Foca (CPU)");
 			return;
 		}
@@ -534,14 +586,22 @@ public class PantallaJuego {
 		int nRapido = inv.contarItem(new Dado("Rapido", 0));
 		int nLento  = inv.contarItem(new Dado("Lento", 0));
 		int nPeces  = inv.contarItem(new Pez(0));
+		int nBola   = inv.contarItem(new Bola(0));
 
-		rapido.setDisable(nRapido <= 0);
-		lento.setDisable(nLento <= 0);
-		peces.setDisable(!focaActivada || nPeces <= 0);
+		qtyRapido.setText("x" + nRapido);
+		qtyLento .setText("x" + nLento);
+		qtyPeces .setText("x" + nPeces);
+		qtyBola  .setText("x" + nBola);
 
-		rapido_t.setText("Dado Rápido: x" + nRapido);
-		lento_t.setText("Dado Lento: x"  + nLento);
-		peces_t.setText("Pez: x"  + nPeces);
+		setSlotEnabled(slotRapido, nRapido > 0);
+		setSlotEnabled(slotLento,  nLento > 0);
+		// Passive slots: opacity only, never clickable
+		slotPeces.setOpacity(nPeces > 0 ? 1.0 : 0.35);
+		slotBola .setOpacity(nBola  > 0 ? 1.0 : 0.35);
+
+		// Cancel selection if selected item is no longer available
+		if ("Rapido".equals(selectedItem) && nRapido <= 0) clearSelection();
+		if ("Lento" .equals(selectedItem) && nLento  <= 0) clearSelection();
 
 		dadoResultText.setText("Turno de: " + pingu.getNom());
 	}
@@ -790,24 +850,24 @@ public class PantallaJuego {
 		partida.setFinalizada(true);
 		addEvent("🏆 " + nomGuanyador + " ¡ha ganado la partida!");
 		dado.setDisable(true);
-		rapido.setDisable(true);
-		lento.setDisable(true);
-		peces.setDisable(true);
+		clearSelection();
+		setSlotEnabled(slotRapido, false);
+		setSlotEnabled(slotLento,  false);
+		setSlotEnabled(slotPeces,  false);
 
 		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
 		if (con != null) {
 			try {
 				if (partidaGuardadaId != -1) {
-					// Loaded game: mark as finished instead of deleting it
-					GestorBBDD.marcarPartidaAcabada(con, partidaGuardadaId);
+					// Partida carregada: marcar com acabada amb guanyador
+					// El trigger TRG_INCR_GANADAS incrementarà PARTIDAS_GANADAS automàticament
+					GestorBBDD.marcarPartidaAcabadaConGanador(con, partidaGuardadaId, nomGuanyador);
 					partidaGuardadaId = -1;
 				} else {
-					// New game: save it as a finished record
+					// Partida nova: guardar-la i marcar com acabada amb guanyador
 					int savedId = guardarPartidaFinalitzada(con, partida);
-					if (savedId > 0) GestorBBDD.marcarPartidaAcabada(con, savedId);
+					if (savedId > 0) GestorBBDD.marcarPartidaAcabadaConGanador(con, savedId, nomGuanyador);
 				}
-				// Increment winner's win count
-				GestorBBDD.incrementarPartidasGanadas(con, nomGuanyador);
 			} finally {
 				GestorBBDD.cerrar(con);
 			}
@@ -969,11 +1029,11 @@ public class PantallaJuego {
 
 		int indiceFichaFoca = fichas.length - 1;
 
-		// Desactivar botons durant l'animació de la foca
+		// Desactivar controls durant l'animació de la foca
 		dado.setDisable(true);
-		rapido.setDisable(true);
-		lento.setDisable(true);
-		peces.setDisable(true);
+		setSlotEnabled(slotRapido, false);
+		setSlotEnabled(slotLento,  false);
+		setSlotEnabled(slotPeces,  false);
 
 		Node fichaFoca = fichas[indiceFichaFoca];
 		int oldPosFoca = posiciones[indiceFichaFoca];
@@ -1028,6 +1088,7 @@ public class PantallaJuego {
 		Partida partida = gestorPartida.getPartida();
 		if (partida.isFinalizada()) return;
 
+		clearSelection();
 		turnosPinguinosEnRonda++;
 
 		// Si tots els pingüins han jugat → torn de la foca (si activada)
@@ -1118,11 +1179,12 @@ public class PantallaJuego {
 		int novaPos = Math.max(0, Math.min(pingu.getPos() + resultado, partida.getTablero().getTamanyo() - 1));
 		pingu.setPos(novaPos);
 
-		// Desactivar botons durant l'animació
+		// Desactivar controls durant l'animació
 		dado.setDisable(true);
-		rapido.setDisable(true);
-		lento.setDisable(true);
-		peces.setDisable(true);
+		clearSelection();
+		setSlotEnabled(slotRapido, false);
+		setSlotEnabled(slotLento,  false);
+		setSlotEnabled(slotPeces,  false);
 
 		Node ficha = fichas[indice];
 		int oldPosition = posiciones[indice];
@@ -1153,54 +1215,39 @@ public class PantallaJuego {
 	}
 
 	@FXML
-	private void handleRapido() {
-		Partida partida = gestorPartida.getPartida();
-		int indice = partida.getJugadorActual();
-		Pinguino pingu = (Pinguino) partida.getJugadores().get(indice);
-		if (pingu.getInv().contarItem(new Dado("Rapido", 0)) > 0) {
-			pingu.quitarItem(new Dado("Rapido", 0));
-			tirarDadoConcreto(new Dado("Rapido", 1));
-		}
+	private void handleSelectRapido() {
+		if (slotRapido.getOpacity() < 0.5) return;
+		if ("Rapido".equals(selectedItem)) { clearSelection(); return; }
+		selectedItem = "Rapido";
+		setSlotSelected(slotRapido, true);
+		setSlotSelected(slotLento,  false);
+		usarBox.setVisible(true);
 	}
 
 	@FXML
-	private void handleLento() {
+	private void handleSelectLento() {
+		if (slotLento.getOpacity() < 0.5) return;
+		if ("Lento".equals(selectedItem)) { clearSelection(); return; }
+		selectedItem = "Lento";
+		setSlotSelected(slotRapido, false);
+		setSlotSelected(slotLento,  true);
+		usarBox.setVisible(true);
+	}
+
+	@FXML
+	private void handleUsarItem() {
 		Partida partida = gestorPartida.getPartida();
 		int indice = partida.getJugadorActual();
 		Pinguino pingu = (Pinguino) partida.getJugadores().get(indice);
-		if (pingu.getInv().contarItem(new Dado("Lento", 0)) > 0) {
+		if ("Rapido".equals(selectedItem) && pingu.getInv().contarItem(new Dado("Rapido", 0)) > 0) {
+			pingu.quitarItem(new Dado("Rapido", 0));
+			clearSelection();
+			tirarDadoConcreto(new Dado("Rapido", 1));
+		} else if ("Lento".equals(selectedItem) && pingu.getInv().contarItem(new Dado("Lento", 0)) > 0) {
 			pingu.quitarItem(new Dado("Lento", 0));
+			clearSelection();
 			tirarDadoConcreto(new Dado("Lento", 1));
 		}
-	}
-
-	@FXML
-	private void handlePeces() {
-		if (!focaActivada) {
-			addEvent("La Foca no está activada en esta partida.");
-			return;
-		}
-
-		Partida partida = gestorPartida.getPartida();
-		int indice = partida.getJugadorActual();
-		Pinguino pingu = (Pinguino) partida.getJugadores().get(indice);
-
-		if (pingu.getInv().contarItem(new Pez(0)) <= 0) {
-			addEvent("¡No tienes peces!");
-			return;
-		}
-
-		if (indiceFoca < 0) {
-			addEvent("No hay Foca en esta partida.");
-			return;
-		}
-
-		Foca foca = (Foca) partida.getJugadores().get(indiceFoca);
-		pingu.usarItem(new Pez(0));
-		pingu.quitarItem(new Pez(0));
-		foca.esSobornado(partida, pingu);
-		addEvent(pingu.getNom() + " ¡ha sobornado a la Foca con un pez! Bloqueada 2 turnos.");
-		actualizarInventarioUI();
 	}
 
 	// -------------------------------------------------------
@@ -1547,7 +1594,7 @@ public class PantallaJuego {
 		javafx.application.Platform.runLater(this::drawPath);
 
 		if (!focaActivada) {
-			peces.setDisable(true);
+			setSlotEnabled(slotPeces, false);
 		}
 	}
 

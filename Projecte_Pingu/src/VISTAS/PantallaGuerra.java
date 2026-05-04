@@ -74,7 +74,7 @@ public class PantallaGuerra {
         int bolesA = atacant.getInv().contarItem(new Bola(0));
 
         infoDefensor.setText("🐧 " + defensor.getNom() + " (defensor) — ❄ " + bolesD + " bolas de nieve");
-        infoAtacant.setText("🐧 " + atacant.getNom()   + " (atacante) — ❄ " + bolesA + " bolas de nieve");
+        infoAtacant.setText("🐧 " + atacant.getNom()   + " (atacante)");
         pregunta.setText(defensor.getNom() + ", ¿pruebas la suerte o entras en guerra?");
 
         // Si el defensor no té boles, no pot batallar

@@ -90,10 +90,12 @@ public class GestorBBDD {
 				crearSequenciaPartidas(con);
 				crearTaulaPartidas(con);
 				migrarColumnaAcabada(con);
+				migrarColumnaGanador(con);
 				crearTaulaPinguinos(con);
 				crearTaulaInventaris(con);
 				crearSequenciaEvents(con);
 				crearTaulaEvents(con);
+				crearObjectesPLSQL(con);
 				return con;
 			}
 		} catch (ClassNotFoundException e) {
@@ -209,6 +211,225 @@ public class GestorBBDD {
 			}
 		} catch (SQLException e) {
 			System.out.println("Error durant migració de PINGU_PARTIDAS: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Afegeix la columna GANADOR a PINGU_PARTIDAS si no existeix.
+	 */
+	private static void migrarColumnaGanador(Connection con) {
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT COUNT(*) FROM USER_TAB_COLUMNS " +
+				"WHERE TABLE_NAME = 'PINGU_PARTIDAS' AND COLUMN_NAME = 'GANADOR'"
+			);
+			ResultSet rs = ps.executeQuery();
+			boolean exists = rs.next() && rs.getInt(1) > 0;
+			rs.close(); ps.close();
+			if (!exists) {
+				Statement st = con.createStatement();
+				st.executeUpdate("ALTER TABLE PINGU_PARTIDAS ADD GANADOR VARCHAR2(50)");
+				st.close();
+				System.out.println("Columna GANADOR afegida a PINGU_PARTIDAS.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Info migració GANADOR: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Crea tots els objectes PL/SQL: triggers, funcions i procediments.
+	 * S'utilitza CREATE OR REPLACE perquè sigui idempotent.
+	 */
+	private static void crearObjectesPLSQL(Connection con) {
+		try {
+			Statement st = con.createStatement();
+
+			// TRIGGER: auto-assignar ID des de seqüència si és NULL (S + T)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE TRIGGER TRG_PINGU_PARTIDAS_ID\n" +
+					"BEFORE INSERT ON PINGU_PARTIDAS\n" +
+					"FOR EACH ROW\n" +
+					"BEGIN\n" +
+					"  IF :NEW.ID IS NULL THEN\n" +
+					"    :NEW.ID := PINGU_PARTIDAS_SEQ.NEXTVAL;\n" +
+					"  END IF;\n" +
+					"END;"
+				);
+				System.out.println("Trigger TRG_PINGU_PARTIDAS_ID creat.");
+			} catch (SQLException e) {
+				System.out.println("Info TRG_PINGU_PARTIDAS_ID: " + e.getMessage());
+			}
+
+			// TRIGGER: incrementar PARTIDAS_GANADAS quan ACABADA passa a 1 (T)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE TRIGGER TRG_INCR_GANADAS\n" +
+					"AFTER UPDATE OF ACABADA ON PINGU_PARTIDAS\n" +
+					"FOR EACH ROW\n" +
+					"WHEN (NEW.ACABADA = 1 AND (OLD.ACABADA IS NULL OR OLD.ACABADA != 1))\n" +
+					"BEGIN\n" +
+					"  IF :NEW.GANADOR IS NOT NULL THEN\n" +
+					"    UPDATE PINGU_USERS\n" +
+					"    SET PARTIDAS_GANADAS = PARTIDAS_GANADAS + 1\n" +
+					"    WHERE USERNAME = :NEW.GANADOR;\n" +
+					"  END IF;\n" +
+					"END;"
+				);
+				System.out.println("Trigger TRG_INCR_GANADAS creat.");
+			} catch (SQLException e) {
+				System.out.println("Info TRG_INCR_GANADAS: " + e.getMessage());
+			}
+
+			// FUNCIÓ: retorna el màxim de partides guanyades (rècord) (F)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE FUNCTION F_PINGU_RECORD RETURN NUMBER IS\n" +
+					"  v_max NUMBER;\n" +
+					"BEGIN\n" +
+					"  SELECT NVL(MAX(PARTIDAS_GANADAS), 0) INTO v_max FROM PINGU_USERS;\n" +
+					"  RETURN v_max;\n" +
+					"END;"
+				);
+				System.out.println("Funció F_PINGU_RECORD creada.");
+			} catch (SQLException e) {
+				System.out.println("Info F_PINGU_RECORD: " + e.getMessage());
+			}
+
+			// FUNCIÓ: retorna la mitja de partides guanyades (F)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE FUNCTION F_PINGU_MITJA RETURN NUMBER IS\n" +
+					"  v_avg NUMBER;\n" +
+					"BEGIN\n" +
+					"  SELECT ROUND(NVL(AVG(PARTIDAS_GANADAS), 0), 2) INTO v_avg FROM PINGU_USERS;\n" +
+					"  RETURN v_avg;\n" +
+					"END;"
+				);
+				System.out.println("Funció F_PINGU_MITJA creada.");
+			} catch (SQLException e) {
+				System.out.println("Info F_PINGU_MITJA: " + e.getMessage());
+			}
+
+			// FUNCIÓ: % de jugadors que han guanyat menys partides (F)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE FUNCTION F_PINGU_PCT_MENYS(p_wins IN NUMBER) RETURN NUMBER IS\n" +
+					"  v_total NUMBER;\n" +
+					"  v_menys NUMBER;\n" +
+					"BEGIN\n" +
+					"  SELECT COUNT(*) INTO v_total FROM PINGU_USERS;\n" +
+					"  IF v_total = 0 THEN RETURN 0; END IF;\n" +
+					"  SELECT COUNT(*) INTO v_menys FROM PINGU_USERS WHERE PARTIDAS_GANADAS < p_wins;\n" +
+					"  RETURN ROUND(v_menys * 100.0 / v_total, 1);\n" +
+					"END;"
+				);
+				System.out.println("Funció F_PINGU_PCT_MENYS creada.");
+			} catch (SQLException e) {
+				System.out.println("Info F_PINGU_PCT_MENYS: " + e.getMessage());
+			}
+
+			// TRIGGER: mostrar % quan PARTIDAS_GANADAS augmenta (T + DBMS_OUTPUT)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE TRIGGER TRG_PINGU_SHOW_PCT\n" +
+					"AFTER UPDATE OF PARTIDAS_GANADAS ON PINGU_USERS\n" +
+					"FOR EACH ROW\n" +
+					"WHEN (NEW.PARTIDAS_GANADAS > OLD.PARTIDAS_GANADAS)\n" +
+					"DECLARE\n" +
+					"  v_pct NUMBER;\n" +
+					"BEGIN\n" +
+					"  SELECT ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM PINGU_USERS), 1)\n" +
+					"  INTO v_pct\n" +
+					"  FROM PINGU_USERS\n" +
+					"  WHERE PARTIDAS_GANADAS < :NEW.PARTIDAS_GANADAS;\n" +
+					"  DBMS_OUTPUT.PUT_LINE('Jugador ' || :NEW.USERNAME ||\n" +
+					"    ' te ' || :NEW.PARTIDAS_GANADAS || ' guanyades. ' ||\n" +
+					"    v_pct || '% dels jugadors han guanyat menys partides.');\n" +
+					"END;"
+				);
+				System.out.println("Trigger TRG_PINGU_SHOW_PCT creat.");
+			} catch (SQLException e) {
+				System.out.println("Info TRG_PINGU_SHOW_PCT: " + e.getMessage());
+			}
+
+			// PROCEDIMENT: jugadors amb el rècord de guanyades (P)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE PROCEDURE P_PINGU_JUGADORS_RECORD(\n" +
+					"  p_record IN NUMBER,\n" +
+					"  p_cursor OUT SYS_REFCURSOR\n" +
+					") AS\n" +
+					"BEGIN\n" +
+					"  OPEN p_cursor FOR\n" +
+					"    SELECT USERNAME, PARTIDAS_GANADAS\n" +
+					"    FROM PINGU_USERS\n" +
+					"    WHERE PARTIDAS_GANADAS = p_record\n" +
+					"    ORDER BY USERNAME;\n" +
+					"END;"
+				);
+				System.out.println("Procediment P_PINGU_JUGADORS_RECORD creat.");
+			} catch (SQLException e) {
+				System.out.println("Info P_PINGU_JUGADORS_RECORD: " + e.getMessage());
+			}
+
+			// PROCEDIMENT: jugadors per sobre de la mitja (P)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE PROCEDURE P_PINGU_SOBRE_MITJA(\n" +
+					"  p_cursor OUT SYS_REFCURSOR\n" +
+					") AS\n" +
+					"  v_mitja NUMBER;\n" +
+					"BEGIN\n" +
+					"  SELECT AVG(PARTIDAS_GANADAS) INTO v_mitja FROM PINGU_USERS;\n" +
+					"  OPEN p_cursor FOR\n" +
+					"    SELECT USERNAME, PARTIDAS_GANADAS\n" +
+					"    FROM PINGU_USERS\n" +
+					"    WHERE PARTIDAS_GANADAS > v_mitja\n" +
+					"    ORDER BY PARTIDAS_GANADAS DESC;\n" +
+					"END;"
+				);
+				System.out.println("Procediment P_PINGU_SOBRE_MITJA creat.");
+			} catch (SQLException e) {
+				System.out.println("Info P_PINGU_SOBRE_MITJA: " + e.getMessage());
+			}
+
+			// PROCEDIMENT: rànquing per partides jugades amb control d'errors (P)
+			try {
+				st.executeUpdate(
+					"CREATE OR REPLACE PROCEDURE P_PINGU_RANKING(\n" +
+					"  p_username IN VARCHAR2,\n" +
+					"  p_cursor OUT SYS_REFCURSOR\n" +
+					") AS\n" +
+					"  v_count NUMBER;\n" +
+					"  v_partidas NUMBER;\n" +
+					"BEGIN\n" +
+					"  SELECT COUNT(*) INTO v_count FROM PINGU_USERS WHERE USERNAME = p_username;\n" +
+					"  IF v_count = 0 THEN\n" +
+					"    RAISE_APPLICATION_ERROR(-20001, 'Jugador ' || p_username || ' no existeix.');\n" +
+					"  END IF;\n" +
+					"  SELECT COUNT(*) INTO v_partidas FROM PINGU_PARTIDAS WHERE USERNAME = p_username;\n" +
+					"  IF v_partidas = 0 THEN\n" +
+					"    RAISE_APPLICATION_ERROR(-20002, 'El jugador ' || p_username || ' no ha guardat cap partida.');\n" +
+					"  END IF;\n" +
+					"  OPEN p_cursor FOR\n" +
+					"    SELECT USERNAME, PARTIDAS_GANADAS, PARTIDAS_JUGADAS,\n" +
+					"           CASE WHEN PARTIDAS_JUGADAS > 0\n" +
+					"                THEN ROUND(PARTIDAS_GANADAS * 100.0 / PARTIDAS_JUGADAS, 1)\n" +
+					"                ELSE 0 END AS RATIO\n" +
+					"    FROM PINGU_USERS\n" +
+					"    ORDER BY PARTIDAS_JUGADAS DESC, PARTIDAS_GANADAS DESC;\n" +
+					"END;"
+				);
+				System.out.println("Procediment P_PINGU_RANKING creat.");
+			} catch (SQLException e) {
+				System.out.println("Info P_PINGU_RANKING: " + e.getMessage());
+			}
+
+			st.close();
+		} catch (SQLException e) {
+			System.out.println("Error creant objectes PL/SQL: " + e.getMessage());
 		}
 	}
 
@@ -539,6 +760,26 @@ public class GestorBBDD {
 			ps.close();
 		} catch (SQLException e) {
 			System.out.println("Error incrementant partides guanyades: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Marca una partida com a finalitzada (ACABADA = 1) i guarda el guanyador.
+	 * El trigger TRG_INCR_GANADAS s'encarregarà d'incrementar PARTIDAS_GANADAS.
+	 */
+	public static void marcarPartidaAcabadaConGanador(Connection con, int id, String ganador) {
+		if (con == null) return;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"UPDATE PINGU_PARTIDAS SET ACABADA = 1, GANADOR = ? WHERE ID = ?"
+			);
+			ps.setString(1, ganador);
+			ps.setInt(2, id);
+			ps.executeUpdate();
+			ps.close();
+			System.out.println("Partida ID=" + id + " marcada acabada, guanyador=" + ganador);
+		} catch (SQLException e) {
+			System.out.println("Error marcant partida acabada: " + e.getMessage());
 		}
 	}
 
@@ -905,6 +1146,183 @@ public class GestorBBDD {
 			ps.close();
 		} catch (SQLException e) {
 			System.out.println("Error obtenint usuaris: " + e.getMessage());
+		}
+		return lista;
+	}
+
+	/**
+	 * Crida F_PINGU_RECORD: retorna el màxim de partides guanyades (rècord).
+	 */
+	public static int getRecord(Connection con) {
+		if (con == null) return 0;
+		try {
+			CallableStatement cs = con.prepareCall("BEGIN ? := F_PINGU_RECORD(); END;");
+			cs.registerOutParameter(1, java.sql.Types.NUMERIC);
+			cs.execute();
+			int val = cs.getInt(1);
+			cs.close();
+			return val;
+		} catch (SQLException e) {
+			System.out.println("Error cridant F_PINGU_RECORD: " + e.getMessage());
+			try {
+				Statement st = con.createStatement();
+				ResultSet rs = st.executeQuery("SELECT NVL(MAX(PARTIDAS_GANADAS),0) FROM PINGU_USERS");
+				int val = rs.next() ? rs.getInt(1) : 0;
+				rs.close(); st.close();
+				return val;
+			} catch (SQLException e2) { return 0; }
+		}
+	}
+
+	/**
+	 * Crida F_PINGU_MITJA: retorna la mitja de partides guanyades.
+	 */
+	public static double getMitja(Connection con) {
+		if (con == null) return 0;
+		try {
+			CallableStatement cs = con.prepareCall("BEGIN ? := F_PINGU_MITJA(); END;");
+			cs.registerOutParameter(1, java.sql.Types.NUMERIC);
+			cs.execute();
+			double val = cs.getDouble(1);
+			cs.close();
+			return val;
+		} catch (SQLException e) {
+			System.out.println("Error cridant F_PINGU_MITJA: " + e.getMessage());
+			try {
+				Statement st = con.createStatement();
+				ResultSet rs = st.executeQuery("SELECT ROUND(NVL(AVG(PARTIDAS_GANADAS),0),2) FROM PINGU_USERS");
+				double val = rs.next() ? rs.getDouble(1) : 0;
+				rs.close(); st.close();
+				return val;
+			} catch (SQLException e2) { return 0; }
+		}
+	}
+
+	/**
+	 * Crida F_PINGU_PCT_MENYS: % de jugadors que han guanyat menys de p_wins partides.
+	 */
+	public static double getPctMenysGuanyades(Connection con, int wins) {
+		if (con == null) return 0;
+		try {
+			CallableStatement cs = con.prepareCall("BEGIN ? := F_PINGU_PCT_MENYS(?); END;");
+			cs.registerOutParameter(1, java.sql.Types.NUMERIC);
+			cs.setInt(2, wins);
+			cs.execute();
+			double val = cs.getDouble(1);
+			cs.close();
+			return val;
+		} catch (SQLException e) {
+			System.out.println("Error cridant F_PINGU_PCT_MENYS: " + e.getMessage());
+			try {
+				PreparedStatement ps = con.prepareStatement(
+					"SELECT ROUND(COUNT(*)*100.0/(SELECT COUNT(*) FROM PINGU_USERS),1) " +
+					"FROM PINGU_USERS WHERE PARTIDAS_GANADAS < ?"
+				);
+				ps.setInt(1, wins);
+				ResultSet rs = ps.executeQuery();
+				double val = rs.next() ? rs.getDouble(1) : 0;
+				rs.close(); ps.close();
+				return val;
+			} catch (SQLException e2) { return 0; }
+		}
+	}
+
+	/**
+	 * Retorna els jugadors que tenen el rècord de partides guanyades.
+	 */
+	public static ArrayList<String> getJugadorsRecord(Connection con) {
+		ArrayList<String> lista = new ArrayList<>();
+		if (con == null) return lista;
+		try {
+			int record = getRecord(con);
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT USERNAME FROM PINGU_USERS WHERE PARTIDAS_GANADAS = ? ORDER BY USERNAME"
+			);
+			ps.setInt(1, record);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) lista.add(rs.getString("USERNAME"));
+			rs.close(); ps.close();
+		} catch (SQLException e) {
+			System.out.println("Error obtenint jugadors rècord: " + e.getMessage());
+		}
+		return lista;
+	}
+
+	/**
+	 * Retorna els jugadors per sobre de la mitja de partides guanyades.
+	 */
+	public static ArrayList<LinkedHashMap<String, String>> getJugadorsSobreMitja(Connection con) {
+		ArrayList<LinkedHashMap<String, String>> lista = new ArrayList<>();
+		if (con == null) return lista;
+		try {
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery(
+				"SELECT USERNAME, PARTIDAS_GANADAS FROM PINGU_USERS " +
+				"WHERE PARTIDAS_GANADAS > (SELECT AVG(PARTIDAS_GANADAS) FROM PINGU_USERS) " +
+				"ORDER BY PARTIDAS_GANADAS DESC"
+			);
+			while (rs.next()) {
+				LinkedHashMap<String, String> fila = new LinkedHashMap<>();
+				fila.put("USERNAME", rs.getString("USERNAME"));
+				fila.put("PARTIDAS_GANADAS", rs.getString("PARTIDAS_GANADAS"));
+				lista.add(fila);
+			}
+			rs.close(); st.close();
+		} catch (SQLException e) {
+			System.out.println("Error obtenint jugadors sobre mitja: " + e.getMessage());
+		}
+		return lista;
+	}
+
+	/**
+	 * Retorna les partides guanyades d'un usuari concret.
+	 */
+	public static int getPartidasGanadasUsuario(Connection con, String username) {
+		if (con == null) return 0;
+		try {
+			PreparedStatement ps = con.prepareStatement(
+				"SELECT PARTIDAS_GANADAS FROM PINGU_USERS WHERE USERNAME = ?"
+			);
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			int val = rs.next() ? rs.getInt(1) : 0;
+			rs.close(); ps.close();
+			return val;
+		} catch (SQLException e) {
+			return 0;
+		}
+	}
+
+	/**
+	 * Rànquing de jugadors ordenat per total de partides jugades (de més a menys).
+	 * Implementa la lògica del procediment P_PINGU_RANKING per a l'ús des de JavaFX.
+	 */
+	public static ArrayList<LinkedHashMap<String, String>> getRankingPerJugades(Connection con) {
+		ArrayList<LinkedHashMap<String, String>> lista = new ArrayList<>();
+		if (con == null) return lista;
+		try {
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery(
+				"SELECT USERNAME, PARTIDAS_GANADAS, PARTIDAS_JUGADAS, " +
+				"  CASE WHEN PARTIDAS_JUGADAS > 0 " +
+				"       THEN ROUND(PARTIDAS_GANADAS * 100.0 / PARTIDAS_JUGADAS, 1) " +
+				"       ELSE 0 END AS RATIO " +
+				"FROM PINGU_USERS " +
+				"WHERE PARTIDAS_JUGADAS > 0 " +
+				"ORDER BY PARTIDAS_JUGADAS DESC, PARTIDAS_GANADAS DESC " +
+				"FETCH FIRST 20 ROWS ONLY"
+			);
+			while (rs.next()) {
+				LinkedHashMap<String, String> fila = new LinkedHashMap<>();
+				fila.put("USERNAME",         rs.getString("USERNAME"));
+				fila.put("PARTIDAS_GANADAS", rs.getString("PARTIDAS_GANADAS"));
+				fila.put("PARTIDAS_JUGADAS", rs.getString("PARTIDAS_JUGADAS"));
+				fila.put("RATIO",            rs.getString("RATIO"));
+				lista.add(fila);
+			}
+			rs.close(); st.close();
+		} catch (SQLException e) {
+			System.out.println("Error obtenint ranking per jugades: " + e.getMessage());
 		}
 		return lista;
 	}

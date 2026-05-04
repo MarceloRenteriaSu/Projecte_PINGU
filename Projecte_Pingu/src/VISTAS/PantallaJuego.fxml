@@ -16,6 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
@@ -99,29 +100,52 @@
                 <VBox spacing="8" styleClass="card">
                     <Label text="Objetos" styleClass="card-title" />
 
-                    <VBox spacing="8">
+                    <!-- Icon row: 4 item slots -->
+                    <HBox spacing="6" alignment="CENTER">
+
+                        <!-- Dado Rápido (red border) -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotRapido" styleClass="item-slot" prefWidth="52" prefHeight="52"
+                                       onMouseClicked="#handleSelectRapido">
+                                <ImageView fx:id="iconRapido" fitWidth="36" fitHeight="36" preserveRatio="true"/>
+                            </StackPane>
+                            <Label fx:id="qtyRapido" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                        <!-- Dado Lento (blue border) -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotLento" styleClass="item-slot" prefWidth="52" prefHeight="52"
+                                       onMouseClicked="#handleSelectLento">
+                                <Label text="🎲" styleClass="item-emoji"/>
+                            </StackPane>
+                            <Label fx:id="qtyLento" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                        <!-- Pez (green border) — passive -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotPeces" styleClass="item-slot" prefWidth="52" prefHeight="52">
+                                <Label text="🐟" styleClass="item-emoji"/>
+                            </StackPane>
+                            <Label fx:id="qtyPeces" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                        <!-- Bola de Nieve (pink border) -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotBola" styleClass="item-slot" prefWidth="52" prefHeight="52">
+                                <Label text="❄" styleClass="item-emoji"/>
+                            </StackPane>
+                            <Label fx:id="qtyBola" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                    </HBox>
+
+                    <!-- Usar area: visible only when a dado slot is selected -->
+                    <VBox fx:id="usarBox" styleClass="usar-area" visible="false" managed="false">
                         <padding>
-                            <Insets top="2" right="2" bottom="2" left="2"/>
+                            <Insets top="5" right="5" bottom="5" left="5"/>
                         </padding>
-
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Text fx:id="rapido_t" text="Dado Rápido: x0" styleClass="stat" />
-                            <Region HBox.hgrow="ALWAYS" />
-                            <Button fx:id="rapido" text="Usar" onAction="#handleRapido"/>
-                        </HBox>
-
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Text fx:id="lento_t" text="Dado Lento: x0" styleClass="stat" />
-                            <Region HBox.hgrow="ALWAYS" />
-                            <Button fx:id="lento" text="Usar" onAction="#handleLento"/>
-                        </HBox>
-
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Text fx:id="peces_t" text="Pez: x0" styleClass="stat" />
-                            <Region HBox.hgrow="ALWAYS" />
-                            <Button fx:id="peces" text="Usar" onAction="#handlePeces"/>
-                        </HBox>
-
+                        <Button fx:id="usarBtn" text="Usar" onAction="#handleUsarItem"
+                                maxWidth="Infinity" styleClass="primary"/>
                     </VBox>
                 </VBox>
 
