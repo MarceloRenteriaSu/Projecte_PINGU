@@ -219,6 +219,33 @@
     -fx-background-color: transparent;
 }
 
+/* ── Turn overlay (small centered card over the board) ── */
+.turno-overlay {
+    -fx-background-color: transparent;
+}
+.turno-card {
+    -fx-background-color: rgba(5, 12, 28, 0.88);
+    -fx-background-radius: 10;
+    -fx-padding: 8 24;
+    -fx-border-color: rgba(85, 203, 245, 0.6);
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 18, 0.4, 0, 0);
+}
+.turno-titulo {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-fill: #9ecde8;
+    -fx-letter-spacing: 2px;
+}
+.turno-nombre {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-fill: #55cbf5;
+}
+
 /* ── End screen (PantallaFin uses PantallaJuego.css) ── */
 .fin-titulo {
     -fx-font-size: 28px;

@@ -83,6 +83,16 @@
                         <Canvas fx:id="P5" id="P5" width="35" height="44" />
                     </children>
                 </GridPane>
+
+                <!-- Turn notification overlay (centered on top of board) -->
+                <StackPane fx:id="turnoOverlay" styleClass="turno-overlay"
+                           mouseTransparent="true" visible="false">
+                    <VBox alignment="CENTER" spacing="2" styleClass="turno-card"
+                          maxWidth="280" maxHeight="70">
+                        <Text fx:id="turnoTitulo" text="TURNO DE" styleClass="turno-titulo" />
+                        <Text fx:id="turnoNombre" text="" styleClass="turno-nombre" />
+                    </VBox>
+                </StackPane>
             </StackPane>
 
             <!-- RIGHT: Sidebar with 3 stacked panels -->

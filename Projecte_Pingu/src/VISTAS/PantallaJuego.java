@@ -3,6 +3,8 @@ package VISTAS;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
@@ -77,6 +79,11 @@ public class PantallaJuego {
 	@FXML private Canvas P3;
 	@FXML private Canvas P4;
 	@FXML private Canvas P5;
+
+	// Turn notification overlay
+	@FXML private StackPane turnoOverlay;
+	@FXML private Text turnoTitulo;
+	@FXML private Text turnoNombre;
 
 	private GestorPartida gestorPartida;
 	private int columnas;
@@ -556,6 +563,53 @@ public class PantallaJuego {
 		if (indice < fichas.length && indice != indiceFoca) {
 			fichas[indice].setEffect(new DropShadow(14, 0, 0, Color.GOLD));
 		}
+
+		// Mostrar el overlay del torn
+		Partida p2 = gestorPartida.getPartida();
+		int idx2 = p2.getJugadorActual();
+		Jugador jugActual = p2.getJugadores().get(idx2);
+		if (focaActivada && idx2 == indiceFoca) {
+			mostrarTurnoOverlay("🦭", "LA FOCA SE MUEVE");
+		} else if (jugActual instanceof Pinguino) {
+			mostrarTurnoOverlay("TURNO DE", ((Pinguino) jugActual).getNom().toUpperCase());
+		}
+	}
+
+	// -------------------------------------------------------
+	// OVERLAY DE TORN (animació fade-in / pause / fade-out)
+	// -------------------------------------------------------
+
+	private javafx.animation.SequentialTransition turnoAnimation;
+
+	private void mostrarTurnoOverlay(String titulo, String nombre) {
+		if (turnoOverlay == null) return;
+
+		// Cancel any running animation
+		if (turnoAnimation != null) {
+			turnoAnimation.stop();
+		}
+
+		turnoTitulo.setText(titulo);
+		turnoNombre.setText(nombre);
+		turnoOverlay.setOpacity(0);
+		turnoOverlay.setVisible(true);
+
+		// Fade in
+		FadeTransition fadeIn = new FadeTransition(Duration.millis(300), turnoOverlay);
+		fadeIn.setFromValue(0);
+		fadeIn.setToValue(1);
+
+		// Pause
+		PauseTransition pause = new PauseTransition(Duration.millis(1500));
+
+		// Fade out
+		FadeTransition fadeOut = new FadeTransition(Duration.millis(500), turnoOverlay);
+		fadeOut.setFromValue(1);
+		fadeOut.setToValue(0);
+
+		turnoAnimation = new SequentialTransition(fadeIn, pause, fadeOut);
+		turnoAnimation.setOnFinished(e -> turnoOverlay.setVisible(false));
+		turnoAnimation.play();
 	}
 
 	// -------------------------------------------------------
@@ -977,8 +1031,11 @@ public class PantallaJuego {
 	// TORN DE LA FOCA (CPU)
 	// -------------------------------------------------------
 
-	private void ejecutarTurnoFoca() {
-		if (!focaActivada || indiceFoca < 0) return;
+	private void ejecutarTurnoFoca(Runnable onComplete) {
+		if (!focaActivada || indiceFoca < 0) {
+			if (onComplete != null) onComplete.run();
+			return;
+		}
 
 		Partida partida = gestorPartida.getPartida();
 		Foca foca = (Foca) partida.getJugadores().get(indiceFoca);
@@ -992,6 +1049,7 @@ public class PantallaJuego {
 			int indiceFichaFoca = fichas.length - 1;
 			moverFichaVisual(indiceFichaFoca, posDespreFoca);
 			addEvent("🦭 La Foca está bloqueada " + foca.getTurnosBloquejada() + " turno(s) más.");
+			if (onComplete != null) onComplete.run();
 			return;
 		}
 
@@ -1076,6 +1134,10 @@ public class PantallaJuego {
 
 				// Comprovar si la foca ha guanyat
 				comprovarGuanyadorFoca(foca);
+
+				if (!gestorPartida.getPartida().isFinalizada() && onComplete != null) {
+					onComplete.run();
+				}
 			});
 		});
 	}
@@ -1091,26 +1153,36 @@ public class PantallaJuego {
 		clearSelection();
 		turnosPinguinosEnRonda++;
 
-		// Si tots els pingüins han jugat → torn de la foca (si activada)
 		if (focaActivada && turnosPinguinosEnRonda >= totalPinguinos) {
 			turnosPinguinosEnRonda = 0;
-			ejecutarTurnoFoca();
-			if (partida.isFinalizada()) return;
-		} else if (!focaActivada && turnosPinguinosEnRonda >= totalPinguinos) {
+			// Mostrar overlay de la foca, esperar un momento y luego moverla
+			mostrarTurnoOverlay("LA FOCA", "SE MUEVE");
+			PauseTransition sealDelay = new PauseTransition(Duration.millis(800));
+			sealDelay.setOnFinished(ev -> ejecutarTurnoFoca(() -> {
+				if (!gestorPartida.getPartida().isFinalizada()) avanzarSiguientePinguino();
+			}));
+			sealDelay.play();
+			return;
+		}
+
+		if (!focaActivada && turnosPinguinosEnRonda >= totalPinguinos) {
 			turnosPinguinosEnRonda = 0;
 		}
+
+		avanzarSiguientePinguino();
+	}
+
+	private void avanzarSiguientePinguino() {
+		Partida partida = gestorPartida.getPartida();
+		if (partida.isFinalizada()) return;
 
 		// Avançar al següent pingüí (saltant la foca)
 		partida.siguienteTurno();
 
-		// Saltar la foca en el cicle de torns (si activada)
 		if (focaActivada && partida.getJugadorActual() == indiceFoca) {
 			partida.siguienteTurno();
 		}
 
-		// Si el pròxim pingüí ha perdut el torn, el saltem
-		// IMPORTANT: NO incrementar turnosPinguinosEnRonda — el torn perdut
-		// compta com a torn del pingüí que ja va jugar, no com un torn nou
 		Jugador seg = partida.getJugadores().get(partida.getJugadorActual());
 		if (seg instanceof Pinguino) {
 			Pinguino segP = (Pinguino) seg;
