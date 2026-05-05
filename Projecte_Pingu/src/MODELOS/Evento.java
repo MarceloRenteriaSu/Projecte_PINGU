@@ -44,33 +44,33 @@ public class Evento extends Casilla {
 				int tipo = r.nextInt(10)+1;
 				if(tipo > 4) {
 					pingu.agregarItem(new Dado("Lento", 1));
-					ultimoEventoDescripcion = "🎲 Ha obtingut un Dado Lento!";
+					ultimoEventoDescripcion = "🎲 Ha obtenido un Dado Lento!";
 				}else {
 					pingu.agregarItem(new Dado("Rapido", 1));
-					ultimoEventoDescripcion = "🎲 Ha obtingut un Dado Ràpid!";
+					ultimoEventoDescripcion = "🎲 Ha obtenido un Dado Rápido!";
 				}
 				break;
 			case "MotoDeNieve":
 				Trineo moto = new Trineo(pingu.getPos());
 				moto.realizarAccion(p, pingu);
-				ultimoEventoDescripcion = "🛷 Moto de Neu! Avança fins al pròxim trineo!";
+				ultimoEventoDescripcion = "🛷 Moto de Nieve! Avanza hasta el siguiente trineo!";
 				break;
 			case "Bola":
 				int cantidad = r.nextInt(3)+1;
 				pingu.agregarItem(new Bola(cantidad));
-				ultimoEventoDescripcion = "❄ Ha obtingut " + cantidad + " Bola(es) de Neu!";
+				ultimoEventoDescripcion = "❄ Ha obtenido " + cantidad + " Bola(s) de Nieve!";
 				break;
 			case "Pez":
 				pingu.agregarItem(new Pez(1));
-				ultimoEventoDescripcion = "🐟 Ha obtingut un Peix!";
+				ultimoEventoDescripcion = "🐟 Ha obtenido un Peix!";
 				break;
 			case "PerderT":
 				pingu.perderTurno();
-				ultimoEventoDescripcion = "⏭ Perd el pròxim torn!";
+				ultimoEventoDescripcion = "⏭ Pierde el siguiente turno!";
 				break;
 			case "PerderObj":
 				pingu.quitarItemAleatorio();
-				ultimoEventoDescripcion = "💔 Ha perdut un objecte aleatori!";
+				ultimoEventoDescripcion = "💔 Ha perdido un objeto aleatorio!";
 				break;
 			}	
 		}
