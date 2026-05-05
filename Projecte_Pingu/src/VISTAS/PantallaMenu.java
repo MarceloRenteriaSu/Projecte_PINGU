@@ -14,9 +14,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -54,7 +58,6 @@ public class PantallaMenu {
     private void initialize() {
         System.out.println("PantallaMenu initialized");
 
-        // Background stretches to fill window; apply cursor to scene
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
@@ -86,7 +89,6 @@ public class PantallaMenu {
         }
 
         try {
-            // Open the match-selection screen as a modal dialog
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaCargarPartida.fxml"));
             Parent root = loader.load();
             PantallaCargarPartida ctrl = loader.getController();
@@ -99,7 +101,6 @@ public class PantallaMenu {
             selStage.setResizable(true);
             selStage.showAndWait();
 
-            // After the dialog closes, check if the user selected a match
             if (ctrl.isLoaded()) {
                 LinkedHashMap<String, String> datos = ctrl.getSelectedPartida();
                 FXMLLoader juegoLoader = new FXMLLoader(getClass().getResource("PantallaJuego.fxml"));
@@ -124,61 +125,137 @@ public class PantallaMenu {
             return;
         }
 
-        ArrayList<LinkedHashMap<String, String>> data = GestorBBDD.getRanking(conexion);
-        ObservableList<LinkedHashMap<String, String>> items = FXCollections.observableArrayList(data);
+        ArrayList<LinkedHashMap<String, String>> rankingData = GestorBBDD.getRankingPerJugades(conexion);
+        int record = GestorBBDD.getRecord(conexion);
+        ArrayList<String> jugadoresRecord = GestorBBDD.getJugadorsRecord(conexion);
+        double media = GestorBBDD.getMitja(conexion);
+        ArrayList<LinkedHashMap<String, String>> sobreMedia = GestorBBDD.getJugadorsSobreMitja(conexion);
+        int myWins = GestorBBDD.getPartidasGanadasUsuario(conexion, nombreUsuarioLogueado);
+        double myPct = GestorBBDD.getPctMenysGuanyades(conexion, myWins);
+
+        // ---- TAB 1: Clasificación ----
+        ObservableList<LinkedHashMap<String, String>> items = FXCollections.observableArrayList(rankingData);
 
         TableView<LinkedHashMap<String, String>> table = new TableView<>(items);
-        table.getStyleClass().add("data-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        table.setPlaceholder(new Label("No hay datos de ranking."));
+        table.setPlaceholder(new Label("No hay datos de clasificación."));
+        table.setStyle("-fx-background-color: rgba(255,255,255,0.08); -fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 6; -fx-background-radius: 6;");
+        VBox.setVgrow(table, Priority.ALWAYS);
 
         TableColumn<LinkedHashMap<String, String>, String> colPos = new TableColumn<>("#");
         colPos.setCellValueFactory(cd ->
             new SimpleStringProperty(String.valueOf(items.indexOf(cd.getValue()) + 1)));
-        colPos.setMaxWidth(40);
-        colPos.setMinWidth(40);
+        colPos.setMaxWidth(40); colPos.setMinWidth(40);
 
         TableColumn<LinkedHashMap<String, String>, String> colUser = new TableColumn<>("Jugador");
         colUser.setCellValueFactory(cd ->
             new SimpleStringProperty(cd.getValue().getOrDefault("USERNAME", "")));
 
-        TableColumn<LinkedHashMap<String, String>, String> colWins = new TableColumn<>("Ganadas");
+        TableColumn<LinkedHashMap<String, String>, String> colPlayed = new TableColumn<>("Partidas");
+        colPlayed.setCellValueFactory(cd ->
+            new SimpleStringProperty(cd.getValue().getOrDefault("PARTIDAS_JUGADES", cd.getValue().getOrDefault("PARTIDAS_JUGADAS", "0"))));
+        colPlayed.setComparator((a, b) -> Integer.compare(parseIntSafe(a), parseIntSafe(b)));
+
+        TableColumn<LinkedHashMap<String, String>, String> colWins = new TableColumn<>("Victorias");
         colWins.setCellValueFactory(cd ->
             new SimpleStringProperty(cd.getValue().getOrDefault("PARTIDAS_GANADAS", "0")));
+        colWins.setComparator((a, b) -> Integer.compare(parseIntSafe(a), parseIntSafe(b)));
 
-        TableColumn<LinkedHashMap<String, String>, String> colPlayed = new TableColumn<>("Jugadas");
-        colPlayed.setCellValueFactory(cd ->
-            new SimpleStringProperty(cd.getValue().getOrDefault("PARTIDAS_JUGADAS", "0")));
-
-        TableColumn<LinkedHashMap<String, String>, String> colRatio = new TableColumn<>("% Victorias");
+        TableColumn<LinkedHashMap<String, String>, String> colRatio = new TableColumn<>("% Victoria");
         colRatio.setCellValueFactory(cd ->
             new SimpleStringProperty(cd.getValue().getOrDefault("RATIO", "0") + "%"));
+        colRatio.setComparator((a, b) -> Double.compare(parseDoubleSafe(a), parseDoubleSafe(b)));
 
-        table.getColumns().addAll(colPos, colUser, colWins, colPlayed, colRatio);
+        table.getColumns().addAll(colPos, colUser, colPlayed, colWins, colRatio);
+
+        VBox tabClasifContent = new VBox(10, table);
+        tabClasifContent.setPadding(new Insets(12));
+        VBox.setVgrow(table, Priority.ALWAYS);
+
+        Tab tabClasif = new Tab("Clasificación", tabClasifContent);
+        tabClasif.setClosable(false);
+
+        // ---- TAB 2: Estadísticas ----
+        String recordJugadores = jugadoresRecord.isEmpty()
+            ? "Ningún jugador aún"
+            : String.join(", ", jugadoresRecord);
+
+        Label lblRecordTitle = makeSectionTitle("🏆  Récord mundial");
+        Label lblRecord = makeStatLabel(recordJugadores + " — " + record + " victorias");
+
+        Label lblMediaTitle = makeSectionTitle("📊  Media de victorias");
+        Label lblMedia = makeStatLabel(String.format("%.2f victorias de media por jugador", media));
+
+        String sobreMediaText;
+        if (sobreMedia.isEmpty()) {
+            sobreMediaText = "Ningún jugador supera la media";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (LinkedHashMap<String, String> row : sobreMedia) {
+                if (sb.length() > 0) sb.append(",  ");
+                sb.append(row.get("USERNAME")).append(" (").append(row.get("PARTIDAS_GANADAS")).append(" vic.)");
+            }
+            sobreMediaText = sb.toString();
+        }
+        Label lblSobreMediaTitle = makeSectionTitle("📈  Por encima de la media");
+        Label lblSobreMedia = makeStatLabel(sobreMediaText);
+        lblSobreMedia.setWrapText(true);
+
+        Label lblPctTitle = makeSectionTitle("🐧  Tu posición — " + nombreUsuarioLogueado);
+        Label lblPct = makeStatLabel(String.format(
+            "%d victorias — superas al %.1f%% de los jugadores", myWins, myPct));
+
+        VBox tabStatsContent = new VBox(8,
+            lblRecordTitle, lblRecord, new Separator(),
+            lblMediaTitle, lblMedia, new Separator(),
+            lblSobreMediaTitle, lblSobreMedia, new Separator(),
+            lblPctTitle, lblPct
+        );
+        tabStatsContent.setPadding(new Insets(16));
+
+        Tab tabStats = new Tab("Estadísticas", tabStatsContent);
+        tabStats.setClosable(false);
+
+        // ---- Composición final ----
+        TabPane tabPane = new TabPane(tabClasif, tabStats);
+        VBox.setVgrow(tabPane, Priority.ALWAYS);
 
         Label title = new Label("Ranking Mundial");
         title.getStyleClass().add("screen-title-label");
 
         Button btnClose = new Button("Cerrar");
         btnClose.getStyleClass().add("cp-dock-button");
+        btnClose.setMaxWidth(Double.MAX_VALUE);
 
-        VBox root = new VBox(16, title, table, btnClose);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(28));
+        VBox root = new VBox(14, title, tabPane, btnClose);
+        root.setAlignment(Pos.TOP_CENTER);
+        root.setPadding(new Insets(20));
         root.setStyle(
             "-fx-background-color: linear-gradient(" +
             "from 0% 0% to 100% 100%, #05101f 0%, #0b1e3c 30%, #0d2a52 55%, #081a3a 80%, #040d1c 100%);");
 
-        Scene scene = new Scene(root, 580, 420);
+        Scene scene = new Scene(root, 620, 480);
         scene.getStylesheets().add(getClass().getResource("PantallaMenu.css").toExternalForm());
 
         Stage rankStage = new Stage();
         rankStage.initModality(Modality.APPLICATION_MODAL);
-        rankStage.setTitle("Ranking");
-        rankStage.setResizable(false);
+        rankStage.setTitle("Ranking Mundial");
+        rankStage.setResizable(true);
         rankStage.setScene(scene);
         btnClose.setOnAction(e -> rankStage.close());
         rankStage.showAndWait();
+    }
+
+    private Label makeSectionTitle(String text) {
+        Label lbl = new Label(text);
+        lbl.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #7ec8f7; -fx-font-family: 'Arial';");
+        return lbl;
+    }
+
+    private Label makeStatLabel(String text) {
+        Label lbl = new Label(text);
+        lbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #c8e6f9; -fx-font-family: 'Arial'; -fx-padding: 0 0 0 12;");
+        return lbl;
     }
 
     @FXML
@@ -219,7 +296,6 @@ public class PantallaMenu {
         System.exit(0);
     }
 
-
     private void abrirPantallaConfig(ActionEvent event, String username) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaConfig.fxml"));
@@ -236,7 +312,6 @@ public class PantallaMenu {
             configStage.initOwner(menuStage);
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.setTitle("Configuración de la Partida");
-            // Match PantallaMenu window size
             configStage.setWidth(menuStage.getWidth());
             configStage.setHeight(menuStage.getHeight());
             configStage.setScene(new Scene(pantallaConfigRoot));
@@ -245,5 +320,13 @@ public class PantallaMenu {
             e.printStackTrace();
             System.out.println("Error al abrir la configuración: " + e.getMessage());
         }
+    }
+
+    private int parseIntSafe(String s) {
+        try { return Integer.parseInt(s.trim()); } catch (Exception e) { return 0; }
+    }
+
+    private double parseDoubleSafe(String s) {
+        try { return Double.parseDouble(s.replace("%", "").trim()); } catch (Exception e) { return 0.0; }
     }
 }
