@@ -362,7 +362,7 @@ public class PantallaJuego {
 			fichas[numPinguinos] = P5;
 			P5.setVisible(true);
 			posiciones[numPinguinos] = 0;
-			FocaRenderer.draw(P5.getGraphicsContext2D(), PinguinoRenderer.GAME_PX);
+			PinguinoRenderer.draw(P5.getGraphicsContext2D(), PinguinoRenderer.GAME_PX, null, true);
 		} else {
 			fichas = new Node[numPinguinos];
 			posiciones = new int[numPinguinos];
@@ -1536,7 +1536,7 @@ public class PantallaJuego {
 			fichas[numJugadores] = P5;
 			P5.setVisible(true);
 			posiciones[numJugadores] = focaPosDB;
-			FocaRenderer.draw(P5.getGraphicsContext2D(), PinguinoRenderer.GAME_PX);
+			PinguinoRenderer.draw(P5.getGraphicsContext2D(), PinguinoRenderer.GAME_PX, null, true);
 		} else {
 			fichas = new Node[numJugadores];
 			posiciones = new int[numJugadores];
