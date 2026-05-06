@@ -56,8 +56,6 @@ public class PantallaMenu {
 
     @FXML
     private void initialize() {
-        System.out.println("PantallaMenu initialized");
-
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
@@ -76,13 +74,11 @@ public class PantallaMenu {
 
     @FXML
     private void handleNewMatch(ActionEvent event) {
-        System.out.println("Nueva Partida clicked");
         abrirPantallaConfig(event, nombreUsuarioLogueado);
     }
 
     @FXML
     private void handleLoadMatch(ActionEvent event) {
-        System.out.println("Cargar Partida clicked");
         if (conexion == null) {
             mostrarAlerta("Error", "No hay conexión a la base de datos.");
             return;
@@ -120,6 +116,10 @@ public class PantallaMenu {
 
     @FXML
     private void handleRanking(ActionEvent event) {
+        mostrarRanking();
+    }
+
+    public void mostrarRanking() {
         if (conexion == null) {
             mostrarAlerta("Error", "No hay conexión a la base de datos.");
             return;

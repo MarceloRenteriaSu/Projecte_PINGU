@@ -3,7 +3,10 @@ package VISTAS;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
 import javafx.animation.SequentialTransition;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,6 +41,11 @@ import GESTORES.GestorBBDD;
 import MODELOS.*;
 
 public class PantallaJuego {
+
+	// Auto-play
+	@FXML private Button btnAutoPlay;
+	private Timeline autoPlayTimeline;
+	private boolean autoPlayOn = false;
 
 	// Menu items
 	@FXML private MenuItem newGame;
@@ -108,46 +116,6 @@ public class PantallaJuego {
 	private boolean jocIniciat = false;
 
 
-	/**
-	 * Inicia el joc amb paràmetres per defecte (50 caselles, 4 jugadors, foca activada).
-	 */
-	public void iniciarJoc() {
-		if (!jocIniciat) {
-			ArrayList<String> noms = new ArrayList<>();
-			noms.add("Jugador1");
-			noms.add("Jugador2");
-			noms.add("Jugador3");
-			noms.add("Jugador4");
-			configurarJoc(50, noms, null, true);
-			jocIniciat = true;
-		}
-	}
-
-	/**
-	 * Inicia el joc amb paràmetres personalitzats.
-	 * Es crida des de PantallaConfig.
-	 */
-	public void iniciarJoc(int numCasillas, ArrayList<String> noms) {
-		if (!jocIniciat) {
-			configurarJoc(numCasillas, noms, null, true);
-			jocIniciat = true;
-		}
-	}
-
-	/**
-	 * Inicia el joc amb paràmetres personalitzats i opció de foca.
-	 */
-	public void iniciarJoc(int numCasillas, ArrayList<String> noms, boolean ambFoca) {
-		if (!jocIniciat) {
-			configurarJoc(numCasillas, noms, null, ambFoca);
-			jocIniciat = true;
-		}
-	}
-
-	/**
-	 * Inicia el joc amb paràmetres personalitzats, colors de jugador i opció de foca.
-	 * @param hexColors llista de colors en format "#RRGGBB", un per jugador
-	 */
 	public void iniciarJoc(int numCasillas, ArrayList<String> noms, ArrayList<String> hexColors, boolean ambFoca) {
 		if (!jocIniciat) {
 			configurarJoc(numCasillas, noms, hexColors, ambFoca);
@@ -785,7 +753,6 @@ public class PantallaJuego {
 
 			PantallaGuerra ctrl = loader.getController();
 			ctrl.inicialitzar(defensor, atacant, partida, (defRet, atRet, passosDau, haEscapat) -> {
-
 				if (haEscapat) {
 					int novaPosD = Math.max(0, Math.min(
 						defensor.getPos() + passosDau,
@@ -813,6 +780,8 @@ public class PantallaJuego {
 				}
 				actualizarInventarioUI();
 			});
+
+			ctrl.setAutoPlay(autoPlayOn);
 
 			Stage guerraStage = new Stage();
 			guerraStage.setTitle("⚔ ¡Batalla de Nieve!");
@@ -848,6 +817,7 @@ public class PantallaJuego {
 	/** Finalitza la partida amb un guanyador. */
 	private void finalizarPartida(String nomGuanyador, Partida partida) {
 		partida.setFinalizada(true);
+		stopAutoPlay();
 		addEvent("🏆 " + nomGuanyador + " ¡ha ganado la partida!");
 		dado.setDisable(true);
 		clearSelection();
@@ -966,6 +936,7 @@ public class PantallaJuego {
 					menuCtrl.setNombreUsuario(nombreUsuarioLogueado);
 					stage.setScene(new Scene(menuRoot));
 					stage.setTitle("El Juego del Pingüino");
+					menuCtrl.mostrarRanking();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1247,6 +1218,42 @@ public class PantallaJuego {
 			pingu.quitarItem(new Dado("Lento", 0));
 			clearSelection();
 			tirarDadoConcreto(new Dado("Lento", 1));
+		}
+	}
+
+	// -------------------------------------------------------
+	// AUTO-PLAY
+	// -------------------------------------------------------
+
+	@FXML
+	private void handleAutoPlay() {
+		autoPlayOn = !autoPlayOn;
+		if (autoPlayOn) {
+			btnAutoPlay.setText("Auto: ON");
+			btnAutoPlay.getStyleClass().add("active");
+			autoPlayTimeline = new Timeline(new KeyFrame(Duration.millis(1500), e -> {
+				if (gestorPartida != null
+						&& !gestorPartida.getPartida().isFinalizada()
+						&& !dado.isDisable()) {
+					handleDado(null);
+				}
+			}));
+			autoPlayTimeline.setCycleCount(Animation.INDEFINITE);
+			autoPlayTimeline.play();
+		} else {
+			stopAutoPlay();
+		}
+	}
+
+	private void stopAutoPlay() {
+		autoPlayOn = false;
+		if (autoPlayTimeline != null) {
+			autoPlayTimeline.stop();
+			autoPlayTimeline = null;
+		}
+		if (btnAutoPlay != null) {
+			btnAutoPlay.setText("Auto: OFF");
+			btnAutoPlay.getStyleClass().remove("active");
 		}
 	}
 

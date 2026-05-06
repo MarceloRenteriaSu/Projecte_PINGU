@@ -35,13 +35,6 @@ public class PantallaFin {
         statsText.setText("Turnos jugados: " + turnos);
     }
 
-    /**
-     * Overload per compatibilitat amb crides antigues (ignorant dificultat).
-     */
-    public void inicialitzar(String nomGuanyador, int turnos, String dificultat) {
-        inicialitzar(nomGuanyador, turnos);
-    }
-
     public boolean isVolverAlMenu() {
         return volverAlMenu;
     }

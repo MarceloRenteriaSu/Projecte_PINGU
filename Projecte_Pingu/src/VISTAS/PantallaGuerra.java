@@ -1,9 +1,11 @@
 package VISTAS;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import MODELOS.*;
 
@@ -79,6 +81,26 @@ public class PantallaGuerra {
 
         // Si el defensor no té boles, no pot batallar
         btnBatalla.setDisable(bolesD == 0 && bolesA == 0);
+    }
+
+    /**
+     * When auto-play is on, automatically picks an action and then closes.
+     * Must be called after inicialitzar().
+     */
+    public void setAutoPlay(boolean on) {
+        if (!on) return;
+        PauseTransition act = new PauseTransition(Duration.millis(600));
+        act.setOnFinished(e -> {
+            if (!btnBatalla.isDisable()) {
+                handleBatalla();
+            } else {
+                handleTirarDau();
+            }
+            PauseTransition close = new PauseTransition(Duration.millis(600));
+            close.setOnFinished(ev -> handleTancar());
+            close.play();
+        });
+        act.play();
     }
 
     // -------------------------------------------------------
