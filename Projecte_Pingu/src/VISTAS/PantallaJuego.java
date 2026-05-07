@@ -257,10 +257,12 @@ public class PantallaJuego {
 		addEvent("¡El juego ha comenzado!");
 		this.focaActivada = ambFoca;
 
-		// Incrementar el comptador de partides jugades a la BBDD
+		// Incrementar PARTIDAS_JUGADAS per a tots els jugadors de la partida
 		java.sql.Connection conStats = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
 		if (conStats != null) {
-			GestorBBDD.incrementarPartidasJugadas(conStats, nombreUsuarioLogueado);
+			for (String nom : noms) {
+				GestorBBDD.incrementarPartidasJugadas(conStats, nom);
+			}
 			GestorBBDD.cerrar(conStats);
 		}
 
@@ -829,14 +831,14 @@ public class PantallaJuego {
 		if (con != null) {
 			try {
 				if (partidaGuardadaId != -1) {
-					// Partida carregada: marcar com acabada amb guanyador
-					// El trigger TRG_INCR_GANADAS incrementarà PARTIDAS_GANADAS automàticament
 					GestorBBDD.marcarPartidaAcabadaConGanador(con, partidaGuardadaId, nomGuanyador);
 					partidaGuardadaId = -1;
 				} else {
-					// Partida nova: guardar-la i marcar com acabada amb guanyador
 					int savedId = guardarPartidaFinalitzada(con, partida);
 					if (savedId > 0) GestorBBDD.marcarPartidaAcabadaConGanador(con, savedId, nomGuanyador);
+				}
+				if (!nomGuanyador.startsWith("🦭")) {
+					GestorBBDD.incrementarPartidasGanadas(con, nomGuanyador);
 				}
 			} finally {
 				GestorBBDD.cerrar(con);
