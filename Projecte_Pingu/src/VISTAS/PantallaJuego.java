@@ -130,6 +130,9 @@ public class PantallaJuego {
 	@FXML
 	private void initialize() {
 		CursorManager.applyWhenReady(dado);
+		CursorManager.applyClickable(dado);
+		CursorManager.applyClickable(btnAutoPlay);
+		CursorManager.applyClickable(usarBtn);
 		setupItemSlots();
 		pathCanvas.widthProperty().bind(tablero.widthProperty());
 		pathCanvas.heightProperty().bind(tablero.heightProperty());
@@ -788,7 +791,9 @@ public class PantallaJuego {
 			Stage guerraStage = new Stage();
 			guerraStage.setTitle("⚔ ¡Batalla de Nieve!");
 			guerraStage.initModality(Modality.APPLICATION_MODAL);
-			guerraStage.setScene(new Scene(root));
+			Scene guerraScene = new Scene(root);
+			CursorManager.apply(guerraScene);
+			guerraStage.setScene(guerraScene);
 			guerraStage.setResizable(false);
 			guerraStage.showAndWait();
 
@@ -925,7 +930,9 @@ public class PantallaJuego {
 				Stage finStage = new Stage();
 				finStage.setTitle("🏆 ¡Fin de la Partida!");
 				finStage.initModality(Modality.APPLICATION_MODAL);
-				finStage.setScene(new Scene(root));
+				Scene finScene = new Scene(root);
+				CursorManager.apply(finScene);
+				finStage.setScene(finScene);
 				finStage.setResizable(false);
 				finStage.showAndWait();
 
@@ -936,7 +943,9 @@ public class PantallaJuego {
 					Parent menuRoot = menuLoader.load();
 					PantallaMenu menuCtrl = menuLoader.getController();
 					menuCtrl.setNombreUsuario(nombreUsuarioLogueado);
-					stage.setScene(new Scene(menuRoot));
+					Scene menuScene = new Scene(menuRoot);
+					CursorManager.apply(menuScene);
+					stage.setScene(menuScene);
 					stage.setTitle("El Juego del Pingüino");
 					menuCtrl.mostrarRanking();
 				}
@@ -1270,7 +1279,9 @@ public class PantallaJuego {
 			Parent root = loader.load();
 			PantallaMenu menuCtrl = loader.getController();
 			menuCtrl.setNombreUsuario(nombreUsuarioLogueado);
-			stage.setScene(new Scene(root));
+			Scene menuScene = new Scene(root);
+			CursorManager.apply(menuScene);
+			stage.setScene(menuScene);
 			stage.setTitle("El Juego del Pingüino");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1391,7 +1402,9 @@ public class PantallaJuego {
 			Stage selStage = new Stage();
 			selStage.setTitle("Cargar Partida");
 			selStage.initModality(Modality.APPLICATION_MODAL);
-			selStage.setScene(new Scene(root, 720, 460));
+			Scene selScene = new Scene(root, 720, 460);
+			CursorManager.apply(selScene);
+			selStage.setScene(selScene);
 			selStage.setResizable(true);
 			selStage.showAndWait();
 

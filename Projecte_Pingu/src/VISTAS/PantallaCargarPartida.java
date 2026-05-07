@@ -65,6 +65,9 @@ public class PantallaCargarPartida {
             "-fx-control-inner-background: #2a2a4e;" +
             "-fx-text-fill: white;");
         CursorManager.applyWhenReady(tablePartides);
+        CursorManager.applyClickable(btnCarregar);
+        CursorManager.applyClickable(btnEsborrar);
+        CursorManager.applyClickable(btnTornar);
     }
 
     // -------------------------------------------------------

@@ -42,6 +42,9 @@ public class PantallaGuerra {
     @FXML
     private void initialize() {
         CursorManager.applyWhenReady(btnDau);
+        CursorManager.applyClickable(btnDau);
+        CursorManager.applyClickable(btnBatalla);
+        CursorManager.applyClickable(btnTancar);
     }
 
     /**

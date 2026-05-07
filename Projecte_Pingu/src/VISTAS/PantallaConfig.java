@@ -120,6 +120,7 @@ public class PantallaConfig {
         feedbackLabel.setText("");
         regenerarCampsNoms();
         CursorManager.applyWhenReady(casillasField);
+        CursorManager.applyClickable(btnComenzar);
     }
 
     /* ------------------------------------------------------------------ */
@@ -146,7 +147,7 @@ public class PantallaConfig {
         btn.setMinSize(36, 36);
         btn.setMaxSize(36, 36);
         btn.setStyle(colorButtonStyle(initial));
-        btn.setCursor(javafx.scene.Cursor.HAND);
+        btn.setCursor(CursorManager.getClickCursor());
 
         btn.setOnAction(e -> showColorPopup(btn, playerIndex, preview));
         return btn;
@@ -162,8 +163,7 @@ public class PantallaConfig {
              + "-fx-border-color: white;"
              + "-fx-border-width: 2.5;"
              + "-fx-border-radius: 6;"
-             + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 4, 0.3, 0, 2);"
-             + "-fx-cursor: hand;";
+             + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 4, 0.3, 0, 2);";
     }
 
     /**
@@ -208,7 +208,7 @@ public class PantallaConfig {
             }
 
             cell.getChildren().add(rect);
-            cell.setCursor(javafx.scene.Cursor.HAND);
+            cell.setCursor(CursorManager.getClickCursor());
 
             // Hover effect
             cell.setOnMouseEntered(ev -> {
@@ -381,7 +381,9 @@ public class PantallaConfig {
 
             Stage configStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             String titleFoca = ambFoca ? " (con Foca)" : " (sin Foca)";
-            menuStage.setScene(new Scene(root));
+            Scene juegoScene = new Scene(root);
+            CursorManager.apply(juegoScene);
+            menuStage.setScene(juegoScene);
             menuStage.setTitle("Juego del Pingüino — " + numJugadors + " jugadores, " + numCasillas + " casillas" + titleFoca);
             configStage.close();
         } catch (Exception e) {

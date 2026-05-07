@@ -42,8 +42,11 @@ public class PantallaRegistro {
                 StackPane parent = (StackPane) bgImageView.getParent();
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
+                CursorManager.apply(newScene);
             }
         });
+        CursorManager.applyClickable(btnRegistrar);
+        CursorManager.applyClickable(btnVolver);
 
         // Logo
         try {
@@ -103,7 +106,9 @@ public class PantallaRegistro {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaLogin.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene loginScene = new Scene(root);
+            CursorManager.apply(loginScene);
+            stage.setScene(loginScene);
             stage.setTitle("El Juego del Pingüino — Login");
         } catch (Exception e) {
             e.printStackTrace();

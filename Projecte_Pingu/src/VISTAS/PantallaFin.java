@@ -23,6 +23,8 @@ public class PantallaFin {
     @FXML
     private void initialize() {
         CursorManager.applyWhenReady(btnMenu);
+        CursorManager.applyClickable(btnMenu);
+        CursorManager.applyClickable(btnTancar);
     }
 
     /**

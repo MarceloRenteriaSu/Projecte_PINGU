@@ -59,8 +59,13 @@ public class PantallaLogin {
                 StackPane parent = (StackPane) bgImageView.getParent();
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
+                CursorManager.apply(newScene);
             }
         });
+        CursorManager.applyClickable(btnLogin);
+        CursorManager.applyClickable(btnRegistrar);
+        CursorManager.applyClickable(btnShowLogin);
+        CursorManager.applyClickable(btnShowReg);
 
         // Logo
         try {
@@ -193,7 +198,9 @@ public class PantallaLogin {
             PantallaMenu ctrl = loader.getController();
             ctrl.setNombreUsuario(username);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene menuScene = new Scene(root);
+            CursorManager.apply(menuScene);
+            stage.setScene(menuScene);
             stage.setTitle("Menú Principal");
         } catch (Exception e) {
             e.printStackTrace();

@@ -34,7 +34,6 @@
     -fx-border-width: 1.5;
     -fx-border-radius: 5;
     -fx-padding: 2 10 2 10;
-    -fx-cursor: hand;
 }
 .auto-btn:hover {
     -fx-background-color: rgba(255,255,255,0.32);
@@ -133,7 +132,6 @@
     -fx-text-fill: white;
     -fx-padding: 8 16;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 5, 0.35, 0, 2);
-    -fx-cursor: hand;
     -fx-border-color: transparent;
     -fx-border-width: 0;
 }
@@ -187,7 +185,6 @@
 .item-slot {
     -fx-background-color: rgba(255,255,255,0.22);
     -fx-background-radius: 8;
-    -fx-cursor: hand;
 }
 .item-emoji {
     -fx-font-size: 26px;
