@@ -46,6 +46,7 @@ public class PantallaJuego {
 	@FXML private Button btnAutoPlay;
 	private Timeline autoPlayTimeline;
 	private boolean autoPlayOn = false;
+	private boolean isMoving   = false;
 
 	// Menu items
 	@FXML private MenuItem newGame;
@@ -554,7 +555,7 @@ public class PantallaJuego {
 		Pinguino pingu = (Pinguino) j;
 		Inventario inv = pingu.getInv();
 
-		dado.setDisable(false);
+		dado.setDisable(autoPlayOn);
 
 		int nRapido = inv.contarItem(new Dado("Rapido", 0));
 		int nLento  = inv.contarItem(new Dado("Lento", 0));
@@ -791,10 +792,15 @@ public class PantallaJuego {
 			Stage guerraStage = new Stage();
 			guerraStage.setTitle("⚔ ¡Batalla de Nieve!");
 			guerraStage.initModality(Modality.APPLICATION_MODAL);
+			guerraStage.initOwner(tablero.getScene().getWindow());
 			Scene guerraScene = new Scene(root);
 			CursorManager.apply(guerraScene);
 			guerraStage.setScene(guerraScene);
 			guerraStage.setResizable(false);
+			guerraStage.setOnCloseRequest(ev -> ev.consume());
+			guerraStage.iconifiedProperty().addListener((obs, wasMin, isMin) -> {
+				if (isMin) guerraStage.setIconified(false);
+			});
 			guerraStage.showAndWait();
 
 		} catch (Exception e) {
@@ -935,20 +941,24 @@ public class PantallaJuego {
 				finStage.setScene(finScene);
 				finStage.setResizable(false);
 				finStage.showAndWait();
+				// showAndWait() ya retornó → el nested event loop cerró limpiamente
 
-				if (ctrl.isVolverAlMenu()) {
-					Stage stage = (Stage) tablero.getScene().getWindow();
-					FXMLLoader menuLoader = new FXMLLoader(
-							getClass().getResource("PantallaMenu.fxml"));
-					Parent menuRoot = menuLoader.load();
-					PantallaMenu menuCtrl = menuLoader.getController();
-					menuCtrl.setNombreUsuario(nombreUsuarioLogueado);
-					Scene menuScene = new Scene(menuRoot);
-					CursorManager.apply(menuScene);
-					stage.setScene(menuScene);
-					stage.setTitle("El Juego del Pingüino");
-					menuCtrl.mostrarRanking();
+				if (!ctrl.isVolverAlMenu()) {
+					javafx.application.Platform.exit();
+					return;
 				}
+
+				Stage stage = (Stage) tablero.getScene().getWindow();
+				FXMLLoader menuLoader = new FXMLLoader(
+						getClass().getResource("PantallaMenu.fxml"));
+				Parent menuRoot = menuLoader.load();
+				PantallaMenu menuCtrl = menuLoader.getController();
+				menuCtrl.setNombreUsuario(nombreUsuarioLogueado);
+				Scene menuScene = new Scene(menuRoot);
+				CursorManager.apply(menuScene);
+				stage.setScene(menuScene);
+				stage.setTitle("El Juego del Pingüino");
+				menuCtrl.mostrarRanking();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1162,6 +1172,7 @@ public class PantallaJuego {
 		pingu.setPos(novaPos);
 
 		// Desactivar controls durant l'animació
+		isMoving = true;
 		dado.setDisable(true);
 		clearSelection();
 		setSlotEnabled(slotRapido, false);
@@ -1177,9 +1188,10 @@ public class PantallaJuego {
 		animarMovimientoCasillaPorCasilla(ficha, oldPosition, novaPos, () -> {
 			redistribuirFichasEnPosicion(novaPos);
 			redistribuirFichasEnPosicion(oldPosition);
-			javafx.application.Platform.runLater(() ->
-				postMovimientoPinguino(pingu, indiceFichaFinal)
-			);
+			javafx.application.Platform.runLater(() -> {
+				isMoving = false;
+				postMovimientoPinguino(pingu, indiceFichaFinal);
+			});
 		});
 	}
 
@@ -1242,10 +1254,11 @@ public class PantallaJuego {
 		if (autoPlayOn) {
 			btnAutoPlay.setText("Auto: ON");
 			btnAutoPlay.getStyleClass().add("active");
+			dado.setDisable(true);
 			autoPlayTimeline = new Timeline(new KeyFrame(Duration.millis(1500), e -> {
 				if (gestorPartida != null
 						&& !gestorPartida.getPartida().isFinalizada()
-						&& !dado.isDisable()) {
+						&& !isMoving) {
 					handleDado(null);
 				}
 			}));
@@ -1265,6 +1278,9 @@ public class PantallaJuego {
 		if (btnAutoPlay != null) {
 			btnAutoPlay.setText("Auto: OFF");
 			btnAutoPlay.getStyleClass().remove("active");
+		}
+		if (dado != null && !isMoving) {
+			dado.setDisable(false);
 		}
 	}
 
