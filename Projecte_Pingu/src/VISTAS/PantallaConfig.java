@@ -107,7 +107,7 @@ public class PantallaConfig {
 
         // Opcions de jugadors
         jugadorsCombo.setItems(FXCollections.observableArrayList(
-            "2 jugadores", "3 jugadores", "4 jugadores"
+            "1 jugador", "2 jugadores", "3 jugadores", "4 jugadores"
         ));
         jugadorsCombo.setValue("4 jugadores");
 
@@ -300,6 +300,7 @@ public class PantallaConfig {
     private int obtenerNumJugadors() {
         String sel = jugadorsCombo.getValue();
         if (sel == null) return 4;
+        if (sel.startsWith("1")) return 1;
         if (sel.startsWith("2")) return 2;
         if (sel.startsWith("3")) return 3;
         return 4;
@@ -381,10 +382,9 @@ public class PantallaConfig {
 
             Stage configStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             String titleFoca = ambFoca ? " (con Foca)" : " (sin Foca)";
-            Scene juegoScene = new Scene(root);
-            CursorManager.apply(juegoScene);
-            menuStage.setScene(juegoScene);
-            menuStage.setTitle("Juego del Pingüino — " + numJugadors + " jugadores, " + numCasillas + " casillas" + titleFoca);
+            String titleJugadors = numJugadors == 1 ? "1 jugador" : numJugadors + " jugadores";
+            menuStage.setScene(new Scene(root));
+            menuStage.setTitle("Juego del Pingüino — " + titleJugadors + ", " + numCasillas + " casillas" + titleFoca);
             configStage.close();
         } catch (Exception e) {
             e.printStackTrace();
