@@ -43,42 +43,45 @@ public class GestorPartida {
     }
 
     public void procesarTurnoJugador(Jugador j) {
-        if (j != null && partida != null) {
+        boolean si = false;
+        if (j != null && partida != null && !si) {
             if (j instanceof Pinguino) {
                 Pinguino p = (Pinguino) j;
                 if (!p.isJuega()) {
                     System.out.println(p.getNom() + " perd el seu torn.");
                     p.setJuega(true);
-                } else {
+                    si = true;
+                } else if (!si) {
                     Dado dado = new Dado("Normal", 1);
                     tirarDado(p, dado);
                     int pos = p.getPos();
                     Casilla casilla = partida.getTablero().getCasilla(pos);
-                    if (casilla != null) {
+                    if (casilla != null && !si) {
                         gestorTablero.ejecutarCasilla(partida, p, casilla);
                     }
                     for (Jugador altre : partida.getJugadores()) {
-                        if (altre != j && altre instanceof Pinguino) {
+                        if (altre != j && altre instanceof Pinguino && !si) {
                             Pinguino altreP = (Pinguino) altre;
                             if (altreP.getPos() == p.getPos()) {
                                 System.out.println(p.getNom() + " i " + altreP.getNom()
                                         + " coincideixen a la casella " + p.getPos() + "!");
                                 gestorJugador.pinguinoGuerra(p, altreP);
-                                break;
+                                si = true;
                             }
                         }
                     }
                     gestorJugador.jugadorFinalizaTurno(p);
                 }
-            } else if (j instanceof Foca) {
+            } else if (j instanceof Foca && !si) {
                 Foca foca = (Foca) j;
                 foca.moverPosicio(0);
                 for (Jugador altre : partida.getJugadores()) {
-                    if (altre instanceof Pinguino) {
+                    if (altre instanceof Pinguino && !si) {
                         Pinguino pingu = (Pinguino) altre;
                         if (foca.getPos() == pingu.getPos()) {
                             System.out.println("La Foca ha colpejat " + pingu.getNom() + "!");
                             gestorJugador.focaInteractua(pingu, foca, partida);
+                            si = true;
                         }
                     }
                 }

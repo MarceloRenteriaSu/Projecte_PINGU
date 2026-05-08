@@ -63,32 +63,25 @@ public class PantallaRegistro {
 
         if (username == null || username.trim().length() < 3 || username.contains(" ")) {
             mostrarError("El usuario debe tener al menos 3 caracteres y sin espacios.");
-            return;
-        }
-        if (password == null || password.length() <= 3) {
+        } else if (password == null || password.length() <= 3) {
             mostrarError("La contraseña debe tener más de 3 caracteres.");
-            return;
-        }
-        if (!password.equals(confirm)) {
+        } else if (!password.equals(confirm)) {
             mostrarError("Las contraseñas no coinciden.");
-            return;
-        }
-
-        Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
-        if (con == null) {
-            mostrarError("Error al conectar con la base de datos.");
-            return;
-        }
-
-        int resultado = GestorBBDD.registrarUsuario(con, username.trim(), password);
-        GestorBBDD.cerrar(con);
-
-        if (resultado == 0) {
-            irALogin(event);
-        } else if (resultado == 1) {
-            mostrarError("El nombre de usuario ya existe. Elige otro.");
         } else {
-            mostrarError("Error al registrar. Inténtalo de nuevo.");
+            Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+            if (con == null) {
+                mostrarError("Error al conectar con la base de datos.");
+            } else {
+                int resultado = GestorBBDD.registrarUsuario(con, username.trim(), password);
+                GestorBBDD.cerrar(con);
+                if (resultado == 0) {
+                    irALogin(event);
+                } else if (resultado == 1) {
+                    mostrarError("El nombre de usuario ya existe. Elige otro.");
+                } else {
+                    mostrarError("Error al registrar. Inténtalo de nuevo.");
+                }
+            }
         }
     }
 

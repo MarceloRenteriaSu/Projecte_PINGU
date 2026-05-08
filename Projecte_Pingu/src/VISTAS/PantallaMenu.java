@@ -87,9 +87,7 @@ public class PantallaMenu {
     private void handleLoadMatch(ActionEvent event) {
         if (conexion == null) {
             mostrarAlerta("Error", "No hay conexión a la base de datos.");
-            return;
-        }
-
+        } else {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaCargarPartida.fxml"));
             Parent root = loader.load();
@@ -122,6 +120,7 @@ public class PantallaMenu {
             e.printStackTrace();
             mostrarAlerta("Error", "Error al abrir la pantalla de carga: " + e.getMessage());
         }
+        }
     }
 
     @FXML
@@ -132,9 +131,7 @@ public class PantallaMenu {
     public void mostrarRanking() {
         if (conexion == null) {
             mostrarAlerta("Error", "No hay conexión a la base de datos.");
-            return;
-        }
-
+        } else {
         ArrayList<LinkedHashMap<String, String>> rankingData = GestorBBDD.getRankingPerJugades(conexion);
         int record = GestorBBDD.getRecord(conexion);
         ArrayList<String> jugadoresRecord = GestorBBDD.getJugadorsRecord(conexion);
@@ -255,6 +252,7 @@ public class PantallaMenu {
         rankStage.setScene(scene);
         btnClose.setOnAction(e -> rankStage.close());
         rankStage.showAndWait();
+        }
     }
 
     private Label makeSectionTitle(String text) {

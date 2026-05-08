@@ -98,25 +98,28 @@ public class GestorBBDD {
 	 * Guarda els esdeveniments d'una partida a la taula PINGU_EVENTS.
 	 */
 	public static void guardarEvents(Connection con, int partidaId, ArrayList<String> events) {
-		if (con == null || events == null || events.isEmpty()) return;
-		try {
-			PreparedStatement ps = con.prepareStatement(
-				"INSERT INTO PINGU_EVENTS (ID, PARTIDA_ID, ORDRE, TEXT) " +
-				"VALUES (PINGU_EVENTS_SEQ.NEXTVAL, ?, ?, ?)"
-			);
-			for (int i = 0; i < events.size(); i++) {
-				String text = events.get(i);
-				if (text == null || text.isEmpty()) continue;
-				ps.setInt(1, partidaId);
-				ps.setInt(2, i);
-				String truncated = text.length() > 498 ? text.substring(0, 498) : text;
-				ps.setString(3, truncated);
-				ps.addBatch();
+		if (con != null && events != null && !events.isEmpty()) {
+			try {
+				PreparedStatement ps = con.prepareStatement(
+					"INSERT INTO PINGU_EVENTS (ID, PARTIDA_ID, ORDRE, TEXT) " +
+					"VALUES (PINGU_EVENTS_SEQ.NEXTVAL, ?, ?, ?)"
+				);
+				for (int i = 0; i < events.size(); i++) {
+					String text = events.get(i);
+					if (text == null || text.isEmpty()) {
+						text = "- -";
+					}
+					ps.setInt(1, partidaId);
+					ps.setInt(2, i);
+					String truncated = text.length() > 498 ? text.substring(0, 498) : text;
+					ps.setString(3, truncated);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+				ps.close();
+			} catch (SQLException e) {
+				System.out.println("Error guardant events: " + e.getMessage());
 			}
-			ps.executeBatch();
-			ps.close();
-		} catch (SQLException e) {
-			System.out.println("Error guardant events: " + e.getMessage());
 		}
 	}
 
@@ -215,16 +218,17 @@ public class GestorBBDD {
 	 * Incrementa el comptador de partides jugades d'un usuari.
 	 */
 	public static void incrementarPartidasJugadas(Connection con, String username) {
-		if (con == null || username == null) return;
-		try {
-			PreparedStatement ps = con.prepareStatement(
-				"UPDATE PINGU_USERS SET PARTIDAS_JUGADAS = PARTIDAS_JUGADAS + 1 WHERE USERNAME = ?"
-			);
-			ps.setString(1, username);
-			ps.executeUpdate();
-			ps.close();
-		} catch (SQLException e) {
-			System.out.println("Error incrementant partides jugades: " + e.getMessage());
+		if (con != null && username != null) {
+			try {
+				PreparedStatement ps = con.prepareStatement(
+					"UPDATE PINGU_USERS SET PARTIDAS_JUGADAS = PARTIDAS_JUGADAS + 1 WHERE USERNAME = ?"
+				);
+				ps.setString(1, username);
+				ps.executeUpdate();
+				ps.close();
+			} catch (SQLException e) {
+				System.out.println("Error incrementant partides jugades: " + e.getMessage());
+			}
 		}
 	}
 
@@ -232,16 +236,17 @@ public class GestorBBDD {
 	 * Incrementa el comptador de partides guanyades d'un usuari.
 	 */
 	public static void incrementarPartidasGanadas(Connection con, String username) {
-		if (con == null || username == null) return;
-		try {
-			PreparedStatement ps = con.prepareStatement(
-				"UPDATE PINGU_USERS SET PARTIDAS_GANADAS = PARTIDAS_GANADAS + 1 WHERE USERNAME = ?"
-			);
-			ps.setString(1, username);
-			ps.executeUpdate();
-			ps.close();
-		} catch (SQLException e) {
-			System.out.println("Error incrementant partides guanyades: " + e.getMessage());
+		if (con != null && username != null) {
+			try {
+				PreparedStatement ps = con.prepareStatement(
+					"UPDATE PINGU_USERS SET PARTIDAS_GANADAS = PARTIDAS_GANADAS + 1 WHERE USERNAME = ?"
+				);
+				ps.setString(1, username);
+				ps.executeUpdate();
+				ps.close();
+			} catch (SQLException e) {
+				System.out.println("Error incrementant partides guanyades: " + e.getMessage());
+			}
 		}
 	}
 
@@ -250,18 +255,19 @@ public class GestorBBDD {
 	 * El trigger TRG_INCR_GANADAS s'encarregarà d'incrementar PARTIDAS_GANADAS.
 	 */
 	public static void marcarPartidaAcabadaConGanador(Connection con, int id, String ganador) {
-		if (con == null) return;
-		try {
-			PreparedStatement ps = con.prepareStatement(
-				"UPDATE PINGU_PARTIDAS SET ACABADA = 1, GANADOR = ? WHERE ID = ?"
-			);
-			ps.setString(1, ganador);
-			ps.setInt(2, id);
-			ps.executeUpdate();
-			ps.close();
-			System.out.println("Partida ID=" + id + " marcada acabada, guanyador=" + ganador);
-		} catch (SQLException e) {
-			System.out.println("Error marcant partida acabada: " + e.getMessage());
+		if (con != null) {
+			try {
+				PreparedStatement ps = con.prepareStatement(
+					"UPDATE PINGU_PARTIDAS SET ACABADA = 1, GANADOR = ? WHERE ID = ?"
+				);
+				ps.setString(1, ganador);
+				ps.setInt(2, id);
+				ps.executeUpdate();
+				ps.close();
+				System.out.println("Partida ID=" + id + " marcada acabada, guanyador=" + ganador);
+			} catch (SQLException e) {
+				System.out.println("Error marcant partida acabada: " + e.getMessage());
+			}
 		}
 	}
 
@@ -269,17 +275,18 @@ public class GestorBBDD {
 	 * Marca una partida com a finalitzada (ACABADA = 1) sense esborrar-la.
 	 */
 	public static void marcarPartidaAcabada(Connection con, int id) {
-		if (con == null) return;
-		try {
-			PreparedStatement ps = con.prepareStatement(
-				"UPDATE PINGU_PARTIDAS SET ACABADA = 1 WHERE ID = ?"
-			);
-			ps.setInt(1, id);
-			ps.executeUpdate();
-			ps.close();
-			System.out.println("Partida ID=" + id + " marcada com acabada.");
-		} catch (SQLException e) {
-			System.out.println("Error marcant partida com acabada: " + e.getMessage());
+		if (con != null) {
+			try {
+				PreparedStatement ps = con.prepareStatement(
+					"UPDATE PINGU_PARTIDAS SET ACABADA = 1 WHERE ID = ?"
+				);
+				ps.setInt(1, id);
+				ps.executeUpdate();
+				ps.close();
+				System.out.println("Partida ID=" + id + " marcada com acabada.");
+			} catch (SQLException e) {
+				System.out.println("Error marcant partida com acabada: " + e.getMessage());
+			}
 		}
 	}
 
@@ -913,9 +920,7 @@ public class GestorBBDD {
 	public static void print(Connection con, String sql, String[] listaElementosSeleccionados) {
 		if (con == null) {
 			System.out.println("No hay conexión. Llama antes a conectarBaseDatos().");
-			return;
-		}
-
+		} else {
 		try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
 			int fila = 0;
 			boolean hayResultados = false;
@@ -934,6 +939,7 @@ public class GestorBBDD {
 			}
 		} catch (SQLException e) {
 			System.out.println("Error en SELECT: " + e.getMessage());
+		}
 		}
 	}
 

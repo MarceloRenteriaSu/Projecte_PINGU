@@ -5,23 +5,6 @@
 
 
 -- ------------------------------------------------------------
--- SEQUENCIES
--- ------------------------------------------------------------
-
-CREATE SEQUENCE PINGU_PARTIDAS_SEQ
-  START WITH 1 INCREMENT BY 1 NOCACHE NOORDER;
-
-CREATE SEQUENCE PINGU_PINGUINOS_SEQ
-  START WITH 1 INCREMENT BY 1 NOCACHE NOORDER;
-
-CREATE SEQUENCE PINGU_INVENTARIS_SEQ
-  START WITH 1 INCREMENT BY 1 NOCACHE NOORDER;
-
-CREATE SEQUENCE PINGU_EVENTS_SEQ
-  START WITH 1 INCREMENT BY 1 NOCACHE NOORDER;
-
-
--- ------------------------------------------------------------
 -- TAULES
 -- ------------------------------------------------------------
 
@@ -74,132 +57,36 @@ CREATE TABLE PINGU_EVENTS (
 
 
 -- ------------------------------------------------------------
--- TRIGGERS
+-- FOREIGN KEYS
 -- ------------------------------------------------------------
 
-CREATE OR REPLACE TRIGGER TRG_PINGU_PARTIDAS_ID
-BEFORE INSERT ON PINGU_PARTIDAS
-FOR EACH ROW
-BEGIN
-  IF :NEW.ID IS NULL THEN
-    :NEW.ID := PINGU_PARTIDAS_SEQ.NEXTVAL;
-  END IF;
-END;
-/
+-- Las partidas pertenecen a un usuario registrado.
+-- Si se borra el usuario, se borran en cascada todas sus partidas
+-- (y por cascada encadenada: pingüinos, inventarios y eventos).
+ALTER TABLE PINGU_PARTIDAS
+  ADD CONSTRAINT FK_PARTIDAS_USER
+  FOREIGN KEY (USERNAME)
+  REFERENCES PINGU_USERS(USERNAME)
+  ON DELETE CASCADE;
 
-CREATE OR REPLACE TRIGGER TRG_INCR_GANADAS
-AFTER UPDATE OF ACABADA ON PINGU_PARTIDAS
-FOR EACH ROW
-WHEN (NEW.ACABADA = 1 AND (OLD.ACABADA IS NULL OR OLD.ACABADA != 1))
-DECLARE
-  v_ganades NUMBER;
-  v_total   NUMBER;
-  v_pct     NUMBER;
-BEGIN
-  IF :NEW.GANADOR IS NOT NULL THEN
-    SELECT PARTIDAS_GANADAS INTO v_ganades
-    FROM   PINGU_USERS WHERE USERNAME = :NEW.GANADOR;
+-- Los pingüinos pertenecen a una partida.
+-- Cascada hacia PINGU_INVENTARIS a través de la FK siguiente.
+ALTER TABLE PINGU_PINGUINOS
+  ADD CONSTRAINT FK_PINGUINOS_PARTIDA
+  FOREIGN KEY (PARTIDA_ID)
+  REFERENCES PINGU_PARTIDAS(ID)
+  ON DELETE CASCADE;
 
-    SELECT COUNT(*) INTO v_total FROM PINGU_USERS;
+-- Los ítems del inventario pertenecen a un pingüino.
+ALTER TABLE PINGU_INVENTARIS
+  ADD CONSTRAINT FK_INVENTARIS_PINGUINO
+  FOREIGN KEY (PINGUINO_ID)
+  REFERENCES PINGU_PINGUINOS(ID)
+  ON DELETE CASCADE;
 
-    IF v_total > 0 THEN
-      SELECT ROUND(COUNT(*) * 100.0 / v_total, 1)
-      INTO   v_pct
-      FROM   PINGU_USERS
-      WHERE  PARTIDAS_GANADAS < v_ganades;
-      DBMS_OUTPUT.PUT_LINE('Jugador ' || :NEW.GANADOR ||
-        ' te ' || v_ganades || ' guanyades. ' ||
-        v_pct || '% dels jugadors han guanyat menys partides.');
-    END IF;
-  END IF;
-END;
-/
-
-
--- ------------------------------------------------------------
--- FUNCIONS
--- ------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION F_PINGU_RECORD RETURN NUMBER IS
-  v_max NUMBER;
-BEGIN
-  SELECT NVL(MAX(PARTIDAS_GANADAS), 0) INTO v_max FROM PINGU_USERS;
-  RETURN v_max;
-END;
-/
-
-CREATE OR REPLACE FUNCTION F_PINGU_MITJA RETURN NUMBER IS
-  v_avg NUMBER;
-BEGIN
-  SELECT ROUND(NVL(AVG(PARTIDAS_GANADAS), 0), 2) INTO v_avg FROM PINGU_USERS;
-  RETURN v_avg;
-END;
-/
-
-CREATE OR REPLACE FUNCTION F_PINGU_PCT_MENYS(p_wins IN NUMBER) RETURN NUMBER IS
-  v_total NUMBER;
-  v_menys NUMBER;
-BEGIN
-  SELECT COUNT(*) INTO v_total FROM PINGU_USERS;
-  IF v_total = 0 THEN RETURN 0; END IF;
-  SELECT COUNT(*) INTO v_menys FROM PINGU_USERS WHERE PARTIDAS_GANADAS < p_wins;
-  RETURN ROUND(v_menys * 100.0 / v_total, 1);
-END;
-/
-
-
--- ------------------------------------------------------------
--- PROCEDIMENTS
--- ------------------------------------------------------------
-
-CREATE OR REPLACE PROCEDURE P_PINGU_JUGADORS_RECORD(
-  p_record IN NUMBER,
-  p_cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-  OPEN p_cursor FOR
-    SELECT USERNAME, PARTIDAS_GANADAS
-    FROM PINGU_USERS
-    WHERE PARTIDAS_GANADAS = p_record
-    ORDER BY USERNAME;
-END;
-/
-
-CREATE OR REPLACE PROCEDURE P_PINGU_SOBRE_MITJA(
-  p_cursor OUT SYS_REFCURSOR
-) AS
-  v_mitja NUMBER;
-BEGIN
-  SELECT AVG(PARTIDAS_GANADAS) INTO v_mitja FROM PINGU_USERS;
-  OPEN p_cursor FOR
-    SELECT USERNAME, PARTIDAS_GANADAS
-    FROM PINGU_USERS
-    WHERE PARTIDAS_GANADAS > v_mitja
-    ORDER BY PARTIDAS_GANADAS DESC;
-END;
-/
-
-CREATE OR REPLACE PROCEDURE P_PINGU_RANKING(
-  p_username IN VARCHAR2,
-  p_cursor   OUT SYS_REFCURSOR
-) AS
-  v_count   NUMBER;
-  v_partidas NUMBER;
-BEGIN
-  SELECT COUNT(*) INTO v_count FROM PINGU_USERS WHERE USERNAME = p_username;
-  IF v_count = 0 THEN
-    RAISE_APPLICATION_ERROR(-20001, 'Jugador ' || p_username || ' no existeix.');
-  END IF;
-  SELECT COUNT(*) INTO v_partidas FROM PINGU_PARTIDAS WHERE USERNAME = p_username;
-  IF v_partidas = 0 THEN
-    RAISE_APPLICATION_ERROR(-20002, 'El jugador ' || p_username || ' no ha guardat cap partida.');
-  END IF;
-  OPEN p_cursor FOR
-    SELECT USERNAME, PARTIDAS_GANADAS, PARTIDAS_JUGADAS,
-           CASE WHEN PARTIDAS_JUGADAS > 0
-                THEN ROUND(PARTIDAS_GANADAS * 100.0 / PARTIDAS_JUGADAS, 1)
-                ELSE 0 END AS RATIO
-    FROM PINGU_USERS
-    ORDER BY PARTIDAS_JUGADAS DESC, PARTIDAS_GANADAS DESC;
-END;
-/
+-- Los eventos pertenecen a una partida.
+ALTER TABLE PINGU_EVENTS
+  ADD CONSTRAINT FK_EVENTS_PARTIDA
+  FOREIGN KEY (PARTIDA_ID)
+  REFERENCES PINGU_PARTIDAS(ID)
+  ON DELETE CASCADE;

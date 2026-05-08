@@ -204,17 +204,16 @@ public class PantallaJuego {
 	}
 
 	private void drawPath() {
-		if (gestorPartida == null || gestorPartida.getPartida() == null) return;
+		if (gestorPartida != null && gestorPartida.getPartida() != null) {
 		double w = pathCanvas.getWidth();
 		double h = pathCanvas.getHeight();
-		if (w <= 0 || h <= 0) return;
-
+		if (w > 0 && h > 0) {
 		javafx.geometry.Insets ins = tablero.getInsets();
 		double padL = ins.getLeft();
 		double padT = ins.getTop();
 		double boardW = w - padL - ins.getRight();
 		double boardH = h - padT - ins.getBottom();
-		if (boardW <= 0 || boardH <= 0) return;
+		if (boardW > 0 && boardH > 0) {
 
 		double cellW = boardW / this.columnas;
 		double cellH = boardH / this.filas;
@@ -250,6 +249,9 @@ public class PantallaJuego {
 			double x  = padL + rc[1] * cellW + margin;
 			double y  = padT + rc[0] * cellH + margin;
 			gc.fillRoundRect(x, y, cellW - 2 * margin, cellH - 2 * margin, arc, arc);
+		}
+		}
+		}
 		}
 	}
 
@@ -547,11 +549,10 @@ public class PantallaJuego {
 			setSlotEnabled(slotPeces,  false);
 			setSlotEnabled(slotBola,   false);
 			dadoResultText.setText("Turno de la Foca (CPU)");
-			return;
-		}
+		} else {
 
 		Jugador j = partida.getJugadores().get(indice);
-		if (!(j instanceof Pinguino)) return;
+		if (j instanceof Pinguino) {
 		Pinguino pingu = (Pinguino) j;
 		Inventario inv = pingu.getInv();
 
@@ -578,6 +579,8 @@ public class PantallaJuego {
 		if ("Lento" .equals(selectedItem) && nLento  <= 0) clearSelection();
 
 		dadoResultText.setText("Turno de: " + pingu.getNom());
+		}
+		}
 	}
 
 	// -------------------------------------------------------
@@ -585,7 +588,7 @@ public class PantallaJuego {
 	// -------------------------------------------------------
 
 	private void moverFichaVisual(int indiceFicha, int posicionNueva) {
-		if (indiceFicha < 0 || indiceFicha >= fichas.length) return;
+		if (indiceFicha >= 0 && indiceFicha < fichas.length) {
 
 		Node ficha = fichas[indiceFicha];
 		int oldPosition = posiciones[indiceFicha];
@@ -599,6 +602,7 @@ public class PantallaJuego {
 
 		redistribuirFichasEnPosicion(posicionNueva);
 		redistribuirFichasEnPosicion(oldPosition);
+		}
 	}
 
 	/**
@@ -608,8 +612,7 @@ public class PantallaJuego {
 	private void animarMovimientoCasillaPorCasilla(Node ficha, int from, int to, Runnable onFinished) {
 		if (from == to) {
 			if (onFinished != null) onFinished.run();
-			return;
-		}
+		} else {
 
 		int direction = (to > from) ? 1 : -1;
 		int steps = Math.abs(to - from);
@@ -650,6 +653,7 @@ public class PantallaJuego {
 			if (onFinished != null) onFinished.run();
 		});
 		sequence.play();
+		}
 	}
 
 	// -------------------------------------------------------
@@ -708,44 +712,47 @@ public class PantallaJuego {
 		actualizarInventarioUI();
 
 		// 2) Comprovar si coincideix amb un altre pingüí → obrir PantallaGuerra
-		for (int i = 0; i < partida.getJugadores().size(); i++) {
+		boolean guerraAbierta = false;
+		for (int i = 0; i < partida.getJugadores().size() && !guerraAbierta; i++) {
 			Jugador altre = partida.getJugadores().get(i);
-			if (altre == atacant) continue;
-			if (!(altre instanceof Pinguino)) continue;
-			Pinguino defensor = (Pinguino) altre;
-			if (defensor.getPos() == atacant.getPos()) {
-				final int indiceDefensor = i;
-				obrirPantallaGuerra(defensor, indiceDefensor, atacant, indiceFichaAtacant, partida);
-				return;
-			}
-		}
-
-		// 3) Interacció amb la Foca si coincideix (només si foca activada)
-		if (focaActivada && indiceFoca >= 0) {
-			Jugador jFoca = partida.getJugadores().get(indiceFoca);
-			if (jFoca instanceof Foca) {
-				Foca foca = (Foca) jFoca;
-				if (foca.getPos() == atacant.getPos()) {
-					foca.aplastarJugador(partida, atacant);
-					int posModel = Math.max(0, atacant.getPos());
-					atacant.setPos(posModel);
-					moverFichaVisual(indiceFichaAtacant, posModel);
-					if (foca.isSoborno()) {
-						addEvent("🦭 " + atacant.getNom() + " ¡ha sobornado a la Foca con un pez!");
-					} else {
-						addEvent("🦭 ¡La Foca ha atrapado a " + atacant.getNom() + "! → casilla " + posModel);
-					}
-					actualizarInventarioUI();
+			if (altre instanceof Pinguino && altre != atacant) {
+				Pinguino defensor = (Pinguino) altre;
+				if (defensor.getPos() == atacant.getPos()) {
+					final int indiceDefensor = i;
+					obrirPantallaGuerra(defensor, indiceDefensor, atacant, indiceFichaAtacant, partida);
+					guerraAbierta = true;
 				}
 			}
 		}
 
-		// 4) Comprovar guanyador (pingüí)
-		comprovarGuanyadorPinguino(atacant);
+		if (!guerraAbierta) {
+			// 3) Interacció amb la Foca si coincideix (només si foca activada)
+			if (focaActivada && indiceFoca >= 0) {
+				Jugador jFoca = partida.getJugadores().get(indiceFoca);
+				if (jFoca instanceof Foca) {
+					Foca foca = (Foca) jFoca;
+					if (foca.getPos() == atacant.getPos()) {
+						foca.aplastarJugador(partida, atacant);
+						int posModel = Math.max(0, atacant.getPos());
+						atacant.setPos(posModel);
+						moverFichaVisual(indiceFichaAtacant, posModel);
+						if (foca.isSoborno()) {
+							addEvent("🦭 " + atacant.getNom() + " ¡ha sobornado a la Foca con un pez!");
+						} else {
+							addEvent("🦭 ¡La Foca ha atrapado a " + atacant.getNom() + "! → casilla " + posModel);
+						}
+						actualizarInventarioUI();
+					}
+				}
+			}
 
-		// 5) Avançar torn
-		if (!partida.isFinalizada()) {
-			avanzarAlSiguienteTurno();
+			// 4) Comprovar guanyador (pingüí)
+			comprovarGuanyadorPinguino(atacant);
+
+			// 5) Avançar torn
+			if (!partida.isFinalizada()) {
+				avanzarAlSiguienteTurno();
+			}
 		}
 	}
 
@@ -848,9 +855,6 @@ public class PantallaJuego {
 					int savedId = guardarPartidaFinalitzada(con, partida);
 					if (savedId > 0) GestorBBDD.marcarPartidaAcabadaConGanador(con, savedId, nomGuanyador);
 				}
-				if (!nomGuanyador.startsWith("🦭")) {
-					GestorBBDD.incrementarPartidasGanadas(con, nomGuanyador);
-				}
 			} finally {
 				GestorBBDD.cerrar(con);
 			}
@@ -945,9 +949,7 @@ public class PantallaJuego {
 
 				if (!ctrl.isVolverAlMenu()) {
 					javafx.application.Platform.exit();
-					return;
-				}
-
+				} else {
 				Stage stage = (Stage) tablero.getScene().getWindow();
 				FXMLLoader menuLoader = new FXMLLoader(
 						getClass().getResource("PantallaMenu.fxml"));
@@ -959,6 +961,7 @@ public class PantallaJuego {
 				stage.setScene(menuScene);
 				stage.setTitle("El Juego del Pingüino");
 				menuCtrl.mostrarRanking();
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -970,7 +973,7 @@ public class PantallaJuego {
 	// -------------------------------------------------------
 
 	private void ejecutarTurnoFoca() {
-		if (!focaActivada || indiceFoca < 0) return;
+		if (focaActivada && indiceFoca >= 0) {
 
 		Partida partida = gestorPartida.getPartida();
 		Foca foca = (Foca) partida.getJugadores().get(indiceFoca);
@@ -984,8 +987,7 @@ public class PantallaJuego {
 			int indiceFichaFoca = fichas.length - 1;
 			moverFichaVisual(indiceFichaFoca, posDespreFoca);
 			addEvent("🦭 La Foca está bloqueada " + foca.getTurnosBloquejada() + " turno(s) más.");
-			return;
-		}
+		} else {
 
 		// IA: Buscar el pingüí més avançat
 		Pinguino objectiu = null;
@@ -1044,22 +1046,23 @@ public class PantallaJuego {
 
 				for (int i = 0; i < partida.getJugadores().size(); i++) {
 					Jugador j = partida.getJugadores().get(i);
-					if (!(j instanceof Pinguino)) continue;
-					Pinguino pingu = (Pinguino) j;
-					int posPingu = pingu.getPos();
+					if (j instanceof Pinguino) {
+						Pinguino pingu = (Pinguino) j;
+						int posPingu = pingu.getPos();
 
-					if (posPingu > posAntesFocaFinal && posPingu < novaPosTemp) {
-						foca.golpearJugador(partida, pingu);
-						msg.append(" ¡Ha pasado por encima de " + pingu.getNom() + " y le ha hecho perder la mitad de los ítems!");
-					} else if (posPingu == novaPosTemp) {
-						foca.aplastarJugador(partida, pingu);
-						int posNova = Math.max(0, pingu.getPos());
-						pingu.setPos(posNova);
-						moverFichaVisual(i, posNova);
-						if (foca.isSoborno()) {
-							msg.append(" " + pingu.getNom() + " ¡ha sobornado a la Foca con un pez!");
-						} else {
-							msg.append(" ¡Ha atrapado a " + pingu.getNom() + "! → casilla " + posNova);
+						if (posPingu > posAntesFocaFinal && posPingu < novaPosTemp) {
+							foca.golpearJugador(partida, pingu);
+							msg.append(" ¡Ha pasado por encima de " + pingu.getNom() + " y le ha hecho perder la mitad de los ítems!");
+						} else if (posPingu == novaPosTemp) {
+							foca.aplastarJugador(partida, pingu);
+							int posNova = Math.max(0, pingu.getPos());
+							pingu.setPos(posNova);
+							moverFichaVisual(i, posNova);
+							if (foca.isSoborno()) {
+								msg.append(" " + pingu.getNom() + " ¡ha sobornado a la Foca con un pez!");
+							} else {
+								msg.append(" ¡Ha atrapado a " + pingu.getNom() + "! → casilla " + posNova);
+							}
 						}
 					}
 				}
@@ -1070,6 +1073,8 @@ public class PantallaJuego {
 				comprovarGuanyadorFoca(foca);
 			});
 		});
+		}
+		}
 	}
 
 	// -------------------------------------------------------
@@ -1078,20 +1083,22 @@ public class PantallaJuego {
 
 	private void avanzarAlSiguienteTurno() {
 		Partida partida = gestorPartida.getPartida();
-		if (partida.isFinalizada()) return;
+		if (!partida.isFinalizada()) {
 
 		clearSelection();
 		turnosPinguinosEnRonda++;
 
 		// Si tots els pingüins han jugat → torn de la foca (si activada)
+		boolean focaJugada = false;
 		if (focaActivada && turnosPinguinosEnRonda >= totalPinguinos) {
 			turnosPinguinosEnRonda = 0;
 			ejecutarTurnoFoca();
-			if (partida.isFinalizada()) return;
+			focaJugada = true;
 		} else if (!focaActivada && turnosPinguinosEnRonda >= totalPinguinos) {
 			turnosPinguinosEnRonda = 0;
 		}
 
+		if (!partida.isFinalizada()) {
 		// Avançar al següent pingüí (saltant la foca)
 		partida.siguienteTurno();
 
@@ -1104,18 +1111,23 @@ public class PantallaJuego {
 		// IMPORTANT: NO incrementar turnosPinguinosEnRonda — el torn perdut
 		// compta com a torn del pingüí que ja va jugar, no com un torn nou
 		Jugador seg = partida.getJugadores().get(partida.getJugadorActual());
+		boolean saltarTorn = false;
 		if (seg instanceof Pinguino) {
 			Pinguino segP = (Pinguino) seg;
 			if (!segP.isJuega()) {
 				addEvent(segP.getNom() + " pierde el turno.");
 				segP.setJuega(true);
 				saltarTurnoPerdut();
-				return;
+				saltarTorn = true;
 			}
 		}
 
-		actualizarInventarioUI();
-		marcarJugadorActual();
+		if (!saltarTorn) {
+			actualizarInventarioUI();
+			marcarJugadorActual();
+		}
+		}
+		}
 	}
 
 	/**
@@ -1124,7 +1136,7 @@ public class PantallaJuego {
 	 */
 	private void saltarTurnoPerdut() {
 		Partida partida = gestorPartida.getPartida();
-		if (partida.isFinalizada()) return;
+		if (!partida.isFinalizada()) {
 
 		// Avançar al següent sense comptar com a torn de ronda
 		partida.siguienteTurno();
@@ -1135,18 +1147,22 @@ public class PantallaJuego {
 
 		// Si el següent també ha perdut el torn, saltar-lo
 		Jugador seg = partida.getJugadores().get(partida.getJugadorActual());
+		boolean saltarDenNou = false;
 		if (seg instanceof Pinguino) {
 			Pinguino segP = (Pinguino) seg;
 			if (!segP.isJuega()) {
 				addEvent(segP.getNom() + " pierde el turno.");
 				segP.setJuega(true);
 				saltarTurnoPerdut();
-				return;
+				saltarDenNou = true;
 			}
 		}
 
-		actualizarInventarioUI();
-		marcarJugadorActual();
+		if (!saltarDenNou) {
+			actualizarInventarioUI();
+			marcarJugadorActual();
+		}
+		}
 	}
 
 	// -------------------------------------------------------
@@ -1155,13 +1171,13 @@ public class PantallaJuego {
 
 	private void tirarDadoConcreto(Dado d) {
 		Partida partida = gestorPartida.getPartida();
-		if (partida.isFinalizada()) return;
+		if (!partida.isFinalizada()) {
 
 		int indice = partida.getJugadorActual();
-		if (focaActivada && indice == indiceFoca) return;
+		if (!focaActivada || indice != indiceFoca) {
 
 		Jugador j = partida.getJugadores().get(indice);
-		if (!(j instanceof Pinguino)) return;
+		if (j instanceof Pinguino) {
 		Pinguino pingu = (Pinguino) j;
 
 		int resultado = d.tirar();
@@ -1193,6 +1209,9 @@ public class PantallaJuego {
 				postMovimientoPinguino(pingu, indiceFichaFinal);
 			});
 		});
+		}
+		}
+		}
 	}
 
 	// -------------------------------------------------------
@@ -1201,31 +1220,35 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleDado(ActionEvent event) {
-		Partida partida = gestorPartida.getPartida();
-		int indice = partida.getJugadorActual();
-		Pinguino pingu = (Pinguino) partida.getJugadores().get(indice);
-		Dado d = new Dado("Normal", 1);
-		tirarDadoConcreto(d);
+		tirarDadoConcreto(new Dado("Normal", 1));
 	}
 
 	@FXML
 	private void handleSelectRapido() {
-		if (slotRapido.getOpacity() < 0.5) return;
-		if ("Rapido".equals(selectedItem)) { clearSelection(); return; }
-		selectedItem = "Rapido";
-		setSlotSelected(slotRapido, true);
-		setSlotSelected(slotLento,  false);
-		usarBox.setVisible(true);
+		if (slotRapido.getOpacity() >= 0.5) {
+			if ("Rapido".equals(selectedItem)) {
+				clearSelection();
+			} else {
+				selectedItem = "Rapido";
+				setSlotSelected(slotRapido, true);
+				setSlotSelected(slotLento,  false);
+				usarBox.setVisible(true);
+			}
+		}
 	}
 
 	@FXML
 	private void handleSelectLento() {
-		if (slotLento.getOpacity() < 0.5) return;
-		if ("Lento".equals(selectedItem)) { clearSelection(); return; }
-		selectedItem = "Lento";
-		setSlotSelected(slotRapido, false);
-		setSlotSelected(slotLento,  true);
-		usarBox.setVisible(true);
+		if (slotLento.getOpacity() >= 0.5) {
+			if ("Lento".equals(selectedItem)) {
+				clearSelection();
+			} else {
+				selectedItem = "Lento";
+				setSlotSelected(slotRapido, false);
+				setSlotSelected(slotLento,  true);
+				usarBox.setVisible(true);
+			}
+		}
 	}
 
 	@FXML
@@ -1308,12 +1331,9 @@ public class PantallaJuego {
 		Partida partida = gestorPartida.getPartida();
 		if (partida == null) {
 			addEvent("⚠ No hay partida para guardar.");
-			return;
-		}
-		if (partida.isFinalizada()) {
+		} else if (partida.isFinalizada()) {
 			addEvent("⚠ La partida ya ha finalizado, no se puede guardar.");
-			return;
-		}
+		} else {
 
 		// Ask the user for a save name
 		TextInputDialog dialog = new TextInputDialog("Partida de " + nombreUsuarioLogueado);
@@ -1321,15 +1341,14 @@ public class PantallaJuego {
 		dialog.setHeaderText(null);
 		dialog.setContentText("Nombre de la partida:");
 		java.util.Optional<String> result = dialog.showAndWait();
-		if (!result.isPresent()) return; // User cancelled
+		if (result.isPresent()) {
 		String nomPartida = result.get().trim();
 		if (nomPartida.isEmpty()) nomPartida = "Partida";
 
 		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
 		if (con == null) {
 			addEvent("❌ Error conectando a la base de datos.");
-			return;
-		}
+		} else {
 		try {
 			Tablero t = partida.getTablero();
 			int numCasillas = t.getTamanyo();
@@ -1401,14 +1420,16 @@ public class PantallaJuego {
 		} finally {
 			GestorBBDD.cerrar(con);
 		}
+		}
+		}
+		}
 	}
 
 	@FXML private void handleLoadGame() {
 		java.sql.Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
 		if (con == null) {
 			addEvent("❌ Error conectando a la base de datos.");
-			return;
-		}
+		} else {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaCargarPartida.fxml"));
 			Parent root = loader.load();
@@ -1433,6 +1454,7 @@ public class PantallaJuego {
 			addEvent("❌ Error al cargar: " + e.getMessage());
 		} finally {
 			GestorBBDD.cerrar(con);
+		}
 		}
 	}
 
@@ -1464,12 +1486,24 @@ public class PantallaJuego {
 		for (int i = 0; i < tiposCasillas.length; i++) {
 			String tipo = tiposCasillas[i].trim();
 			switch (tipo) {
-				case "Oso": casillasGuardadas.add(new Oso(i)); break;
-				case "Agujero": casillasGuardadas.add(new Agujero(i)); break;
-				case "Trineo": casillasGuardadas.add(new Trineo(i)); break;
-				case "Evento": casillasGuardadas.add(new Evento(i)); break;
-				case "SueloQuebradizo": casillasGuardadas.add(new SueloQuebradizo(i)); break;
-				default: casillasGuardadas.add(new Normal(i)); break;
+				case "Oso": 
+				casillasGuardadas.add(new Oso(i)); 
+				break;
+				case "Agujero": 
+				casillasGuardadas.add(new Agujero(i));
+				break;
+				case "Trineo": 
+				casillasGuardadas.add(new Trineo(i)); 
+				break;
+				case "Evento": 
+				casillasGuardadas.add(new Evento(i)); 
+				break;
+				case "SueloQuebradizo": 
+				casillasGuardadas.add(new SueloQuebradizo(i)); 
+				break;
+				default: 
+				casillasGuardadas.add(new Normal(i)); 
+				break;
 			}
 		}
 		t.setCasillas(casillasGuardadas);
@@ -1507,7 +1541,9 @@ public class PantallaJuego {
 			// Assegurar que hi ha almenys un dado Normal
 			boolean teDadoNormal = false;
 			for (Item it : items) {
-				if (it.getNom().equals("Normal")) { teDadoNormal = true; break; }
+				if (it.getNom().equals("Normal")) {
+					teDadoNormal = true;
+				}
 			}
 			if (!teDadoNormal) items.add(0, new Dado("Normal", 1));
 

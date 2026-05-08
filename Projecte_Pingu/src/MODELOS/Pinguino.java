@@ -58,14 +58,14 @@ public class Pinguino extends Jugador {
 	//MÉTODO PARA USAR ITEM
 	public void usarItem(Item i) {
 		Item encontrado = null;
+		boolean si = false;
 		for(Item exist : inv.getInv()) {
-			if(exist.getNom().equalsIgnoreCase(i.getNom())) {
+			if(exist.getNom().equalsIgnoreCase(i.getNom()) && !si) {
 				encontrado = exist;
-				break;
+				si = true;
 			}
 		}
-		if(encontrado == null) return;
-		
+		if(encontrado != null) {
 		if(i instanceof Pez) {
 			if(encontrado.getCantidad() >= 1) {
 				encontrado.setCantidad(encontrado.getCantidad()-1);
@@ -90,8 +90,9 @@ public class Pinguino extends Jugador {
 				break;
 			}
 		}
+		}
 	}
-	
+
 	//MÉTODO PARA AGREGAR ITEMS AL INVENTARIO
 	public void agregarItem(Item i) {
 		if(i == null) {

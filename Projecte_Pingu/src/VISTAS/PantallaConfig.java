@@ -248,7 +248,7 @@ public class PantallaConfig {
      * Els jugadors 2-4 escullen entre els usuaris registrats via ComboBox.
      */
     private void regenerarCampsNoms() {
-        if (nomsContainer == null) return;
+        if (nomsContainer != null) {
         nomsContainer.getChildren().clear();
         campSelectedColors.clear();
         campColorButtons.clear();
@@ -295,6 +295,7 @@ public class PantallaConfig {
             fila.setAlignment(Pos.CENTER_LEFT);
             nomsContainer.getChildren().add(fila);
         }
+        }
     }
 
     private int obtenerNumJugadors() {
@@ -321,21 +322,22 @@ public class PantallaConfig {
         int numCasillas = obtenerNumCasillas();
         boolean ambFoca = focaCheckBox.isSelected();
 
-        if (numCasillas < 50 || numCasillas > 150) {
+        boolean valid = numCasillas >= 50 && numCasillas <= 150;
+        if (!valid) {
             feedbackLabel.setText("⚠ El número de casillas debe ser entre 50 y 150!");
             feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
-            return;
         }
 
         // Validate all ComboBoxes have a selection
-        for (int i = 0; i < campsJugadors.size(); i++) {
+        for (int i = 0; i < campsJugadors.size() && valid; i++) {
             if (campsJugadors.get(i).getValue() == null) {
                 feedbackLabel.setText("⚠ Selecciona un usuario para el jugador " + (i + 2) + ".");
                 feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
-                return;
+                valid = false;
             }
         }
 
+        if (valid) {
         // Collect names: player 1 = logged-in user, rest from ComboBoxes
         ArrayList<String> noms = new ArrayList<>();
         noms.add(nombreUsuario);
@@ -344,12 +346,12 @@ public class PantallaConfig {
         }
 
         // Validate no duplicates
-        for (int i = 0; i < noms.size(); i++) {
-            for (int j = i + 1; j < noms.size(); j++) {
+        for (int i = 0; i < noms.size() && valid; i++) {
+            for (int j = i + 1; j < noms.size() && valid; j++) {
                 if (noms.get(i).equalsIgnoreCase(noms.get(j))) {
                     feedbackLabel.setText("⚠ ¡No puede haber nombres repetidos!");
                     feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
-                    return;
+                    valid = false;
                 }
             }
         }
@@ -361,17 +363,18 @@ public class PantallaConfig {
         }
 
         // Validar que no hi hagi colors repetits
-        for (int i = 0; i < colors.size(); i++) {
-            for (int j = i + 1; j < colors.size(); j++) {
+        for (int i = 0; i < colors.size() && valid; i++) {
+            for (int j = i + 1; j < colors.size() && valid; j++) {
                 if (colors.get(i).equalsIgnoreCase(colors.get(j))) {
                     feedbackLabel.setText("⚠ Los jugadores " + (i + 1) + " y " + (j + 1) + " tienen el mismo color!");
                     feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
-                    return;
+                    valid = false;
                 }
             }
         }
 
         // Obrir PantallaJuego en el Stage del menú i tancar la finestra de config
+        if (valid) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaJuego.fxml"));
             Parent root = loader.load();
@@ -390,6 +393,8 @@ public class PantallaConfig {
             e.printStackTrace();
             feedbackLabel.setText("❌ Error: " + e.getMessage());
             feedbackLabel.setStyle("-fx-text-fill: #ef4444;");
+        }
+        }
         }
     }
 

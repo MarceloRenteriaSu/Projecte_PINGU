@@ -91,19 +91,20 @@ public class PantallaGuerra {
      * Must be called after inicialitzar().
      */
     public void setAutoPlay(boolean on) {
-        if (!on) return;
-        PauseTransition act = new PauseTransition(Duration.millis(600));
-        act.setOnFinished(e -> {
-            if (!btnBatalla.isDisable()) {
-                handleBatalla();
-            } else {
-                handleTirarDau();
-            }
-            PauseTransition close = new PauseTransition(Duration.millis(600));
-            close.setOnFinished(ev -> handleTancar());
-            close.play();
-        });
-        act.play();
+        if (on) {
+            PauseTransition act = new PauseTransition(Duration.millis(600));
+            act.setOnFinished(e -> {
+                if (!btnBatalla.isDisable()) {
+                    handleBatalla();
+                } else {
+                    handleTirarDau();
+                }
+                PauseTransition close = new PauseTransition(Duration.millis(600));
+                close.setOnFinished(ev -> handleTancar());
+                close.play();
+            });
+            act.play();
+        }
     }
 
     // -------------------------------------------------------

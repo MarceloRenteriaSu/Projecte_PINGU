@@ -37,21 +37,22 @@ public class CursorManager {
     /* ── Càrrega lazy dels dos cursors ─────────────────────────── */
 
     private static void load() {
-        if (loaded) return;
-        loaded = true;
-        try {
-            Image img1 = new Image(CursorManager.class.getResourceAsStream("/pngs_cursores/cursor1.png"));
-            // Hotspot a la punta superior esquerra del cursor fletxa
-            defaultCursor = new ImageCursor(img1, img1.getWidth() * 0.15, img1.getHeight() * 0.05);
-        } catch (Exception e) {
-            System.out.println("CursorManager: no s'ha pogut carregar cursor1.png — " + e.getMessage());
-        }
-        try {
-            Image img2 = new Image(CursorManager.class.getResourceAsStream("/pngs_cursores/cursor2.png"));
-            // Hotspot a la punta del dit índex (part superior central de la mà)
-            clickCursor = new ImageCursor(img2, img2.getWidth() * 0.40, img2.getHeight() * 0.05);
-        } catch (Exception e) {
-            System.out.println("CursorManager: no s'ha pogut carregar cursor2.png — " + e.getMessage());
+        if (!loaded) {
+            loaded = true;
+            try {
+                Image img1 = new Image(CursorManager.class.getResourceAsStream("/pngs_cursores/cursor1.png"));
+                // Hotspot a la punta superior esquerra del cursor fletxa
+                defaultCursor = new ImageCursor(img1, img1.getWidth() * 0.15, img1.getHeight() * 0.05);
+            } catch (Exception e) {
+                System.out.println("CursorManager: no s'ha pogut carregar cursor1.png — " + e.getMessage());
+            }
+            try {
+                Image img2 = new Image(CursorManager.class.getResourceAsStream("/pngs_cursores/cursor2.png"));
+                // Hotspot a la punta del dit índex (part superior central de la mà)
+                clickCursor = new ImageCursor(img2, img2.getWidth() * 0.40, img2.getHeight() * 0.05);
+            } catch (Exception e) {
+                System.out.println("CursorManager: no s'ha pogut carregar cursor2.png — " + e.getMessage());
+            }
         }
     }
 
@@ -69,17 +70,18 @@ public class CursorManager {
      * (botons, checkboxes, combo-boxes, sliders, hyperlinks, etc.).
      */
     public static void apply(Scene scene) {
-        if (scene == null) return;
-        load();
+        if (scene != null) {
+            load();
 
-        // Cursor per defecte a tota la Scene (cursor1 — fletxa)
-        if (defaultCursor != null) {
-            scene.setCursor(defaultCursor);
-        }
+            // Cursor per defecte a tota la Scene (cursor1 — fletxa)
+            if (defaultCursor != null) {
+                scene.setCursor(defaultCursor);
+            }
 
-        // Recórrer l'arbre i marcar elements interactius amb cursor2
-        if (scene.getRoot() != null) {
-            applyHandCursorRecursive(scene.getRoot());
+            // Recórrer l'arbre i marcar elements interactius amb cursor2
+            if (scene.getRoot() != null) {
+                applyHandCursorRecursive(scene.getRoot());
+            }
         }
     }
 

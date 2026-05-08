@@ -29,24 +29,24 @@ public final class MusicManager {
      * If music is already playing, this call is ignored.
      */
     public void play() {
-        if (mediaPlayer != null) return; // already playing
-
-        try {
-            var url = getClass().getResource("/extras/Frost Menu Drift.mp3");
-            if (url == null) {
-                System.out.println("⚠ Arxiu de música no trobat: /extras/Frost-Menu-Drift.mp3");
-                return;
+        if (mediaPlayer == null) {
+            try {
+                var url = getClass().getResource("/extras/Frost Menu Drift.mp3");
+                if (url == null) {
+                    System.out.println("⚠ Arxiu de música no trobat: /extras/Frost-Menu-Drift.mp3");
+                } else {
+                    Media media = new Media(url.toExternalForm());
+                    mediaPlayer = new MediaPlayer(media);
+                    mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                    mediaPlayer.setVolume(0.5);
+                    mediaPlayer.setOnError(() ->
+                        System.out.println("⚠ Error reproduint música: " + mediaPlayer.getError().getMessage())
+                    );
+                    mediaPlayer.play();
+                }
+            } catch (Exception e) {
+                System.out.println("⚠ No s'ha pogut reproduir la música de fons: " + e.getMessage());
             }
-            Media media = new Media(url.toExternalForm());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            mediaPlayer.setVolume(0.5);
-            mediaPlayer.setOnError(() ->
-                System.out.println("⚠ Error reproduint música: " + mediaPlayer.getError().getMessage())
-            );
-            mediaPlayer.play();
-        } catch (Exception e) {
-            System.out.println("⚠ No s'ha pogut reproduir la música de fons: " + e.getMessage());
         }
     }
 

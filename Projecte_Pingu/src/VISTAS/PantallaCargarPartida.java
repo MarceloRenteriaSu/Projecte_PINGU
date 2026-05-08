@@ -122,15 +122,15 @@ public class PantallaCargarPartida {
         PartidaItem sel = tablePartides.getSelectionModel().getSelectedItem();
         if (sel == null) {
             mostrarAlerta("Aviso", "Selecciona una partida para cargar.");
-            return;
-        }
-        LinkedHashMap<String, String> datos = GestorBBDD.cargarPartidaPorId(conexion, sel.getId());
-        if (datos != null) {
-            selectedPartida = datos;
-            loaded = true;
-            tancarStage(event);
         } else {
-            mostrarAlerta("Error", "No se ha podido cargar la partida de la base de datos.");
+            LinkedHashMap<String, String> datos = GestorBBDD.cargarPartidaPorId(conexion, sel.getId());
+            if (datos != null) {
+                selectedPartida = datos;
+                loaded = true;
+                tancarStage(event);
+            } else {
+                mostrarAlerta("Error", "No se ha podido cargar la partida de la base de datos.");
+            }
         }
     }
 
@@ -139,8 +139,7 @@ public class PantallaCargarPartida {
         PartidaItem sel = tablePartides.getSelectionModel().getSelectedItem();
         if (sel == null) {
             mostrarAlerta("Aviso", "Selecciona una partida para borrar.");
-            return;
-        }
+        } else {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
             "¿Seguro que quieres borrar la partida '" + sel.getNomPartida() + "'?\nEsta acción no se puede deshacer.",
             ButtonType.YES, ButtonType.NO);
@@ -156,6 +155,7 @@ public class PantallaCargarPartida {
                 }
             }
         });
+        }
     }
 
     @FXML
