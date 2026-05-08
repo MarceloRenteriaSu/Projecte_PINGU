@@ -31,21 +31,21 @@ public final class MusicManager {
     public void play() {
         if (mediaPlayer == null) {
             try {
-                var url = getClass().getResource("/extras/Frost Menu Drift.mp3");
+                var url = getClass().getResource("/Frost_Menu_Drift.mp3");
                 if (url == null) {
-                    System.out.println("⚠ Arxiu de música no trobat: /extras/Frost-Menu-Drift.mp3");
+                    System.out.println("⚠ Archivo de música no encontrado: /Frost_Menu_Drift.mp3");
                 } else {
                     Media media = new Media(url.toExternalForm());
                     mediaPlayer = new MediaPlayer(media);
                     mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                     mediaPlayer.setVolume(0.5);
                     mediaPlayer.setOnError(() ->
-                        System.out.println("⚠ Error reproduint música: " + mediaPlayer.getError().getMessage())
+                        System.out.println("⚠ Error reproduciendo la música: " + mediaPlayer.getError().getMessage())
                     );
                     mediaPlayer.play();
                 }
             } catch (Exception e) {
-                System.out.println("⚠ No s'ha pogut reproduir la música de fons: " + e.getMessage());
+                System.out.println("⚠ No se ha podido reproducir la música de fondo: " + e.getMessage());
             }
         }
     }
