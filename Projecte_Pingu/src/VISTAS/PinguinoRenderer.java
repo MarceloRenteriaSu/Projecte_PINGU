@@ -74,17 +74,17 @@ public final class PinguinoRenderer {
             Image img = getFocaBase();
             if (img != null && !img.isError()) {
                 gc.drawImage(img, 0, 0, w, h);
-                return;
+            } else {
+                drawFallback(gc, px, null, true);
             }
-            drawFallback(gc, px, null, true);
         } else {
             Image base = getPinguBase();
             if (base != null && !base.isError()) {
                 Color hat = hatColor != null ? hatColor : DEFAULT_COLORS[0];
                 gc.drawImage(tintYellow(base, hat), 0, 0, w, h);
-                return;
+            } else {
+                drawFallback(gc, px, hatColor, false);
             }
-            drawFallback(gc, px, hatColor, false);
         }
     }
 
@@ -159,7 +159,7 @@ public final class PinguinoRenderer {
                     case 3: fill = hatC;   break;
                     case 4: fill = beakC;  break;
                     case 5: fill = irisC;  break;
-                    default: continue;
+                    default: fill = Color.TRANSPARENT; break;
                 }
                 gc.setFill(fill);
                 gc.fillRect(c * px, r * px, px, px);

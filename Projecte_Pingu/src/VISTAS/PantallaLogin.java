@@ -59,8 +59,13 @@ public class PantallaLogin {
                 StackPane parent = (StackPane) bgImageView.getParent();
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
+                CursorManager.apply(newScene);
             }
         });
+        CursorManager.applyClickable(btnLogin);
+        CursorManager.applyClickable(btnRegistrar);
+        CursorManager.applyClickable(btnShowLogin);
+        CursorManager.applyClickable(btnShowReg);
 
         // Logo
         try {
@@ -118,26 +123,21 @@ public class PantallaLogin {
 
         if (username == null || username.trim().length() < 3 || username.contains(" ")) {
             feedbackLabel.setText("⚠ El usuario debe tener al menos 3 caracteres y sin espacios.");
-            return;
-        }
-        if (password == null || password.length() <= 3) {
+        } else if (password == null || password.length() <= 3) {
             feedbackLabel.setText("⚠ La contraseña debe tener más de 3 caracteres.");
-            return;
-        }
-
-        Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
-        if (con == null) {
-            feedbackLabel.setText("⚠ Error al conectar con la base de datos.");
-            return;
-        }
-
-        boolean valid = GestorBBDD.loginUsuario(con, username.trim(), password);
-        GestorBBDD.cerrar(con);
-
-        if (valid) {
-            irAMenu(event, username.trim());
         } else {
-            feedbackLabel.setText("⚠ Usuario o contraseña incorrectos.");
+            Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
+            if (con == null) {
+                feedbackLabel.setText("⚠ Error al conectar con la base de datos.");
+            } else {
+                boolean valid = GestorBBDD.loginUsuario(con, username.trim(), password);
+                GestorBBDD.cerrar(con);
+                if (valid) {
+                    irAMenu(event, username.trim());
+                } else {
+                    feedbackLabel.setText("⚠ Usuario o contraseña incorrectos.");
+                }
+            }
         }
     }
 
@@ -151,23 +151,15 @@ public class PantallaLogin {
 
         if (username == null || username.trim().length() < 3 || username.contains(" ")) {
             regFeedbackLabel.setText("⚠ El usuario debe tener al menos 3 caracteres y sin espacios.");
-            return;
-        }
-        if (password == null || password.length() <= 3) {
+        } else if (password == null || password.length() <= 3) {
             regFeedbackLabel.setText("⚠ La contraseña debe tener más de 3 caracteres.");
-            return;
-        }
-        if (!password.equals(confirm)) {
+        } else if (!password.equals(confirm)) {
             regFeedbackLabel.setText("⚠ Las contraseñas no coinciden.");
-            return;
-        }
-
+        } else {
         Connection con = GestorBBDD.conectarBBDD("fuera", "DW2526_GR02_PINGU", "ACOMRDT");
         if (con == null) {
             regFeedbackLabel.setText("⚠ Error al conectar con la base de datos.");
-            return;
-        }
-
+        } else {
         int resultado = GestorBBDD.registrarUsuario(con, username.trim(), password);
         GestorBBDD.cerrar(con);
 
@@ -182,6 +174,8 @@ public class PantallaLogin {
         } else {
             regFeedbackLabel.setText("⚠ Error al registrar. Inténtalo de nuevo.");
         }
+        }
+        }
     }
 
     // ── Navegación ────────────────────────────────────────────────
@@ -193,7 +187,9 @@ public class PantallaLogin {
             PantallaMenu ctrl = loader.getController();
             ctrl.setNombreUsuario(username);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene menuScene = new Scene(root);
+            CursorManager.apply(menuScene);
+            stage.setScene(menuScene);
             stage.setTitle("Menú Principal");
         } catch (Exception e) {
             e.printStackTrace();

@@ -8,11 +8,40 @@
         #05101f 0%, #0b1e3c 30%, #0d2a52 55%, #081a3a 80%, #040d1c 100%);
 }
 
-/* ── Menu bar: CP-island blue bar ── */
-.menu-bar {
+/* ── Top bar: wraps menu bar + auto-play button ── */
+.top-bar {
     -fx-background-color: linear-gradient(to bottom, #10a0e8, #056db5);
     -fx-border-color: #55cbf5;
     -fx-border-width: 0 0 2 0;
+}
+
+/* ── Menu bar: CP-island blue bar ── */
+.menu-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Auto-play toggle button ── */
+.auto-btn {
+    -fx-background-color: rgba(255,255,255,0.18);
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-color: rgba(255,255,255,0.55);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 5;
+    -fx-padding: 2 10 2 10;
+}
+.auto-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.32);
+}
+.auto-btn.active {
+    -fx-background-color: #22c55e;
+    -fx-border-color: #86efac;
+    -fx-text-fill: white;
 }
 .menu-bar .label {
     -fx-text-fill: white;
@@ -103,7 +132,6 @@
     -fx-text-fill: white;
     -fx-padding: 8 16;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 5, 0.35, 0, 2);
-    -fx-cursor: hand;
     -fx-border-color: transparent;
     -fx-border-width: 0;
 }
@@ -157,7 +185,6 @@
 .item-slot {
     -fx-background-color: rgba(255,255,255,0.22);
     -fx-background-radius: 8;
-    -fx-cursor: hand;
 }
 .item-emoji {
     -fx-font-size: 26px;

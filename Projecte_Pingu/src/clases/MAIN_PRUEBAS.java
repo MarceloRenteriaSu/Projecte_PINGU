@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
+import VISTAS.CursorManager;
 import VISTAS.MusicManager;
 
 public class MAIN_PRUEBAS extends Application {
@@ -20,6 +21,9 @@ public class MAIN_PRUEBAS extends Application {
 	    stage.setTitle("El Joc del Pingu — Login");
 	    stage.setMaximized(true);
 	    stage.show();
+
+	    // Aplicar cursors personalitzats (cursor1 = fletxa, cursor2 = mà als elements interactius)
+	    CursorManager.apply(scene);
 
 	    // Start background music (loops indefinitely across all screens)
 	    try {

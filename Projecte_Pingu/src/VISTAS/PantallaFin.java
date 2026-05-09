@@ -1,5 +1,6 @@
 package VISTAS;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
@@ -23,6 +24,8 @@ public class PantallaFin {
     @FXML
     private void initialize() {
         CursorManager.applyWhenReady(btnMenu);
+        CursorManager.applyClickable(btnMenu);
+        CursorManager.applyClickable(btnTancar);
     }
 
     /**
@@ -33,13 +36,6 @@ public class PantallaFin {
         titulo.setText("¡Fin del Juego!");
         guanyador.setText("Ganador: " + nomGuanyador);
         statsText.setText("Turnos jugados: " + turnos);
-    }
-
-    /**
-     * Overload per compatibilitat amb crides antigues (ignorant dificultat).
-     */
-    public void inicialitzar(String nomGuanyador, int turnos, String dificultat) {
-        inicialitzar(nomGuanyador, turnos);
     }
 
     public boolean isVolverAlMenu() {

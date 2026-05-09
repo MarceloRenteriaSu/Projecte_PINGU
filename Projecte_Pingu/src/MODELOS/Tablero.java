@@ -77,12 +77,13 @@ public class Tablero {
 
 		// Caselles intermèdies: totes aleatòries
 		for (int i = 1; i < cantidad - 1; i++) {
+			boolean si = false;
 			int rd = r.nextInt(100) + 1;
 			String tipo = tipos[tipos.length - 1];
-			for (int t = 0; t < probs.length; t++) {
-				if (rd <= probs[t]) {
+			for (int t = 0; t < probs.length && !si; t++) {
+				if (rd <= probs[t] && !si) {
 					tipo = tipos[t];
-					break;
+					si = true;
 				}
 			}
 			casillas.add(crearCasilla(tipo, i));

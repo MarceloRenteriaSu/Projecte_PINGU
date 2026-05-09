@@ -10,7 +10,6 @@ public class Trineo extends Casilla {
 	public void realizarAccion(Partida p, Jugador j) {
 		if(j instanceof Pinguino) {
 			Pinguino pingu = (Pinguino) j;
-			//if(!pingu.inmune()) {
 				int posActual = pingu.getPos();
 				int tamanyo = p.getTablero().getTamanyo();
 				int posTrineoProximo = p.getTablero().trineoPosterior(posActual);

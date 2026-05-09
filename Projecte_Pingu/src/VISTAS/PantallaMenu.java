@@ -56,14 +56,18 @@ public class PantallaMenu {
 
     @FXML
     private void initialize() {
-        System.out.println("PantallaMenu initialized");
-
         bgImageView.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 StackPane parent = (StackPane) bgImageView.getParent();
                 bgImageView.fitWidthProperty().bind(parent.widthProperty());
                 bgImageView.fitHeightProperty().bind(parent.heightProperty());
                 CursorManager.apply(newScene);
+                CursorManager.applyClickable(btnNewMatch);
+                CursorManager.applyClickable(btnLoadMatch);
+                CursorManager.applyClickable(btnRanking);
+                CursorManager.applyClickable(btnAjustes);
+                CursorManager.applyClickable(btnCredits);
+                CursorManager.applyClickable(btnExit);
             }
         });
 
@@ -76,18 +80,14 @@ public class PantallaMenu {
 
     @FXML
     private void handleNewMatch(ActionEvent event) {
-        System.out.println("Nueva Partida clicked");
         abrirPantallaConfig(event, nombreUsuarioLogueado);
     }
 
     @FXML
     private void handleLoadMatch(ActionEvent event) {
-        System.out.println("Cargar Partida clicked");
         if (conexion == null) {
             mostrarAlerta("Error", "No hay conexión a la base de datos.");
-            return;
-        }
-
+        } else {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PantallaCargarPartida.fxml"));
             Parent root = loader.load();
@@ -97,7 +97,9 @@ public class PantallaMenu {
             Stage selStage = new Stage();
             selStage.setTitle("Cargar Partida");
             selStage.initModality(Modality.APPLICATION_MODAL);
-            selStage.setScene(new Scene(root, 720, 460));
+            Scene selScene = new Scene(root, 720, 460);
+            CursorManager.apply(selScene);
+            selStage.setScene(selScene);
             selStage.setResizable(true);
             selStage.showAndWait();
 
@@ -109,22 +111,27 @@ public class PantallaMenu {
                 juegoCtrl.setNombreUsuario(nombreUsuarioLogueado);
                 juegoCtrl.restaurarPartida(datos);
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(juegoRoot));
+                Scene juegoScene = new Scene(juegoRoot);
+                CursorManager.apply(juegoScene);
+                stage.setScene(juegoScene);
                 stage.setTitle("El Juego del Pingüino — Partida Cargada");
             }
         } catch (Exception e) {
             e.printStackTrace();
             mostrarAlerta("Error", "Error al abrir la pantalla de carga: " + e.getMessage());
         }
+        }
     }
 
     @FXML
     private void handleRanking(ActionEvent event) {
+        mostrarRanking();
+    }
+
+    public void mostrarRanking() {
         if (conexion == null) {
             mostrarAlerta("Error", "No hay conexión a la base de datos.");
-            return;
-        }
-
+        } else {
         ArrayList<LinkedHashMap<String, String>> rankingData = GestorBBDD.getRankingPerJugades(conexion);
         int record = GestorBBDD.getRecord(conexion);
         ArrayList<String> jugadoresRecord = GestorBBDD.getJugadorsRecord(conexion);
@@ -236,6 +243,7 @@ public class PantallaMenu {
 
         Scene scene = new Scene(root, 620, 480);
         scene.getStylesheets().add(getClass().getResource("PantallaMenu.css").toExternalForm());
+        CursorManager.apply(scene);
 
         Stage rankStage = new Stage();
         rankStage.initModality(Modality.APPLICATION_MODAL);
@@ -244,6 +252,7 @@ public class PantallaMenu {
         rankStage.setScene(scene);
         btnClose.setOnAction(e -> rankStage.close());
         rankStage.showAndWait();
+        }
     }
 
     private Label makeSectionTitle(String text) {
@@ -267,7 +276,9 @@ public class PantallaMenu {
             ajStage.initModality(Modality.APPLICATION_MODAL);
             ajStage.setTitle("Opciones");
             ajStage.setResizable(false);
-            ajStage.setScene(new Scene(root));
+            Scene ajScene = new Scene(root);
+            CursorManager.apply(ajScene);
+            ajStage.setScene(ajScene);
             ajStage.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
@@ -314,7 +325,9 @@ public class PantallaMenu {
             configStage.setTitle("Configuración de la Partida");
             configStage.setWidth(menuStage.getWidth());
             configStage.setHeight(menuStage.getHeight());
-            configStage.setScene(new Scene(pantallaConfigRoot));
+            Scene configScene = new Scene(pantallaConfigRoot);
+            CursorManager.apply(configScene);
+            configStage.setScene(configScene);
             configStage.show();
         } catch (Exception e) {
             e.printStackTrace();
