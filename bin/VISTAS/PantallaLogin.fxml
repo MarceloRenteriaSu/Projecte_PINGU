@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21.0.10"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="VISTAS.PantallaLogin"
+           stylesheets="@PantallaMenu.css"
+           styleClass="login-root"
+           prefWidth="1024" prefHeight="576">
+
+    <!-- Contenido principal que se difuminará -->
+    <StackPane fx:id="mainContentPane">
+        <!-- Fons -->
+        <ImageView fx:id="bgImageView" preserveRatio="false" smooth="true"/>
+
+        <!-- Top Area: Logo -->
+        <VBox alignment="TOP_CENTER" spacing="10" mouseTransparent="true">
+            <padding>
+                <Insets top="40"/>
+            </padding>
+            <ImageView fx:id="logoImageView" fitWidth="460" preserveRatio="true"/>
+        </VBox>
+
+        <!-- Bottom Dock area -->
+        <VBox alignment="BOTTOM_CENTER">
+            <HBox alignment="CENTER" spacing="40" styleClass="cp-bottom-dock" minHeight="90">
+                <!-- Pinguino mascota esquerra -->
+                <Button fx:id="btnShowReg" text="Registrarse"
+                        onAction="#showRegForm"
+                        styleClass="cp-dock-button"/>
+                
+                <Button fx:id="btnShowLogin" text="Iniciar Sesión"
+                        onAction="#showLoginForm"
+                        styleClass="cp-dock-button"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+
+    <!-- Overlay: formulario LOGIN (oculto por defecto) -->
+    <VBox fx:id="loginFormOverlay" alignment="CENTER" visible="false"
+          styleClass="cp-login-overlay">
+        <padding><Insets bottom="95"/></padding>
+        <VBox spacing="15" styleClass="cp-login-card" prefWidth="350" maxWidth="350">
+            <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+
+            <Label text="Iniciar Sesión" styleClass="login-title"/>
+
+            <VBox spacing="5">
+                <Label text="Usuario" styleClass="login-label"/>
+                <TextField fx:id="usernameField"
+                           promptText="Nombre de usuario"
+                           styleClass="login-field"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Contraseña" styleClass="login-label"/>
+                <PasswordField fx:id="passwordField"
+                               promptText="Contraseña"
+                               styleClass="login-field"/>
+            </VBox>
+
+            <Label fx:id="feedbackLabel" text="" styleClass="login-feedback" wrapText="true"/>
+
+            <HBox spacing="15" alignment="CENTER">
+                <Button fx:id="btnLogin" text="Entrar"
+                        onAction="#handleLogin"
+                        styleClass="cp-primary-button"/>
+                <Button text="Cancelar"
+                        onAction="#hideLoginForm"
+                        styleClass="cp-secondary-button"/>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <!-- Overlay: formulario REGISTRO (oculto por defecto) -->
+    <VBox fx:id="regFormOverlay" alignment="CENTER" visible="false"
+          styleClass="cp-login-overlay">
+        <padding><Insets bottom="95"/></padding>
+        <VBox spacing="12" styleClass="cp-login-card" prefWidth="370" maxWidth="370">
+            <padding><Insets top="26" right="28" bottom="26" left="28"/></padding>
+
+            <Label text="Crear Cuenta" styleClass="login-title"/>
+
+            <VBox spacing="4">
+                <Label text="Nombre de usuario" styleClass="login-label"/>
+                <TextField fx:id="regUsernameField"
+                           promptText="Elige un nombre de usuario"
+                           styleClass="login-field"/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Contraseña" styleClass="login-label"/>
+                <PasswordField fx:id="regPasswordField"
+                               promptText="Elige una contraseña"
+                               styleClass="login-field"/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Confirmar contraseña" styleClass="login-label"/>
+                <PasswordField fx:id="regConfirmField"
+                               promptText="Repite la contraseña"
+                               styleClass="login-field"/>
+            </VBox>
+
+            <Label fx:id="regFeedbackLabel" text="" styleClass="login-feedback" wrapText="true"/>
+
+            <HBox spacing="12" alignment="CENTER">
+                <Button fx:id="btnRegistrar" text="Crear Cuenta"
+                        onAction="#handleRegistrar"
+                        styleClass="cp-primary-button"/>
+                <Button text="Cancelar"
+                        onAction="#hideRegForm"
+                        styleClass="cp-secondary-button"/>
+            </HBox>
+        </VBox>
+    </VBox>
+
+
+</StackPane>

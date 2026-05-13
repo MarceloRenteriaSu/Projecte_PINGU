@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane
+    xmlns="http://javafx.com/javafx/21.0.10"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="VISTAS.PantallaJuego"
+    stylesheets="@PantallaJuego.css"
+    styleClass="root">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="top-bar">
+            <MenuBar HBox.hgrow="ALWAYS" minWidth="0">
+                <menus>
+                    <Menu mnemonicParsing="false" text="File">
+                        <items>
+                            <MenuItem fx:id="newGame" mnemonicParsing="false" text="New" onAction="#handleNewGame"/>
+                            <SeparatorMenuItem mnemonicParsing="false" />
+                            <MenuItem fx:id="saveGame" mnemonicParsing="false" text="Save" onAction="#handleSaveGame"/>
+                            <MenuItem fx:id="loadGame" mnemonicParsing="false" text="Load" onAction="#handleLoadGame"/>
+                            <SeparatorMenuItem mnemonicParsing="false" />
+                            <MenuItem fx:id="quitGame" mnemonicParsing="false" text="Quit" onAction="#handleQuitGame"/>
+                        </items>
+                    </Menu>
+                </menus>
+            </MenuBar>
+            <Button fx:id="btnAutoPlay" text="Auto: OFF" onAction="#handleAutoPlay" styleClass="auto-btn"/>
+        </HBox>
+    </top>
+
+    <center>
+        <HBox spacing="14" styleClass="snow-background">
+            <padding>
+                <Insets top="14" right="14" bottom="14" left="14"/>
+            </padding>
+
+            <!-- LEFT: Board fills all available space -->
+            <StackPane HBox.hgrow="ALWAYS">
+                <Canvas fx:id="pathCanvas" mouseTransparent="true" />
+                <GridPane fx:id="tablero" styleClass="board"
+                          maxWidth="Infinity" maxHeight="Infinity">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="20.0" />
+                        <ColumnConstraints percentWidth="20.0" />
+                        <ColumnConstraints percentWidth="20.0" />
+                        <ColumnConstraints percentWidth="20.0" />
+                        <ColumnConstraints percentWidth="20.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                        <RowConstraints percentHeight="10.0" />
+                    </rowConstraints>
+                    <children>
+                        <Canvas fx:id="P1" id="P1" width="35" height="44" />
+                        <Canvas fx:id="P2" id="P2" width="35" height="44" />
+                        <Canvas fx:id="P3" id="P3" width="35" height="44" />
+                        <Canvas fx:id="P4" id="P4" width="35" height="44" />
+                        <Canvas fx:id="P5" id="P5" width="35" height="44" />
+                    </children>
+                </GridPane>
+
+                <!-- Turn notification overlay (centered on top of board) -->
+                <StackPane fx:id="turnoOverlay" styleClass="turno-overlay"
+                           mouseTransparent="true" visible="false">
+                    <VBox alignment="CENTER" spacing="2" styleClass="turno-card"
+                          maxWidth="280" maxHeight="70">
+                        <Text fx:id="turnoTitulo" text="TURNO DE" styleClass="turno-titulo" />
+                        <Text fx:id="turnoNombre" text="" styleClass="turno-nombre" />
+                    </VBox>
+                </StackPane>
+            </StackPane>
+
+            <!-- RIGHT: Sidebar with 3 stacked panels -->
+            <VBox spacing="10" prefWidth="270" minWidth="220" maxWidth="320">
+
+                <!-- YELLOW: Dado / Turn -->
+                <VBox spacing="8" styleClass="card">
+                    <Label text="Dado" styleClass="card-title" />
+                    <Text fx:id="dadoResultText" text="Ha salido: -" styleClass="big-text" wrappingWidth="220" />
+                    <Button fx:id="dado" text="Tirar dado" onAction="#handleDado"
+                            maxWidth="Infinity" styleClass="primary" />
+                </VBox>
+
+                <!-- BLUE: Inventory -->
+                <VBox spacing="8" styleClass="card">
+                    <Label text="Objetos" styleClass="card-title" />
+
+                    <!-- Icon row: 4 item slots -->
+                    <HBox spacing="6" alignment="CENTER">
+
+                        <!-- Dado Rápido (red border) -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotRapido" styleClass="item-slot" prefWidth="52" prefHeight="52"
+                                       onMouseClicked="#handleSelectRapido">
+                                <ImageView fx:id="iconRapido" fitWidth="36" fitHeight="36" preserveRatio="true"/>
+                            </StackPane>
+                            <Label fx:id="qtyRapido" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                        <!-- Dado Lento (blue border) -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotLento" styleClass="item-slot" prefWidth="52" prefHeight="52"
+                                       onMouseClicked="#handleSelectLento">
+                                <Label text="🎲" styleClass="item-emoji"/>
+                            </StackPane>
+                            <Label fx:id="qtyLento" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                        <!-- Pez (green border) — passive -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotPeces" styleClass="item-slot" prefWidth="52" prefHeight="52">
+                                <Label text="🐟" styleClass="item-emoji"/>
+                            </StackPane>
+                            <Label fx:id="qtyPeces" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                        <!-- Bola de Nieve (pink border) -->
+                        <VBox alignment="CENTER" spacing="3">
+                            <StackPane fx:id="slotBola" styleClass="item-slot" prefWidth="52" prefHeight="52">
+                                <Label text="❄" styleClass="item-emoji"/>
+                            </StackPane>
+                            <Label fx:id="qtyBola" text="x0" styleClass="item-qty" maxWidth="52"/>
+                        </VBox>
+
+                    </HBox>
+
+                    <!-- Usar area: visible only when a dado slot is selected -->
+                    <VBox fx:id="usarBox" styleClass="usar-area" visible="false" managed="false">
+                        <padding>
+                            <Insets top="5" right="5" bottom="5" left="5"/>
+                        </padding>
+                        <Button fx:id="usarBtn" text="Usar" onAction="#handleUsarItem"
+                                maxWidth="Infinity" styleClass="primary"/>
+                    </VBox>
+                </VBox>
+
+                <!-- GREEN: Events -->
+                <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
+                    <Label text="Eventos" styleClass="card-title" />
+                    <ListView fx:id="eventosListView" styleClass="events-list" VBox.vgrow="ALWAYS" />
+                </VBox>
+
+            </VBox>
+        </HBox>
+    </center>
+
+</BorderPane>
