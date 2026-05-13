@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import docx; print\\('python-docx OK'\\)\")",
+      "Bash(python -c \"import pip; print\\('pip OK'\\)\")",
+      "Bash(py --version)",
+      "Bash(where python3 *)",
+      "Bash(where py *)",
+      "PowerShell(python3 --version)",
+      "PowerShell(python3 -c \"import docx; print\\('python-docx OK'\\)\")"
+    ]
+  }
+}
