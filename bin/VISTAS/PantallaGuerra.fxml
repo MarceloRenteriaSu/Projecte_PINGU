@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox
+    xmlns="http://javafx.com/javafx/21.0.10"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="VISTAS.PantallaGuerra"
+    stylesheets="@PantallaMenu.css"
+    styleClass="login-root"
+    alignment="CENTER"
+    prefWidth="440"
+    prefHeight="380">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <VBox styleClass="cp-login-card" spacing="16" alignment="CENTER">
+        <padding>
+            <Insets top="26" right="28" bottom="26" left="28"/>
+        </padding>
+
+        <!-- Título -->
+        <Text fx:id="titulo" styleClass="card-big-text" text="⚔ ¡BATALLA DE NIEVE!" />
+
+        <!-- Info del jugador que decideix -->
+        <Text fx:id="infoDefensor" styleClass="card-stat" text="" />
+
+        <!-- Info del jugador atacant -->
+        <Text fx:id="infoAtacant" styleClass="card-stat" text="" />
+
+        <!-- Pregunta -->
+        <Text fx:id="pregunta" styleClass="card-info"
+              text="¿Pruebas la suerte o entras en guerra?" />
+
+        <!-- Botons d'acció -->
+        <HBox spacing="16" alignment="CENTER">
+            <Button fx:id="btnDau" text="🎲 Tirar dado y escapar"
+                    styleClass="cp-dock-button"
+                    onAction="#handleTirarDau"
+                    prefWidth="180"/>
+            <Button fx:id="btnBatalla" text="❄ ¡Batalla de nieve!"
+                    styleClass="cp-primary-button"
+                    onAction="#handleBatalla"
+                    prefWidth="180"/>
+        </HBox>
+
+        <!-- Resultat -->
+        <Text fx:id="resultat" styleClass="card-info" text="" />
+
+        <Region prefHeight="4"/>
+
+        <!-- Botó tancar -->
+        <Button fx:id="btnTancar" text="Continuar"
+                styleClass="cp-dock-button"
+                onAction="#handleTancar"
+                visible="false"
+                prefWidth="220"/>
+    </VBox>
+</VBox>

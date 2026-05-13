@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane stylesheets="@PantallaMenu.css"
+           xmlns="http://javafx.com/javafx/21.0.10"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="VISTAS.PantallaMenu"
+           prefWidth="1024" prefHeight="576">
+
+    <!-- Background image -->
+    <ImageView fx:id="bgImageView" mouseTransparent="true" preserveRatio="false"
+               StackPane.alignment="CENTER">
+        <image>
+            <Image url="@menu_background.png" />
+        </image>
+    </ImageView>
+
+    <!-- Dark vignette overlay so text always reads clearly -->
+    <Region mouseTransparent="true" StackPane.alignment="CENTER"
+            style="-fx-background-color: radial-gradient(center 50% 50%, radius 70%, transparent 0%, rgba(0,0,0,0.52) 100%);"/>
+
+    <!-- Central layout: title + buttons -->
+    <VBox alignment="CENTER" spacing="0" StackPane.alignment="CENTER">
+
+        <!-- Title image -->
+        <ImageView fitWidth="620" preserveRatio="true" smooth="true">
+            <image>
+                <Image url="@title_pinguino.png" />
+            </image>
+        </ImageView>
+
+        <Region prefHeight="12"/>
+
+        <!-- Menu buttons — vertically stacked -->
+        <VBox alignment="CENTER" spacing="10">
+            <Button fx:id="btnNewMatch"  text="Nueva Partida"   onAction="#handleNewMatch"  styleClass="menu-nav-button"/>
+            <Button fx:id="btnLoadMatch" text="Cargar Partida"  onAction="#handleLoadMatch" styleClass="menu-nav-button"/>
+            <Button fx:id="btnRanking"   text="Ranking"         onAction="#handleRanking"   styleClass="menu-nav-button"/>
+            <Button fx:id="btnAjustes"   text="Opciones"        onAction="#handleAjustes"   styleClass="menu-nav-button"/>
+            <Button fx:id="btnCredits"   text="Créditos"        onAction="#handleCredits"   styleClass="menu-nav-button"/>
+            <Button fx:id="btnExit"      text="Salir"           onAction="#handleExit"      styleClass="menu-nav-button"/>
+        </VBox>
+
+    </VBox>
+
+    <!-- Logged-in user — top right -->
+    <Label fx:id="usernameLabel" styleClass="username-label" text="Jugador: "
+           StackPane.alignment="TOP_RIGHT">
+        <StackPane.margin>
+            <Insets right="16" top="8"/>
+        </StackPane.margin>
+    </Label>
+
+</StackPane>

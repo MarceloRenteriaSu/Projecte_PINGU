@@ -1,0 +1,774 @@
+/* ========================================
+   PantallaMenu.css — Estilo Pingüino Helado
+   ======================================== */
+
+
+/* ============================================================
+   HOLLOW-KNIGHT STYLE — title + plain text menu buttons
+   ============================================================ */
+
+/* Small italic line above the main title */
+.hk-subtitle {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-text-fill: rgba(215, 200, 165, 0.88);
+    -fx-effect:
+        dropshadow(gaussian, rgba(0,0,0,0.90), 8, 0.55, 0, 1);
+}
+
+/* Big all-caps game title */
+.hk-title {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 72px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect:
+        dropshadow(gaussian, rgba(255,255,255,0.22), 28, 0.18, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.95), 10, 0.65, 0, 3);
+}
+
+/* Decorative ornament between title and buttons */
+.hk-ornament {
+    -fx-font-size: 20px;
+    -fx-text-fill: rgba(200, 185, 130, 0.72);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.80), 5, 0.45, 0, 1);
+}
+
+/* Plain text menu button — no background, no border */
+.hk-btn {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 22px;
+    -fx-text-fill: rgba(218, 208, 188, 0.86);
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 7 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.80), 6, 0.50, 0, 1);
+}
+
+/* Hover: warm golden glow on the text */
+.hk-btn:hover {
+    -fx-text-fill: #fffde0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-effect:
+        dropshadow(gaussian, rgba(255,240,140,0.90), 22, 0.60, 0, 0),
+        dropshadow(gaussian, rgba(255,200,60,0.50), 10, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.85), 6, 0.50, 0, 1);
+}
+
+/* Press: deeper golden */
+.hk-btn:pressed {
+    -fx-text-fill: rgba(255, 220, 80, 0.95);
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-effect:
+        dropshadow(gaussian, rgba(255,180,40,0.65), 10, 0.45, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.85), 5, 0.50, 0, 1);
+}
+
+/* No focus ring */
+.hk-btn:focused {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+
+/* ── Menu Button — Bloque de hielo ── */
+.menu-btn {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #e8f8ff;
+    -fx-text-alignment: center;
+    -fx-alignment: CENTER;
+    -fx-wrap-text: true;
+
+    /* 3 capas: borde hielo oscuro → marco azul medio → interior hielo translúcido */
+    -fx-background-color:
+        #1a3a5c,
+        linear-gradient(to bottom, #2a6090, #1e4d78, #163d68),
+        linear-gradient(to bottom,
+            rgba(200,235,255,0.95) 0%,
+            rgba(160,210,245,0.90) 20%,
+            rgba(120,185,235,0.85) 45%,
+            rgba(100,165,220,0.88) 65%,
+            rgba(140,200,240,0.90) 85%,
+            rgba(180,225,250,0.92) 100%);
+    -fx-background-insets: 0, 3, 6;
+    -fx-background-radius: 8, 6, 4;
+
+    -fx-min-width: 110;
+    -fx-pref-width: 120;
+    -fx-min-height: 72;
+    -fx-pref-height: 82;
+    -fx-padding: 10 16 10 16;
+
+    -fx-effect:
+        dropshadow(gaussian, rgba(30,100,180,0.70), 10, 0.30, 0, 4),
+        dropshadow(gaussian, rgba(150,220,255,0.35), 14, 0.20, 0, 0);
+}
+
+/* ── Hover ── */
+.menu-btn:hover {
+    -fx-text-fill: #ffffff;
+    -fx-background-color:
+        #0e2a4a,
+        linear-gradient(to bottom, #3a78b0, #2a60a0, #1e5090),
+        linear-gradient(to bottom,
+            rgba(220,245,255,0.98) 0%,
+            rgba(185,228,252,0.95) 20%,
+            rgba(145,205,248,0.92) 45%,
+            rgba(120,190,242,0.94) 65%,
+            rgba(160,215,250,0.95) 85%,
+            rgba(200,235,255,0.97) 100%);
+    -fx-background-insets: 0, 3, 6;
+    -fx-background-radius: 8, 6, 4;
+    -fx-effect:
+        dropshadow(gaussian, rgba(100,200,255,0.80), 16, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(20,80,160,0.65), 10, 0.30, 0, 4);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* ── Pressed ── */
+.menu-btn:pressed {
+    -fx-text-fill: #c8eaff;
+    -fx-background-color:
+        #0a1e38,
+        linear-gradient(to bottom, #163868, #102e58, #0c2448),
+        linear-gradient(to bottom,
+            rgba(80,140,200,0.92) 0%,
+            rgba(60,120,185,0.90) 30%,
+            rgba(45,100,170,0.88) 65%,
+            rgba(55,115,180,0.90) 100%);
+    -fx-background-insets: 0, 3, 6;
+    -fx-background-radius: 8, 6, 4;
+    -fx-effect: innershadow(gaussian, rgba(0,30,80,0.80), 10, 0.50, 1, 3);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ── Focus: sin borde visible ── */
+.menu-btn:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Menu nav button — bigger version of cp-dock-button ── */
+.menu-nav-button {
+    -fx-background-color: linear-gradient(to bottom, #094b8e, #032b55);
+    -fx-background-radius: 30;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+    -fx-padding: 16 60;
+    -fx-min-width: 300;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0.4, 0, 3);
+}
+.menu-nav-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #04396b);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+.menu-nav-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #032b55, #094b8e);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+.menu-nav-button:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Settings Slider ── */
+.settings-slider {
+    -fx-pref-height: 24;
+}
+.settings-slider .track {
+    -fx-background-color: rgba(9, 75, 142, 0.35);
+    -fx-background-radius: 4;
+    -fx-pref-height: 8;
+    -fx-border-color: rgba(120, 185, 240, 0.40);
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+}
+.settings-slider .thumb {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #094b8e);
+    -fx-background-radius: 12;
+    -fx-pref-width: 22;
+    -fx-pref-height: 22;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 4, 0.3, 0, 2);
+}
+.settings-slider .thumb:hover {
+    -fx-background-color: linear-gradient(to bottom, #1068b8, #0c5ea8);
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+}
+.settings-slider:disabled .thumb {
+    -fx-opacity: 0.35;
+}
+.settings-slider:disabled .track {
+    -fx-opacity: 0.35;
+}
+
+/* ── Image Button (graphic-only, no background) ── */
+.img-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 8, 0.25, 0, 3);
+}
+.img-btn:hover {
+    -fx-scale-x: 1.07;
+    -fx-scale-y: 1.07;
+    -fx-effect:
+        dropshadow(gaussian, rgba(100,200,255,0.75), 14, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.55), 8, 0.25, 0, 3);
+}
+.img-btn:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 4, 0.30, 0, 2);
+}
+.img-btn:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Version Label ── */
+.version-label {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 4, 0.6, 1, 1);
+}
+
+/* ── Username Label ── */
+.username-label {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 4, 0.6, 1, 1);
+}
+
+
+/* ============================================================
+   LOGIN SCREEN — Icy night theme
+   ============================================================ */
+
+/* Full-screen deep blue / arctic gradient background */
+.login-root {
+    -fx-background-color:
+        linear-gradient(
+            from 0% 0% to 100% 100%,
+            #05101f 0%,
+            #0b1e3c 30%,
+            #0d2a52 55%,
+            #081a3a 80%,
+            #040d1c 100%
+        );
+}
+
+/* ── Left-side decorative labels ── */
+.login-penguin-icon {
+    -fx-font-size: 72px;
+    -fx-effect: dropshadow(gaussian, rgba(100,200,255,0.55), 28, 0.35, 0, 0);
+}
+
+.login-game-title {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 38px;
+    -fx-font-weight: 800;
+    -fx-text-fill: linear-gradient(from 0% 0% to 0% 100%, #d0eeff, #8ac8f5);
+    -fx-effect:
+        dropshadow(gaussian, rgba(80,180,255,0.70), 20, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(0,0,0,0.80), 6, 0.50, 1, 2);
+}
+
+.login-game-subtitle {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: rgba(180, 220, 255, 0.72);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.70), 4, 0.40, 0, 1);
+}
+
+.login-snowflakes {
+    -fx-font-size: 22px;
+    -fx-text-fill: rgba(160, 210, 255, 0.45);
+    -fx-letter-spacing: 6;
+}
+
+/* ── Login card (frosted ice panel) ── */
+.login-card {
+    -fx-background-color:
+        linear-gradient(
+            from 0% 0% to 0% 100%,
+            rgba(180,225,255,0.11) 0%,
+            rgba(100,170,230,0.08) 50%,
+            rgba(60,130,200,0.11) 100%
+        );
+    -fx-background-radius: 18;
+    -fx-border-color:
+        linear-gradient(
+            from 0% 0% to 0% 100%,
+            rgba(200,235,255,0.50),
+            rgba(100,170,230,0.25)
+        );
+    -fx-border-radius: 18;
+    -fx-border-width: 1.5;
+    -fx-effect:
+        dropshadow(gaussian, rgba(0,60,140,0.55), 40, 0.12, 0, 6),
+        dropshadow(gaussian, rgba(120,200,255,0.20), 20, 0.10, 0, 0);
+}
+
+/* ── Card title ── */
+.login-title {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #dff0ff;
+    -fx-effect: dropshadow(gaussian, rgba(80,180,255,0.50), 10, 0.35, 0, 0);
+}
+
+/* ── Field labels ── */
+.login-label {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(190, 225, 255, 0.80);
+}
+
+/* ── Text / Password fields ── */
+.login-field {
+    -fx-background-color: rgba(8, 28, 60, 0.75);
+    -fx-background-radius: 9;
+    -fx-border-color: rgba(120, 185, 240, 0.40);
+    -fx-border-radius: 9;
+    -fx-border-width: 1;
+    -fx-text-fill: #e4f2ff;
+    -fx-prompt-text-fill: rgba(140, 190, 235, 0.50);
+    -fx-font-size: 14px;
+    -fx-padding: 10 13;
+}
+.login-field:focused {
+    -fx-border-color: rgba(100, 185, 255, 0.85);
+    -fx-background-color: rgba(12, 40, 80, 0.88);
+    -fx-effect: dropshadow(gaussian, rgba(80,170,255,0.45), 10, 0.30, 0, 0);
+}
+
+/* ── Feedback / error text ── */
+.login-feedback {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #f87171;
+    -fx-effect: dropshadow(gaussian, rgba(220,30,30,0.35), 4, 0.30, 0, 0);
+}
+
+/* ── Primary button (ice block style) ── */
+.login-primary {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #dff0ff;
+    -fx-background-color:
+        #0c2240,
+        linear-gradient(to bottom, #2060a0, #184a88, #103870),
+        linear-gradient(to bottom,
+            rgba(200,235,255,0.90) 0%,
+            rgba(160,210,245,0.85) 20%,
+            rgba(110,180,235,0.80) 50%,
+            rgba(90,160,220,0.83) 75%,
+            rgba(140,200,242,0.87) 100%);
+    -fx-background-insets: 0, 2, 4;
+    -fx-background-radius: 11, 9, 7;
+    -fx-padding: 12 18;
+    -fx-effect: dropshadow(gaussian, rgba(20,90,180,0.65), 12, 0.30, 0, 3);
+}
+.login-primary:hover {
+    -fx-background-color:
+        #081830,
+        linear-gradient(to bottom, #3070b8, #2060a8, #185098),
+        linear-gradient(to bottom,
+            rgba(220,245,255,0.96) 0%,
+            rgba(185,225,252,0.92) 20%,
+            rgba(140,200,248,0.88) 50%,
+            rgba(115,185,242,0.91) 75%,
+            rgba(165,215,252,0.94) 100%);
+    -fx-background-insets: 0, 2, 4;
+    -fx-background-radius: 11, 9, 7;
+    -fx-effect:
+        dropshadow(gaussian, rgba(100,200,255,0.80), 16, 0.40, 0, 0),
+        dropshadow(gaussian, rgba(10,60,150,0.60), 10, 0.25, 0, 3);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+.login-primary:pressed {
+    -fx-background-color:
+        #040e1e,
+        linear-gradient(to bottom, #123060, #0e2650, #0a1e40),
+        linear-gradient(to bottom,
+            rgba(70,130,200,0.90) 0%,
+            rgba(55,110,180,0.87) 35%,
+            rgba(40,95,165,0.84) 70%,
+            rgba(50,108,178,0.87) 100%);
+    -fx-background-insets: 0, 2, 4;
+    -fx-background-radius: 11, 9, 7;
+    -fx-effect: innershadow(gaussian, rgba(0,20,60,0.85), 10, 0.55, 1, 3);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ── Secondary button (ghost/outline style) ── */
+.login-secondary {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(180, 220, 255, 0.85);
+    -fx-background-color: rgba(15, 45, 90, 0.55);
+    -fx-background-radius: 11;
+    -fx-border-color: rgba(120, 185, 240, 0.40);
+    -fx-border-radius: 11;
+    -fx-border-width: 1;
+    -fx-padding: 10 18;
+}
+.login-secondary:hover {
+    -fx-background-color: rgba(25, 65, 120, 0.72);
+    -fx-border-color: rgba(150, 210, 255, 0.65);
+    -fx-text-fill: #e4f2ff;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+.login-secondary:pressed {
+    -fx-background-color: rgba(8, 28, 65, 0.85);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+
+/* ============================================================
+   LOGIN SCREEN — CP Island Theme (dock + overlay classes)
+   ============================================================ */
+
+.cp-bottom-dock {
+    -fx-background-color: linear-gradient(to bottom, #10a0e8, #056db5);
+    -fx-border-color: #55cbf5;
+    -fx-border-width: 4 0 0 0;
+    -fx-padding: 0 40 10 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0.2, 0, -4);
+}
+
+.cp-dock-button {
+    -fx-background-color: linear-gradient(to bottom, #094b8e, #032b55);
+    -fx-background-radius: 30;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+    -fx-padding: 12 35;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0.4, 0, 3);
+}
+.cp-dock-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #04396b);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+.cp-dock-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #032b55, #094b8e);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.cp-login-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+}
+
+.cp-login-card {
+    -fx-background-color: linear-gradient(to bottom, #daeffc, #aedef5);
+    -fx-background-radius: 15;
+    -fx-border-color: white;
+    -fx-border-width: 4;
+    -fx-border-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 20, 0.3, 0, 8);
+}
+
+.cp-login-card .login-title {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0d4680;
+}
+
+.cp-login-card .login-label {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0c5ea8;
+}
+
+.cp-login-card .login-field {
+    -fx-background-color: white;
+    -fx-background-radius: 6;
+    -fx-border-color: #8ac0db;
+    -fx-border-radius: 6;
+    -fx-border-width: 2;
+    -fx-text-fill: #333333;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+}
+
+.cp-login-card .login-feedback {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #d11f1f;
+}
+
+.cp-primary-button {
+    -fx-background-color: linear-gradient(to bottom, #50cc04, #368a02);
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 10 25;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.3, 0, 2);
+}
+.cp-primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #60e609, #40a103);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+.cp-primary-button:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.cp-secondary-button {
+    -fx-background-color: linear-gradient(to bottom, #e33030, #a31010);
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 10 25;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.3, 0, 2);
+}
+.cp-secondary-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f54242, #bd1717);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+.cp-secondary-button:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+
+/* ============================================================
+   SHARED — Text styles for inside cp-login-card
+   (Text nodes use -fx-fill, not -fx-text-fill)
+   ============================================================ */
+
+.card-big-text {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-fill: #0d4680;
+    -fx-effect: dropshadow(gaussian, rgba(0,40,120,0.15), 3, 0.20, 0, 1);
+}
+
+.card-stat {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-fill: #1a5090;
+}
+
+.card-info {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 13px;
+    -fx-fill: #34689e;
+}
+
+/* Title labels on dark backgrounds (outside a card) */
+.screen-title-label {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.80), 5, 0.40, 0, 2);
+}
+
+.screen-sub-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(174, 222, 245, 0.90);
+    -fx-font-family: "Arial", sans-serif;
+}
+
+
+/* ============================================================
+   SHARED — field/button aliases for PantallaConfig.java
+   dynamic content (controller uses "field" and "button")
+   ============================================================ */
+
+.cp-login-card .field {
+    -fx-background-color: white;
+    -fx-background-radius: 6;
+    -fx-border-color: #8ac0db;
+    -fx-border-radius: 6;
+    -fx-border-width: 2;
+    -fx-text-fill: #333333;
+    -fx-padding: 5 8;
+    -fx-font-size: 13px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-pref-height: 30;
+    -fx-max-height: 30;
+}
+
+.cp-login-card .button {
+    -fx-background-color: linear-gradient(to bottom, #094b8e, #032b55);
+    -fx-background-radius: 20;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-padding: 8 14;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 4, 0.30, 0, 2);
+}
+.cp-login-card .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #04396b);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+.cp-login-card .button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #032b55, #094b8e);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+.cp-login-card .button:disabled {
+    -fx-opacity: 0.40;
+}
+.cp-login-card .color-picker .color-picker-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+}
+
+
+/* ============================================================
+   SHARED — ComboBox inside cp-login-card
+   ============================================================ */
+
+.cp-combo {
+    -fx-background-color: white;
+    -fx-background-radius: 6;
+    -fx-border-color: #8ac0db;
+    -fx-border-radius: 6;
+    -fx-border-width: 2;
+    -fx-text-fill: #333333;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-padding: 4 8;
+}
+.cp-combo .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #333333;
+    -fx-font-family: "Arial", sans-serif;
+}
+.cp-combo:focused {
+    -fx-border-color: #0c5ea8;
+}
+
+
+/* ============================================================
+   SHARED — CheckBox inside cp-login-card
+   ============================================================ */
+
+.cp-checkbox {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0c5ea8;
+}
+.cp-checkbox .box {
+    -fx-background-color: white;
+    -fx-border-color: #8ac0db;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-border-width: 2;
+}
+.cp-checkbox:selected .box {
+    -fx-background-color: #daeffc;
+    -fx-border-color: #0c5ea8;
+}
+.cp-checkbox .mark {
+    -fx-background-color: transparent;
+}
+.cp-checkbox:selected .mark {
+    -fx-background-color: #0d4680;
+}
+
+
+/* ============================================================
+   SHARED — Data table (PantallaCargarPartida)
+   ============================================================ */
+
+.data-table {
+    -fx-background-color: rgba(218,239,252,0.90);
+    -fx-control-inner-background: rgba(218,239,252,0.90);
+    -fx-table-header-border-color: transparent;
+    -fx-border-color: white;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.50), 14, 0.22, 0, 4);
+}
+.data-table .column-header {
+    -fx-background-color: linear-gradient(to bottom, #10a0e8, #056db5);
+    -fx-border-color: transparent;
+}
+.data-table .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 13px;
+}
+.data-table .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #10a0e8, #056db5);
+}
+.data-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.data-table .table-row-cell:odd {
+    -fx-background-color: rgba(174,222,245,0.45);
+}
+.data-table .table-row-cell:selected {
+    -fx-background-color: rgba(9,75,142,0.22);
+}
+.data-table .table-cell {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 10;
+}
+.data-table .placeholder .label {
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
+}
+.data-table > .virtual-flow > .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(9,75,142,0.40);
+    -fx-background-radius: 4;
+}
+.data-table > .virtual-flow > .scroll-bar:vertical .track {
+    -fx-background-color: rgba(174,222,245,0.30);
+}

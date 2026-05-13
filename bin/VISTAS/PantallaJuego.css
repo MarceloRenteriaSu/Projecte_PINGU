@@ -1,0 +1,292 @@
+/* ==============================
+   JUEGO — CP Island Style
+   ============================== */
+
+.root {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
+        #05101f 0%, #0b1e3c 30%, #0d2a52 55%, #081a3a 80%, #040d1c 100%);
+}
+
+/* ── Top bar: wraps menu bar + auto-play button ── */
+.top-bar {
+    -fx-background-color: linear-gradient(to bottom, #10a0e8, #056db5);
+    -fx-border-color: #55cbf5;
+    -fx-border-width: 0 0 2 0;
+}
+
+/* ── Menu bar: CP-island blue bar ── */
+.menu-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Auto-play toggle button ── */
+.auto-btn {
+    -fx-background-color: rgba(255,255,255,0.18);
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-color: rgba(255,255,255,0.55);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 5;
+    -fx-padding: 2 10 2 10;
+}
+.auto-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.32);
+}
+.auto-btn.active {
+    -fx-background-color: #22c55e;
+    -fx-border-color: #86efac;
+    -fx-text-fill: white;
+}
+.menu-bar .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+}
+.context-menu {
+    -fx-background-color: #0b2a55;
+    -fx-border-color: #55cbf5;
+}
+.menu-item .label {
+    -fx-text-fill: white;
+    -fx-font-family: "Arial", sans-serif;
+}
+.menu-item:focused {
+    -fx-background-color: #1a5294;
+}
+
+/* ── Board wrapper ── */
+.snow-background {
+    -fx-background-color: transparent;
+}
+
+/* ── Board (transparent – Canvas draws the white path) ── */
+.board {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ── Cell number labels ── */
+.cell-title {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-fill: #0d4680;
+}
+.cell-type {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 10px;
+    -fx-fill: #1a5090;
+}
+
+/* ── Sidebar cards (cp-login-card style) ── */
+.card {
+    -fx-background-color: linear-gradient(to bottom, #daeffc, #aedef5);
+    -fx-background-radius: 15;
+    -fx-padding: 14;
+    -fx-border-color: white;
+    -fx-border-radius: 15;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 16, 0.25, 0, 5);
+}
+
+.card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-text-fill: #0d4680;
+}
+
+/* ── Text nodes inside cards ── */
+.big-text {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #0d4680;
+}
+.stat {
+    -fx-font-size: 13px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #1a5090;
+}
+.events {
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #34689e;
+}
+
+/* ── Buttons ── */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #094b8e, #032b55);
+    -fx-background-radius: 20;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-padding: 8 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 5, 0.35, 0, 2);
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0c5ea8, #04396b);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #032b55, #094b8e);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+.button:disabled {
+    -fx-opacity: 0.38;
+}
+.button:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* Primary = green (dado/action button) */
+.button.primary {
+    -fx-background-color: linear-gradient(to bottom, #50cc04, #368a02);
+    -fx-background-radius: 20;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 4, 0.30, 0, 2);
+}
+.button.primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #60e609, #40a103);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+.button.primary:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+.button.primary:disabled {
+    -fx-opacity: 0.38;
+}
+
+/* ── ScrollPane inside inventory card ── */
+.objects-scroll {
+    -fx-background-color: transparent;
+}
+.objects-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ── Item slots (inventory icons) ── */
+.item-slot {
+    -fx-background-color: rgba(255,255,255,0.22);
+    -fx-background-radius: 8;
+}
+.item-emoji {
+    -fx-font-size: 26px;
+}
+.item-qty {
+    -fx-background-color: #8a9bb0;
+    -fx-background-radius: 4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 1 5;
+    -fx-alignment: center;
+    -fx-font-family: "Arial", sans-serif;
+}
+.usar-area {
+    -fx-border-color: #0d2a52;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-color: rgba(5,16,31,0.25);
+    -fx-background-radius: 6;
+}
+
+/* ── Player tokens (Canvas pixel-art penguins) ──
+   Los efectos de brillo/oro se aplican programáticamente en PantallaJuego.java
+   (marcarJugadorActual usa setEffect con DropShadow) ── */
+
+/* ── Events ListView ── */
+.events-list {
+    -fx-background-color: rgba(255,255,255,0.35);
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(9,75,142,0.30);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+}
+.events-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1a5090;
+    -fx-font-size: 12px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-padding: 4 8;
+    -fx-border-width: 0;
+}
+.events-list .list-cell:odd {
+    -fx-background-color: rgba(9,75,142,0.07);
+}
+.events-list .list-cell:selected {
+    -fx-background-color: rgba(9,75,142,0.18);
+}
+.events-list > .virtual-flow > .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+.events-list > .virtual-flow > .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(9,75,142,0.40);
+    -fx-background-radius: 4;
+}
+.events-list > .virtual-flow > .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+/* ── Turn overlay (small centered card over the board) ── */
+.turno-overlay {
+    -fx-background-color: transparent;
+}
+.turno-card {
+    -fx-background-color: rgba(5, 12, 28, 0.88);
+    -fx-background-radius: 10;
+    -fx-padding: 8 24;
+    -fx-border-color: rgba(85, 203, 245, 0.6);
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 18, 0.4, 0, 0);
+}
+.turno-titulo {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-fill: #9ecde8;
+    -fx-letter-spacing: 2px;
+}
+.turno-nombre {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-fill: #55cbf5;
+}
+
+/* ── End screen (PantallaFin uses PantallaJuego.css) ── */
+.fin-titulo {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #0d4680;
+}
+.fin-subtitulo {
+    -fx-font-size: 16px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #1a5090;
+}
+.fin-info {
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-fill: #34689e;
+}
